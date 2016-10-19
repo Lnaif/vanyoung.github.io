@@ -10,6 +10,13 @@
     </entry>
 
     
+    <entry>
+      <title><![CDATA[Why start my blog]]></title>
+      <url>http://lnaif.github.io/2016/10/16/Why-start-blog/</url>
+      <content type="text"><![CDATA[EarlyI have thought about write some notes on the blog early, but really have a longing for the blog is in the sophomore. After carefully read the AnqurVanillapy’s blog, I firmly decided to build a blog to record my learning experience and some inspiration. I start to write mainly from: Accumulation. Accumulation of work and life among the thoughts in learning and what have learned. Excitation. Encourage myself to read ceaselessly, study ceaselessly, practice ceaselessly. Communication. The blogosphere is a place full of masters. Share. Self-improvement, but also take pleasure in helping others. ContentMy blog is the main record and sharing of work and life of my own thinking on the learning, the accumulation of technology, and the perception of life, and not prepared to account for life trivial. At the same time, the blog will be regularly reproduced some of the individual that is fine, nutritious article to enhance the overall quality of the blog, encourage reading and promote communication. Why EnglishMost of the literature is written in English, it is necessary for me to practice. How to build a blogAs an amateur web developer, I need to keep a record of the development process. Require GitHub Pages Hexo GitHub pagesWhat is GitHub Pages GotGitHub：GitHub Git教程-廖雪峰 Github Pages can be thought of as a user-written static web page hosted on github that describes the user (team) itself or the project. How start GitHub pages Github Pages HexoWhat is HexoHexo is a static blog program based on the Nodejs , you can easily generate a static web page hosted on github. Citing the author’s words: A fast, simple &amp; powerful blog framework, powered by Node.js. How start HexoHexo|Documents Theme-NexT在线预览 Preview | NexT 使用文档 | English Documentation MarkdownWhat is Markdown Markdown is a lightweight markup language, the founder is John Gruber (John Gruber). It allows people to “write documents in plain text format that is easy toread and then convert to a valid XHTML (or HTML) document.” Why Markdown Markdown lets us focus on writing, not on typography. Markdown editorIt’s not difficult learning Markdown in half an hour, but a good Markdown editor is hard to find in half a day. I’m using Typora, which is a light and simple editor, especially, for free! LicenseCC BY-NC-ND 3.0 CN]]></content>
+    </entry>
+
+    
   
   
 </search>

@@ -110,7 +110,7 @@
 <meta property="og:site_name" content="EXCITED NOTES">
 <meta property="og:description" content="前言Hexo是一个非常好用的静态博客生成器，但在使用过程中尤其是第一次使用可能会遇到诸多报错。可能由于配置、操作不当、版本迭代、Hexo本身的BUG导致使用不顺畅。
 本文主要记录我在使用Hexo中遇到的问题，遇到BUG可通过issues给Hexo作者提出问题或意见。">
-<meta property="og:updated_time" content="2016-10-19T14:05:53.220Z">
+<meta property="og:updated_time" content="2016-10-20T04:06:20.393Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Hexo遇到的问题及解决办法">
 <meta name="twitter:description" content="前言Hexo是一个非常好用的静态博客生成器，但在使用过程中尤其是第一次使用可能会遇到诸多报错。可能由于配置、操作不当、版本迭代、Hexo本身的BUG导致使用不顺畅。
@@ -379,7 +379,7 @@
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Hexo是一个非常好用的静态博客生成器，但在使用过程中尤其是第一次使用可能会遇到诸多报错。可能由于配置、操作不当、版本迭代、Hexo本身的BUG导致使用不顺畅。</p>
 <p>本文主要记录我在使用Hexo中遇到的问题，遇到BUG可通过<a href="https://github.com/Xuanwo/xuanwo.github.io/issues" target="_blank" rel="external">issues</a>给Hexo作者提出问题或意见。</p>
 <a id="more"></a>
-<h1 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h1><h2 id="npm安装问题"><a href="#npm安装问题" class="headerlink" title="npm安装问题"></a>npm安装问题</h2><h3 id="npm安装Hexo依赖包过慢"><a href="#npm安装Hexo依赖包过慢" class="headerlink" title="npm安装Hexo依赖包过慢"></a>npm安装Hexo依赖包过慢</h3><p>解决方案</p>
+<h1 id="问题及解决"><a href="#问题及解决" class="headerlink" title="问题及解决"></a>问题及解决</h1><h2 id="npm安装问题"><a href="#npm安装问题" class="headerlink" title="npm安装问题"></a>npm安装问题</h2><h3 id="npm安装Hexo依赖包过慢"><a href="#npm安装Hexo依赖包过慢" class="headerlink" title="npm安装Hexo依赖包过慢"></a>npm安装Hexo依赖包过慢</h3><p>解决方案</p>
 <ul>
 <li><p>使用VPN</p>
 </li>
@@ -396,20 +396,27 @@
 </li>
 </ul>
 <h2 id="Hexo错误"><a href="#Hexo错误" class="headerlink" title="Hexo错误"></a>Hexo错误</h2><h3 id="安装时报错-1"><a href="#安装时报错-1" class="headerlink" title="安装时报错"></a>安装时报错</h3><p>报错：<code>Cannot find moudle</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123; [Error: Cannot find module &apos;./build/Release/DTraceProviderBindings&apos;] code: &apos;MODULE_NOT_FOUND&apos; &#125;</div><div class="line">  &#123; [Error: Cannot find module &apos;./build/default/DTraceProviderBindings&apos;] code: &apos;MODULE_NOT_FOUND&apos; &#125;</div><div class="line">  &#123; [Error: Cannot find module &apos;./build/Debug/DTraceProviderBindings&apos;] code: &apos;MODULE_NOT_FOUND&apos; &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123; [Error: Cannot find module &apos;./build/Release/DTraceProviderBindings&apos;] code: &apos;MODULE_NOT_FOUND&apos; &#125;</div><div class="line">&#123; [Error: Cannot find module &apos;./build/default/DTraceProviderBindings&apos;] code: &apos;MODULE_NOT_FOUND&apos; &#125;</div><div class="line">&#123; [Error: Cannot find module &apos;./build/Debug/DTraceProviderBindings&apos;] code: &apos;MODULE_NOT_FOUND&apos; &#125;</div></pre></td></tr></table></figure>
 <p>解决方案：</p>
 <ul>
 <li><p>安装时Hexo时带上 <code>--no-optional</code> 命令</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo --no-optional</div></pre></td></tr></table></figure>
 </li>
 </ul>
-<h3 id="config-yml编译不通过"><a href="#config-yml编译不通过" class="headerlink" title="_config.yml编译不通过"></a>_config.yml编译不通过</h3><p>_config.yml编译不通过，报错略</p>
+<h3 id="config-yml编译不通过"><a href="#config-yml编译不通过" class="headerlink" title="_config.yml编译不通过"></a>_config.yml编译不通过</h3><p>.yml语法及其严格，不过往往是空格导致的问题。</p>
 <p>解决方案：</p>
 <ul>
 <li>仔细检查_config,yml文件，所有设置参数属性末尾都要加空格</li>
 </ul>
-<h3 id="deploy设置错误"><a href="#deploy设置错误" class="headerlink" title="deploy设置错误"></a>deploy设置错误</h3><p>输入命令<code>hexo deploy</code>出现错误信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&apos;github&apos; does not appear to be a git repository</div></pre></td></tr></table></figure>
+<h3 id="sever报错"><a href="#sever报错" class="headerlink" title="sever报错"></a>sever报错</h3><p>输入命令<code>hexo sever</code>提示找不到指令</p>
+<p>解决方案：</p>
+<ul>
+<li><p>安装sever依赖包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-server --save</div></pre></td></tr></table></figure>
+<p><strong>注意</strong>：<strong>Hexo3.0</strong>版本后与server分离，此方法适用于<strong>Hexo3.0</strong>版本及以后。</p>
+</li>
+</ul>
+<h3 id="deploy报错"><a href="#deploy报错" class="headerlink" title="deploy报错"></a>deploy报错</h3><p>输入命令<code>hexo deploy</code>出现错误信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&apos;github&apos; does not appear to be a git repository</div></pre></td></tr></table></figure></p>
 <p>解决方案：</p>
 <ol>
 <li>检查<code>_config.yml</code>中deploy设置。参见<a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">http://hexo.io/docs/deployment.html</a>。</li>
@@ -418,12 +425,13 @@
 <h2 id="Git错误"><a href="#Git错误" class="headerlink" title="Git错误"></a>Git错误</h2><h3 id="error-deployer-not-found-github"><a href="#error-deployer-not-found-github" class="headerlink" title="error deployer not found:github"></a>error deployer not found:github</h3><p>报错<code>error deployer not found:github</code></p>
 <p>解决方案：</p>
 <ul>
-<li><p>修改_config.yml中type为git</p>
+<li>修改_config.yml中type为git</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">	type: git</div></pre></td></tr></table></figure>
-</li>
+<ul>
 <li><p>安装deploy依赖包</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git –save</div></pre></td></tr></table></figure>
-<p><strong>注意</strong>，Hexo3.0版本后才将deploye分离，此方法适用于Hexo3.0版本及以后。</p>
+<p><strong>注意</strong>：<strong>Hexo3.0</strong>版本后与deploye分离，此方法适用于<strong>Hexo3.0</strong>版本及以后。</p>
 </li>
 </ul>
 <h3 id="github-–crendetials-git-is-not-command"><a href="#github-–crendetials-git-is-not-command" class="headerlink" title="github –crendetials: git is not command"></a>github –crendetials: git is not command</h3><p> 报错：<code>github --crendetials: git is not command</code></p>
@@ -435,8 +443,13 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">	repository: ssh://git@github.com/yourname/yourname.github.io.git</div></pre></td></tr></table></figure>
 </li>
 </ul>
-<h1 id="deploy参数设置"><a href="#deploy参数设置" class="headerlink" title="deploy参数设置"></a>deploy参数设置</h1><p><strong>注意</strong>，此配置针对Hexo3.0版本及以后。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">	type: git</div><div class="line">	repository: ssh://git@github.com/yourname/yourname.github.io.git</div><div class="line">	branch: yourbranch</div></pre></td></tr></table></figure>
+<h1 id="Hexo3-0版本后的坑"><a href="#Hexo3-0版本后的坑" class="headerlink" title="Hexo3.0版本后的坑"></a>Hexo3.0版本后的坑</h1><h2 id="deploy参数设置"><a href="#deploy参数设置" class="headerlink" title="deploy参数设置"></a>deploy参数设置</h2>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">	type: git</div><div class="line">	repository: ssh://git@github.com/yourname/yourname.github.io.git</div><div class="line">	branch: yourbranch</div></pre></td></tr></table></figure>
+<p><strong>注意</strong>：绝大多数教程上<code>repository</code>参数都被设置为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">repository: http://github.com/yourname/yourname.github.io.git</div></pre></td></tr></table></figure>
+<p>但我在deploy的时候却报错<code>github --crendetials: git is not command</code></p>
+<p>在将<code>repository</code>参数设置为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">repository: ssh://git@github.com/yourname/yourname.github.io.git</div></pre></td></tr></table></figure>
+<p>才操作成功，不清楚是什么原因，请各位根据自己的设备情况自行调试。</p>
 <h1 id="许可"><a href="#许可" class="headerlink" title="许可"></a>许可</h1><p>本文章采用<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/cn/" target="_blank" rel="external">知识共享署名-非商业性使用-禁止演绎 3.0 许可协议</a>进行许可，转载请注明来源。</p>
 
       
@@ -644,7 +657,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#遇到的问题"><span class="nav-number">2.</span> <span class="nav-text">遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#npm安装问题"><span class="nav-number">2.1.</span> <span class="nav-text">npm安装问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#npm安装Hexo依赖包过慢"><span class="nav-number">2.1.1.</span> <span class="nav-text">npm安装Hexo依赖包过慢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装时报错"><span class="nav-number">2.1.2.</span> <span class="nav-text">安装时报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo错误"><span class="nav-number">2.2.</span> <span class="nav-text">Hexo错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装时报错-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">安装时报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#config-yml编译不通过"><span class="nav-number">2.2.2.</span> <span class="nav-text">_config.yml编译不通过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deploy设置错误"><span class="nav-number">2.2.3.</span> <span class="nav-text">deploy设置错误</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git错误"><span class="nav-number">2.3.</span> <span class="nav-text">Git错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#error-deployer-not-found-github"><span class="nav-number">2.3.1.</span> <span class="nav-text">error deployer not found:github</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#github-–crendetials-git-is-not-command"><span class="nav-number">2.3.2.</span> <span class="nav-text">github –crendetials: git is not command</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#deploy参数设置"><span class="nav-number">3.</span> <span class="nav-text">deploy参数设置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#许可"><span class="nav-number">4.</span> <span class="nav-text">许可</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题及解决"><span class="nav-number">2.</span> <span class="nav-text">问题及解决</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#npm安装问题"><span class="nav-number">2.1.</span> <span class="nav-text">npm安装问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#npm安装Hexo依赖包过慢"><span class="nav-number">2.1.1.</span> <span class="nav-text">npm安装Hexo依赖包过慢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装时报错"><span class="nav-number">2.1.2.</span> <span class="nav-text">安装时报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo错误"><span class="nav-number">2.2.</span> <span class="nav-text">Hexo错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装时报错-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">安装时报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#config-yml编译不通过"><span class="nav-number">2.2.2.</span> <span class="nav-text">_config.yml编译不通过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sever报错"><span class="nav-number">2.2.3.</span> <span class="nav-text">sever报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deploy报错"><span class="nav-number">2.2.4.</span> <span class="nav-text">deploy报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git错误"><span class="nav-number">2.3.</span> <span class="nav-text">Git错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#error-deployer-not-found-github"><span class="nav-number">2.3.1.</span> <span class="nav-text">error deployer not found:github</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#github-–crendetials-git-is-not-command"><span class="nav-number">2.3.2.</span> <span class="nav-text">github –crendetials: git is not command</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hexo3-0版本后的坑"><span class="nav-number">3.</span> <span class="nav-text">Hexo3.0版本后的坑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#deploy参数设置"><span class="nav-number">3.1.</span> <span class="nav-text">deploy参数设置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#许可"><span class="nav-number">4.</span> <span class="nav-text">许可</span></a></li></ol></div>
             
           </div>
         </section>

@@ -112,7 +112,7 @@
 <meta property="og:description" content="为了招揽安全方向的新生，暨南大学Xp0int团队组织了Xp0int2016新生杯交流赛。
 由于是民间团队，题目较基础，校内外大牛就不用来战了。
 本文总结了这次比赛题目的Write up，详细请查看全文。">
-<meta property="og:updated_time" content="2016-10-20T10:36:01.498Z">
+<meta property="og:updated_time" content="2016-10-20T13:46:43.231Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Xp0int新生杯交流赛Write up">
 <meta name="twitter:description" content="为了招揽安全方向的新生，暨南大学Xp0int团队组织了Xp0int2016新生杯交流赛。
@@ -334,8 +334,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/随手分享文/" itemprop="url" rel="index">
-                    <span itemprop="name">随手分享文</span>
+                  <a href="/categories/人生经验/" itemprop="url" rel="index">
+                    <span itemprop="name">人生经验</span>
                   </a>
                 </span>
 
@@ -455,7 +455,7 @@
 <ul>
 <li>先将<code>Xp0int233</code>编码为<code>%58%70%30%69%6e%74%32%33%33</code></li>
 <li>再一次编码为<code>%25%35%38%25%37%30%25%33%30%25%36%39%25%36%65%25%37%34%25%33%32%25%33%33%25%33%33</code></li>
-<li>注入<code>?id=%25%35%38%25%37%30%25%33%30%25%36%39%25%36%65%25%37%34%25%33%32%25%33%33%25%33%33</code>返回flag</li>
+<li>注入返回flag</li>
 </ul>
 <h2 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h2><blockquote>
 <p><a href="http://123.207.1.235/ctf/setcookie.php" target="_blank" rel="external">http://123.207.1.235/ctf/setcookie.php</a></p>
@@ -464,7 +464,7 @@
 <h2 id="JsFuck"><a href="#JsFuck" class="headerlink" title="JsFuck"></a>JsFuck</h2><blockquote>
 <p><a href="http://123.207.1.235/ctf/jsfuck.html" target="_blank" rel="external">http://123.207.1.235/ctf/jsfuck.html</a></p>
 </blockquote>
-<p>JSFuck 可以只用 6 个字符 <a href=""></a>!+ 来编写 JavaScript 程序，可起到一定加密作用。教程：<a href="http://www.yiibai.com/t/jsfuck" target="_blank" rel="external">JsFuck教程</a></p>
+<p>JSFuck 可以只用 6 个字符 <code>[]()!+</code> 来编写 JavaScript 程序，可起到一定加密作用。教程：<a href="http://www.yiibai.com/t/jsfuck" target="_blank" rel="external">JsFuck教程</a></p>
 <p>我们自己去解析这么大段JsFuck是不可能的，所以用到工具网站<a href="http://www.jsfuck.com/" target="_blank" rel="external">http://www.jsfuck.com/</a></p>
 <ul>
 <li>复制JsFuck代码到工具网站揭秘，得到flag</li>
@@ -498,9 +498,6 @@
 <p>降低难度，提交参数是id哦，别以为id=1就可以了，呵呵</p>
 <p>若访问不了，请过几秒后刷新</p>
 </blockquote>
-<ul>
-<li>​</li>
-</ul>
 <h1 id="Crypto"><a href="#Crypto" class="headerlink" title="Crypto"></a>Crypto</h1><h2 id="Crypto1"><a href="#Crypto1" class="headerlink" title="Crypto1"></a>Crypto1</h2><blockquote>
 <p>这是一个有趣的密码</p>
 <p>Hint: 百度识图</p>
@@ -520,7 +517,9 @@
 <h2 id="你猜"><a href="#你猜" class="headerlink" title="你猜"></a>你猜</h2><blockquote>
 <p>ESZDCTF 852 IUHNM GHYTFVB</p>
 </blockquote>
-<p>按照顺序在键盘上敲一边，其轨迹为<strong>nice</strong></p>
+<ul>
+<li>按照顺序在键盘上敲一边，其轨迹为<strong>nice</strong></li>
+</ul>
 <h2 id="GO"><a href="#GO" class="headerlink" title="GO"></a>GO</h2><blockquote>
 <p>听说出题人喜欢吃夜宵食堂二楼的培根加蛋手抓饼！</p>
 <p>flag{BABAB ABBBA ABBAB ABAAA ABBAA BAABA AABBA ABBAB}</p>
@@ -529,7 +528,7 @@
 <p><a href="http://baike.baidu.com/link?url=9ZQymTxKQoO09bgSyYikiuGme-gHmPWKIiB4N2sbXqYzAlP95C4RDli0lhPN9jJMRYR7VsmldIMv4-1ViD6kvaTp6eIe0zyg8Lzh_JvQ6rSgdYNOi2OZiKfHX0lFuQZQ" target="_blank" rel="external">培根密码</a></p>
 <ul>
 <li>对照第一种密码表翻译得到<code>vonimsgn</code>，无论大小写都错误</li>
-<li>题目提示<strong>食堂二楼的培根…</strong>，因此对照第二种密码表翻译得到<code>xpointgo</code>或<code>xpojintgo</code>，都试一下就行了</li>
+<li>题目提示<strong>食堂二楼的培根…</strong>，因此对照第二种密码表翻译得到<code>xpointgo</code>或<code>xpojntgo</code>，都试一下就行了</li>
 </ul>
 <h2 id="搞那么多干嘛"><a href="#搞那么多干嘛" class="headerlink" title="搞那么多干嘛"></a>搞那么多干嘛</h2><blockquote>
 <p>搞起，这什么加密呢</p>
@@ -586,8 +585,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/10/19/WinSCP-error-utf8/" rel="next" title="坑！WinSCP使用utf-8编码错误">
-                <i class="fa fa-chevron-left"></i> 坑！WinSCP使用utf-8编码错误
+              <a href="/2016/10/19/hexo-error/" rel="next" title="使用Hexo遇到的问题及解决办法">
+                <i class="fa fa-chevron-left"></i> 使用Hexo遇到的问题及解决办法
               </a>
             
           </div>
@@ -683,7 +682,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -691,7 +690,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -700,7 +699,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

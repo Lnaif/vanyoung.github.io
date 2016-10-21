@@ -1,0 +1,966 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="css," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="NexT是一个被广泛使用的Hexo主题，其风格扁平化，优雅而低调。
+但也有许多瑕疵，在引用第三方服务时，可能与其本身的风格有比较大的冲突。比如多说评论服务，NexT作者似乎并没有非常在意去修改原版的css，导致博客的评论板块十分地…简直没法看。
+作为一个业余的前端，当然有必要来自己打理一番。
+本文主要说明了我的css源码与原作者的区别，完整源码请前往https://github.com/lnaif">
+<meta property="og:type" content="article">
+<meta property="og:title" content="美化多说CSS，与NexT风格契合">
+<meta property="og:url" content="http://lnaif.github.io/2016/10/21/duoshuo-theme-next/index.html">
+<meta property="og:site_name" content="EXCITED NOTES">
+<meta property="og:description" content="NexT是一个被广泛使用的Hexo主题，其风格扁平化，优雅而低调。
+但也有许多瑕疵，在引用第三方服务时，可能与其本身的风格有比较大的冲突。比如多说评论服务，NexT作者似乎并没有非常在意去修改原版的css，导致博客的评论板块十分地…简直没法看。
+作为一个业余的前端，当然有必要来自己打理一番。
+本文主要说明了我的css源码与原作者的区别，完整源码请前往https://github.com/lnaif">
+<meta property="og:image" content="http://lnaif.github.io/C:\Users\user\blog\themes\next\source\uploads\QQimg20161021163411.png">
+<meta property="og:image" content="http://lnaif.github.io/C:\Users\user\blog\themes\next\source\uploads\QQimg20161021163517.png">
+<meta property="og:image" content="http://lnaif.github.io/file:///C:\Users\user\AppData\Roaming\Tencent\Users\676098269\QQ\WinTemp\RichOle\}`C$[R@@%]KX3}W}5D_OP58.png">
+<meta property="og:image" content="http://lnaif.github.io/C:\Users\user\blog\themes\next\source\uploads\QQimg20161021172418.png">
+<meta property="og:image" content="http://lnaif.github.io/C:\Users\user\blog\themes\next\source\uploads\QQimg20161021165722.png">
+<meta property="og:image" content="http://lnaif.github.io/C:\Users\user\blog\themes\next\source\uploads\QQimg20161021170129.png">
+<meta property="og:image" content="http://lnaif.github.io/C:\Users\user\blog\themes\next\source\uploads\QQimg20161021171806.png">
+<meta property="og:updated_time" content="2016-10-21T09:30:58.091Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="美化多说CSS，与NexT风格契合">
+<meta name="twitter:description" content="NexT是一个被广泛使用的Hexo主题，其风格扁平化，优雅而低调。
+但也有许多瑕疵，在引用第三方服务时，可能与其本身的风格有比较大的冲突。比如多说评论服务，NexT作者似乎并没有非常在意去修改原版的css，导致博客的评论板块十分地…简直没法看。
+作为一个业余的前端，当然有必要来自己打理一番。
+本文主要说明了我的css源码与原作者的区别，完整源码请前往https://github.com/lnaif">
+<meta name="twitter:image" content="http://lnaif.github.io/C:\Users\user\blog\themes\next\source\uploads\QQimg20161021163411.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 6339436826301826000,
+      author: 'Author'
+    }
+  };
+</script>
+
+  <title> 美化多说CSS，与NexT风格契合 | EXCITED NOTES </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans,en,default">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?c46622065e992c0832a78c10f8467d3f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">EXCITED NOTES</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Naif's blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="#" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                美化多说CSS，与NexT风格契合
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-21T16:00:31+08:00" content="2016-10-21">
+              2016-10-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/技术水波文/" itemprop="url" rel="index">
+                    <span itemprop="name">技术水波文</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/10/21/duoshuo-theme-next/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/21/duoshuo-theme-next/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="external">NexT</a>是一个被广泛使用的Hexo主题，其风格扁平化，优雅而低调。</p>
+<p>但也有许多瑕疵，在引用第三方服务时，可能与其本身的风格有比较大的冲突。比如多说评论服务，NexT作者似乎并没有非常在意去修改原版的css，导致博客的评论板块十分地…简直没法看。</p>
+<p>作为一个业余的前端，当然有必要来自己打理一番。</p>
+<p>本文主要说明了我的css源码与原作者的区别，完整源码请前往<a href="https://github.com/lnaif/duoshuo-theme-next" target="_blank" rel="external">https://github.com/lnaif/duoshuo-theme-next</a>查看。</p>
+<a id="more"></a>
+<h1 id="如何修改"><a href="#如何修改" class="headerlink" title="如何修改"></a>如何修改</h1><h2 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h2><p>在你的博客主题目录里，进入<code>\next\source\css\_common\components\third-party</code>,找到<code>duoshuo.styl</code>文件，这个就是控制<strong>多说评论版块样式</strong>的css文件。</p>
+<p>或者直接在<strong>多说官网</strong>的开发者中心中添加<strong>css</strong>，但并不推荐这种方式，因为在多说官网上修改的css很容易被本地的<code>.styl</code>覆盖。</p>
+<h2 id="找到类名"><a href="#找到类名" class="headerlink" title="找到类名"></a>找到类名</h2><p>直接在<strong>浏览器</strong>上，右键-&gt;检查元素-&gt;检查窗口右上角的选择元素-&gt;点击想查看的元素，旁边的查看器就会显示当前元素的类名和样式。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>先将要修改的多说评论版块分为几个模块：</p>
+<ul>
+<li>喜欢按钮</li>
+<li>评论区</li>
+<li>评论输入框</li>
+</ul>
+<p>再依次修改</p>
+<h1 id="喜欢按钮"><a href="#喜欢按钮" class="headerlink" title="喜欢按钮"></a>喜欢按钮</h1><h2 id="新旧对比"><a href="#新旧对比" class="headerlink" title="新旧对比"></a>新旧对比</h2><ul>
+<li><p>原版</p>
+<p><img src="C:\Users\user\blog\themes\next\source\uploads\QQimg20161021163411.png" alt="QQimg20161021163411"></p>
+</li>
+<li><p>新版 </p>
+<p><img src="C:\Users\user\blog\themes\next\source\uploads\QQimg20161021163517.png" alt="QQimg20161021163517"></p>
+</li>
+</ul>
+<p>区别还是很明显的，新版更加明显，更契合扁平化风格</p>
+<h2 id="源码对比"><a href="#源码对比" class="headerlink" title="源码对比"></a>源码对比</h2><ul>
+<li>原版源码</li>
+</ul>
+<p>原版使用的是多说<strong>喜欢按钮</strong>的<strong>默认样式</strong>，因此我们直接添加就行了</p>
+<ul>
+<li>新版源码</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">  /* 去除喜欢下面的分割线*/</div><div class="line">#ds-thread #ds-reset .ds-meta &#123;</div><div class="line">  border:none;</div><div class="line">  text-align: center;</div><div class="line">&#125;</div><div class="line">/*调整‘人喜欢’的字体*/</div><div class="line">#ds-thread #ds-reset .ds-like-panel &#123;</div><div class="line">  line-height: 60px;</div><div class="line">  font-family: 'Roboto Slab', 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;</div><div class="line">  font-size: 16px;</div><div class="line">&#125;</div><div class="line">/* 喜欢按钮  居中 圆形 */</div><div class="line">#ds-thread #ds-reset a.ds-like-thread-button &#123;</div><div class="line">  display: block;</div><div class="line">  width: 80px;z</div><div class="line">  height: 80px;</div><div class="line">  border-radius: 50px;</div><div class="line">  padding: 10px;</div><div class="line">  margin: 0 auto;</div><div class="line">&#125;</div><div class="line">#ds-thread #ds-reset a.ds-like-thread-button span&#123;</div><div class="line">  font-family: 'Roboto Slab', 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;</div><div class="line">  font-size: 16px;</div><div class="line">&#125;</div><div class="line">/* 喜欢按钮 心形 */</div><div class="line">#ds-thread #ds-reset a.ds-like-thread-button .ds-icon-heart  &#123;</div><div class="line">  background: none;</div><div class="line">  width: 40px;</div><div class="line">  height: 40px;</div><div class="line">  display: block;</div><div class="line">  padding-top: 20px;</div><div class="line">  margin: 0 auto;</div><div class="line">&#125;</div><div class="line">/* 自定义心形 '\f004'是font awesome对应的心形编码 */</div><div class="line">#ds-thread #ds-reset a.ds-like-thread-button .ds-icon-heart:before &#123;</div><div class="line">  content: '\f004';</div><div class="line">  display: block;</div><div class="line">  font: normal normal normal 14px/1 FontAwesome;</div><div class="line">  font-size: 40px;</div><div class="line">  color: #999;</div><div class="line">  text-rendering: auto;</div><div class="line">&#125;</div><div class="line">#ds-thread #ds-reset a.ds-like-thread-button &#123;</div><div class="line">  border:none;</div><div class="line">  background:#eee;</div><div class="line">&#125;</div><div class="line">#ds-thread #ds-reset a.ds-thread-liked .ds-icon-heart:before &#123;</div><div class="line">  color: rgb(252, 120, 120);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="评论区"><a href="#评论区" class="headerlink" title="评论区"></a>评论区</h1><h2 id="新旧对比-1"><a href="#新旧对比-1" class="headerlink" title="新旧对比"></a>新旧对比</h2><ul>
+<li><p>原版</p>
+<p><img src="file:///C:\Users\user\AppData\Roaming\Tencent\Users\676098269\QQ\WinTemp\RichOle\}`C$[R@@%]KX3}W}5D_OP58.png" alt="img"></p>
+</li>
+<li><p>新版</p>
+<p> <img src="C:\Users\user\blog\themes\next\source\uploads\QQimg20161021172418.png" alt="QQimg20161021172418"></p>
+</li>
+</ul>
+<p>（抱歉之前没截图，所以直接用了原作者下面的评论截图）更加简洁，与NexT主题色调契合</p>
+<h2 id="源码对比-1"><a href="#源码对比-1" class="headerlink" title="源码对比"></a>源码对比</h2><ul>
+<li>原版源码</li>
+</ul>
+<p>原版使用的多说的<strong>评论区</strong>的<strong>默认样式</strong>，因此我们直接添加就行了</p>
+<ul>
+<li>新版源码</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*清除评论区分割线*/</span></div><div class="line"><span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-tag">li</span><span class="selector-class">.ds-post</span>&#123;</div><div class="line">  <span class="attribute">border</span>: none;</div><div class="line">&#125;</div><div class="line"><span class="comment">/*底部和有部添加新的边框*/</span></div><div class="line"><span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-post-self</span>&#123;</div><div class="line">  <span class="attribute">margin</span>: <span class="number">1em</span> auto;</div><div class="line">  <span class="attribute">padding</span>: <span class="number">1em</span>;</div><div class="line">  <span class="attribute">margin-bottom</span>: <span class="number">1em</span>;</div><div class="line">  <span class="attribute">border-bottom</span>: solid <span class="number">3px</span> <span class="number">#ccc</span>;</div><div class="line">  <span class="attribute">border-right</span>: solid <span class="number">4px</span> <span class="number">#eee</span>;</div><div class="line">&#125;</div><div class="line"><span class="comment">/*评论字体*/</span></div><div class="line"><span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-comment-body</span> <span class="selector-tag">p</span>&#123;</div><div class="line">  <span class="attribute">font-family</span>: <span class="string">'Roboto Slab'</span>, <span class="string">'Lato'</span>, <span class="string">"PingFang SC"</span>, <span class="string">"Microsoft YaHei"</span>, sans-serif;</div><div class="line">  <span class="attribute">padding</span>: <span class="number">5px</span> <span class="number">0</span>;</div><div class="line">  <span class="attribute">font-weight</span>: <span class="number">400</span>;</div><div class="line">  <span class="attribute">line-height</span>: <span class="number">1.5</span>;</div><div class="line">&#125;</div><div class="line"><span class="comment">/*高亮字体（“n条评论”，“n条微博”，评论者名字的颜色）*/</span></div><div class="line"><span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-highlight</span>&#123;</div><div class="line">  <span class="attribute">font-family</span>: <span class="string">'Roboto Slab'</span>, <span class="string">'Lato'</span>, <span class="string">"PingFang SC"</span>, <span class="string">"Microsoft YaHei"</span>, sans-serif;</div><div class="line">  <span class="attribute">color</span>: <span class="number">#000</span>  <span class="meta">!important</span>;</div><div class="line">  <span class="attribute">font-weight</span>: <span class="number">400</span>;</div><div class="line">&#125;</div><div class="line"><span class="selector-id">#ds-reset</span> <span class="selector-class">.duoshuo-ua-admin</span>&#123;</div><div class="line"><span class="attribute">display</span>: inline-block;</div><div class="line">    <span class="attribute">color</span>: <span class="number">#fff</span>;</div><div class="line">    <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">5px</span>;</div><div class="line">    <span class="attribute">line-height</span>: <span class="number">1.2em</span>;</div><div class="line">    <span class="attribute">border-radius</span>: <span class="number">2px</span>;</div><div class="line">    <span class="attribute">background-color</span>: <span class="number">#777</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="评论输入框"><a href="#评论输入框" class="headerlink" title="评论输入框"></a>评论输入框</h1><h2 id="新旧对比-2"><a href="#新旧对比-2" class="headerlink" title="新旧对比"></a>新旧对比</h2><ul>
+<li><p>原版</p>
+<p> <img src="C:\Users\user\blog\themes\next\source\uploads\QQimg20161021165722.png" alt="QQimg20161021165722"></p>
+</li>
+<li><p>新版</p>
+<p>​</p>
+<p> <img src="C:\Users\user\blog\themes\next\source\uploads\QQimg20161021170129.png" alt="QQimg20161021170129"></p>
+<p>也是扁平化了，并且当焦点在评论框上和按钮上时反馈效果更舒服和顺畅了</p>
+</li>
+</ul>
+<h2 id="源码对比-2"><a href="#源码对比-2" class="headerlink" title="源码对比"></a>源码对比</h2><ul>
+<li><p>原版源码</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*整个评论输入框+按钮*/</span></div><div class="line"><span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-textarea-wrapper</span> &#123;</div><div class="line">    <span class="attribute">border-color</span>: $duoshuoBaseBorderColor;</div><div class="line">    <span class="attribute">background</span>: none;</div><div class="line">    <span class="attribute">border-top-right-radius</span>: <span class="number">3px</span>;</div><div class="line">    <span class="attribute">border-top-left-radius</span>: <span class="number">3px</span>;</div><div class="line">  &#125;</div><div class="line"><span class="comment">/*输入框*/</span></div><div class="line">  <span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-textarea-wrapper</span> <span class="selector-tag">textarea</span> &#123;</div><div class="line">    <span class="attribute">height</span>: <span class="number">60px</span>;</div><div class="line">  &#125;</div><div class="line"><span class="comment">/*标签+提交按钮 工具栏*/</span></div><div class="line"> <span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-post-toolbar</span> &#123;</div><div class="line">    <span class="attribute">box-sizing</span>: border-box;</div><div class="line">    <span class="attribute">border</span>: <span class="number">1px</span> solid $duoshuoBaseBorderColor;</div><div class="line">    <span class="attribute">background</span>: $duoshuoBaseBgColor;</div><div class="line">  &#125;</div><div class="line"><span class="comment">/*表情栏与输入框间距*/</span></div><div class="line">  <span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-post-options</span> &#123;</div><div class="line">    <span class="attribute">height</span>: <span class="number">40px</span>;</div><div class="line">    <span class="attribute">border</span>: none;</div><div class="line">    <span class="attribute">background</span>: none;</div><div class="line">  &#125;</div><div class="line"><span class="comment">/*表情、图片按钮*/</span></div><div class="line">  <span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-toolbar-buttons</span> &#123;</div><div class="line">    <span class="attribute">top</span>: <span class="number">11px</span>;</div><div class="line">  &#125;</div><div class="line"><span class="comment">/*评论分享*/</span></div><div class="line">  <span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-sync</span> &#123;</div><div class="line">    <span class="attribute">top</span>: <span class="number">5px</span>;</div><div class="line">  &#125;</div><div class="line"><span class="comment">/*提交按钮*/</span></div><div class="line">  <span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-post-button</span> &#123;</div><div class="line">    <span class="attribute">top</span>: <span class="number">4px</span>;</div><div class="line">    <span class="attribute">right</span>: <span class="number">5px</span>;</div><div class="line">    <span class="attribute">width</span>: <span class="number">90px</span>;</div><div class="line">    <span class="attribute">height</span>: <span class="number">30px</span>;</div><div class="line">    <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#c5ced7</span>;</div><div class="line">    <span class="attribute">border-radius</span>: <span class="number">3px</span>;</div><div class="line">    <span class="attribute">background-image</span>: <span class="built_in">linear-gradient</span>(#fbfbfc, #f5f7f9);</div><div class="line">    <span class="attribute">color</span>: <span class="number">#60676d</span>;</div><div class="line">  &#125;</div><div class="line"><span class="comment">/*按钮聚焦效果*/</span></div><div class="line">  <span class="selector-id">#ds-thread</span> <span class="selector-id">#ds-reset</span> <span class="selector-class">.ds-post-button</span><span class="selector-pseudo">:hover</span> &#123;</div><div class="line">    <span class="attribute">background-position</span>: <span class="number">0</span> -<span class="number">30px</span>;</div><div class="line">    <span class="attribute">color</span>: <span class="number">#60676d</span>;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>新版源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line">/*输入框外框加粗，变色*/</div><div class="line">#ds-thread #ds-reset .ds-textarea-wrapper &#123;</div><div class="line">    border:3px solid #c9c9cb;</div><div class="line">    background: none;</div><div class="line">    border-top-right-radius: 2px;</div><div class="line">    border-top-left-radius: 2px;</div><div class="line">    transition: 0.5s all ease;</div><div class="line">    -webkit-transition: 0.5s all ease;</div><div class="line">    -moz-transition: 0.5s all ease;</div><div class="line">    -o-transition: 0.5s all ease;</div><div class="line">    -ms-transition: 0.5s all ease;</div><div class="line">  &#125;</div><div class="line">/*输入框聚焦效果*/</div><div class="line">  #ds-thread #ds-reset .ds-textarea-wrapper:hover&#123;</div><div class="line">    border-color:#595959;</div><div class="line">    transition: 0.5s all ease;</div><div class="line">    -webkit-transition: 0.5s all ease;</div><div class="line">    -moz-transition: 0.5s all ease;</div><div class="line">    -o-transition: 0.5s all ease; </div><div class="line">    -ms-transition: 0.5s all ease;</div><div class="line">  &#125;</div><div class="line">/*评论框调高，内部字体修饰*/</div><div class="line">#ds-thread #ds-reset .ds-textarea-wrapper textarea &#123;</div><div class="line">  /*height: 60px*/</div><div class="line">  height: 120px;</div><div class="line">  font-family: &apos;Monda&apos;, &apos;Lato&apos;, &quot;PingFang SC&quot;, &quot;Microsoft YaHei&quot;, sans-serif;</div><div class="line">  font-size: 16px;</div><div class="line">&#125;</div><div class="line">/*工具栏取消边框，背景调白*/</div><div class="line">#ds-thread #ds-reset .ds-post-toolbar &#123;</div><div class="line">  /*box-sizing: border-box;*/</div><div class="line">  /*border: 1px solid #e6e6e6;*/</div><div class="line">  background: #fff;</div><div class="line">&#125;</div><div class="line">/*表情栏上移*/</div><div class="line">#ds-thread #ds-reset .ds-post-options &#123;</div><div class="line">  height: 0px;</div><div class="line">  border: none;</div><div class="line">  background: none;</div><div class="line">&#125;</div><div class="line">/*表情、图片按钮上移*/</div><div class="line">#ds-thread #ds-reset .ds-toolbar-buttons &#123;</div><div class="line">  top:-25px;</div><div class="line">&#125;</div><div class="line">/*评论分享隐藏，一般用不着*/</div><div class="line">#ds-thread #ds-reset .ds-sync &#123;</div><div class="line">  /*top: 5px;*/</div><div class="line">  display: none !important;</div><div class="line">&#125;</div><div class="line">/*按钮扁平化*/</div><div class="line">#ds-thread #ds-reset .ds-post-button &#123;</div><div class="line">  /*top: 4px;</div><div class="line">  right: 5px;*/</div><div class="line">  width: 90px;</div><div class="line">  height: 40px;</div><div class="line">  /*border: 1px solid #c5ced7;*/</div><div class="line">  border-radius: 1px;</div><div class="line">  background-image: linear-gradient(#333, #222);</div><div class="line">  color: #60676d;</div><div class="line">  border: none;</div><div class="line">  font-weight: 200;</div><div class="line">  color: #fff;</div><div class="line">  font-size: 16px;</div><div class="line">  background-color: #444;</div><div class="line">&#125;</div><div class="line">/*按钮聚焦特效*/</div><div class="line">#ds-thread #ds-reset .ds-post-button:hover &#123;</div><div class="line">  background-position: 0 -40px;</div><div class="line">  color: #ddd;</div><div class="line">&#125;</div><div class="line">/*取消评论框上方分割线*/</div><div class="line">#ds-thread #ds-reset .ds-comments&#123;</div><div class="line">  border: none;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="整体对比"><a href="#整体对比" class="headerlink" title="整体对比"></a>整体对比</h1><ul>
+<li><p>原版</p>
+<p> <img src="C:\Users\user\blog\themes\next\source\uploads\QQimg20161021171806.png" alt="QQimg20161021171806"></p>
+</li>
+<li><p>新版</p>
+</li>
+</ul>
+<pre><code>![QQimg20161021172529](C:\Users\user\blog\themes\next\source\uploads\QQimg20161021172529.png)
+</code></pre><p>是不是清爽了很多？完整源码=》<a href="https://github.com/lnaif/duoshuo-theme-next" target="_blank" rel="external">https://github.com/lnaif/duoshuo-theme-next</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/css/" rel="tag">#css</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/20/Xp0int-ctf/" rel="next" title="Xp0int新生杯交流赛Write up">
+                <i class="fa fa-chevron-left"></i> Xp0int新生杯交流赛Write up
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/10/21/duoshuo-theme-next/"
+     data-title="美化多说CSS，与NexT风格契合"
+     data-content=""
+     data-url="http://lnaif.github.io/2016/10/21/duoshuo-theme-next/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/21/duoshuo-theme-next/"
+           data-title="美化多说CSS，与NexT风格契合" data-url="http://lnaif.github.io/2016/10/21/duoshuo-theme-next/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Naif" />
+          <p class="site-author-name" itemprop="name">Naif</p>
+          <p class="site-description motion-element" itemprop="description">Have been through many things, seen many things</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/lnaif" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/5895973587" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/isad" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何修改"><span class="nav-number">1.</span> <span class="nav-text">如何修改</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件"><span class="nav-number">1.1.</span> <span class="nav-text">文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找到类名"><span class="nav-number">1.2.</span> <span class="nav-text">找到类名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">1.3.</span> <span class="nav-text">思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#喜欢按钮"><span class="nav-number">2.</span> <span class="nav-text">喜欢按钮</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新旧对比"><span class="nav-number">2.1.</span> <span class="nav-text">新旧对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码对比"><span class="nav-number">2.2.</span> <span class="nav-text">源码对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#评论区"><span class="nav-number">3.</span> <span class="nav-text">评论区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新旧对比-1"><span class="nav-number">3.1.</span> <span class="nav-text">新旧对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码对比-1"><span class="nav-number">3.2.</span> <span class="nav-text">源码对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#评论输入框"><span class="nav-number">4.</span> <span class="nav-text">评论输入框</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新旧对比-2"><span class="nav-number">4.1.</span> <span class="nav-text">新旧对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码对比-2"><span class="nav-number">4.2.</span> <span class="nav-text">源码对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#整体对比"><span class="nav-number">5.</span> <span class="nav-text">整体对比</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Naif</span>
+</div>
+
+<div class="powered-by">
+  Mouth sealed, cash in
+</div>
+
+<div class="theme-info">
+  Naif's blog
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lnaif"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js"></script>
+    
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';                
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+                            
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').mousedown(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+  
+
+  
+
+  
+
+</body>
+</html>

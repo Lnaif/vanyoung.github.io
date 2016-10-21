@@ -1548,7 +1548,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #05ffc8;
+  background: #da3862;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -1700,6 +1700,75 @@ pre .javascript .function {
 .theme-next #ds-thread #ds-reset {
   color: #555;
 }
+.theme-next #ds-thread #ds-reset .ds-meta {
+  border: none;
+  text-align: center;
+}
+.theme-next #ds-thread #ds-reset .ds-like-panel {
+  line-height: 60px;
+  font-family: 'Roboto Slab', 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+}
+.theme-next #ds-thread #ds-reset a.ds-like-thread-button {
+  display: block;
+  width: 80px;
+z
+  height: 80px;
+  border-radius: 50px;
+  padding: 10px;
+  margin: 0 auto;
+}
+.theme-next #ds-thread #ds-reset a.ds-like-thread-button span {
+  font-family: 'Roboto Slab', 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+}
+.theme-next #ds-thread #ds-reset a.ds-like-thread-button .ds-icon-heart {
+  background: none;
+  width: 40px;
+  height: 40px;
+  display: block;
+  padding-top: 20px;
+  margin: 0 auto;
+}
+.theme-next #ds-thread #ds-reset a.ds-like-thread-button .ds-icon-heart:before {
+  content: '\f004';
+  display: block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 40px;
+  color: #999;
+  text-rendering: auto;
+}
+.theme-next #ds-thread #ds-reset a.ds-like-thread-button {
+  border: none;
+  background: #eee;
+}
+.theme-next #ds-thread #ds-reset a.ds-thread-liked .ds-icon-heart:before {
+  color: #fc7878;
+}
+.theme-next #ds-thread #ds-reset .ds-comment-body p {
+  font-family: 'Roboto Slab', 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  padding: 5px 0;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.theme-next #ds-thread #ds-reset .ds-highlight {
+  font-family: 'Roboto Slab', 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #000 !important;
+  font-weight: 400;
+}
+.theme-next #ds-thread #ds-reset .ds-powered-by a {
+  display: none !important;
+}
+.theme-next #ds-thread #ds-reset li.ds-post {
+  border: none;
+}
+.theme-next #ds-thread #ds-reset .ds-post-self {
+  margin: 1em auto;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-bottom: solid 3px #ccc;
+  border-right: solid 4px #eee;
+}
 .theme-next #ds-thread #ds-reset .ds-replybox {
   margin-bottom: 30px;
 }
@@ -1708,21 +1777,37 @@ pre .javascript .function {
   box-shadow: none;
 }
 .theme-next #ds-thread #ds-reset .ds-textarea-wrapper {
-  border-color: #c7d4e1;
+  border: 3px solid #c9c9cb;
   background: none;
-  border-top-right-radius: 3px;
-  border-top-left-radius: 3px;
+  border-top-right-radius: 2px;
+  border-top-left-radius: 2px;
+  transition: 0.5s all ease;
+  -webkit-transition: 0.5s all ease;
+  -moz-transition: 0.5s all ease;
+  -o-transition: 0.5s all ease;
+  -ms-transition: 0.5s all ease;
+}
+.theme-next #ds-thread #ds-reset .ds-textarea-wrapper:hover {
+  border-color: #595959;
+  transition: 0.5s all ease;
+  -webkit-transition: 0.5s all ease;
+  -moz-transition: 0.5s all ease;
+  -o-transition: 0.5s all ease;
+  -ms-transition: 0.5s all ease;
 }
 .theme-next #ds-thread #ds-reset .ds-textarea-wrapper textarea {
-  height: 60px;
+/*height: 60px*/
+  height: 120px;
+  font-family: 'Monda', 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
 }
 .theme-next #ds-reset .ds-rounded-top {
   border-radius: 0;
 }
 .theme-next #ds-thread #ds-reset .ds-post-toolbar {
-  box-sizing: border-box;
-  border: 1px solid #c7d4e1;
-  background: #f6f8fa;
+/*box-sizing: border-box;*/
+/*border: 1px solid #e6e6e6;*/
+  background: #fff;
 }
 .theme-next #ds-thread #ds-reset .ds-post-options {
   height: 40px;
@@ -1730,34 +1815,43 @@ pre .javascript .function {
   background: none;
 }
 .theme-next #ds-thread #ds-reset .ds-toolbar-buttons {
-  top: 11px;
+  top: -25px;
 }
 .theme-next #ds-thread #ds-reset .ds-sync {
-  top: 5px;
+/*top: 5px;*/
+  display: none !important;
 }
 .theme-next #ds-thread #ds-reset .ds-post-button {
-  top: 4px;
-  right: 5px;
+/*top: 4px;
+  right: 5px;*/
   width: 90px;
-  height: 30px;
-  border: 1px solid #c5ced7;
-  border-radius: 3px;
-  background-image: linear-gradient(#fbfbfc, #f5f7f9);
+  height: 40px;
+/*border: 1px solid #c5ced7;*/
+  border-radius: 1px;
+  background-image: linear-gradient(#333, #222);
   color: #60676d;
+  border: none;
+  font-weight: 200;
+  color: #fff;
+  font-size: 16px;
+  background-color: #444;
 }
 .theme-next #ds-thread #ds-reset .ds-post-button:hover {
-  background-position: 0 -30px;
-  color: #60676d;
+  background-position: 0 -40px;
+  color: #ddd;
 }
 .theme-next #ds-thread #ds-reset .ds-comments-info {
   padding: 10px 0;
+}
+.theme-next #ds-thread #ds-reset .ds-comments {
+  border: none;
 }
 .theme-next #ds-thread #ds-reset .ds-sort {
   display: none;
 }
 .theme-next #ds-thread #ds-reset li.ds-tab a.ds-current {
   border: none;
-  background: #f6f8fa;
+  background: #f5f5f5;
   color: #60676d;
 }
 .theme-next #ds-thread #ds-reset li.ds-tab a.ds-current:hover {
@@ -1864,7 +1958,11 @@ pre .javascript .function {
 }
 .theme-next #ds-reset .duoshuo-ua-admin {
   display: inline-block;
-  color: #f00;
+  color: #fff;
+  padding: 2px 5px;
+  line-height: 1.2em;
+  border-radius: 2px;
+  background-color: #444;
 }
 .theme-next #ds-reset .duoshuo-ua-platform,
 .theme-next #ds-reset .duoshuo-ua-browser {

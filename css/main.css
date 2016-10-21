@@ -1548,7 +1548,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #b5f2f7;
+  background: #c8f4db;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -1678,10 +1678,10 @@ pre .javascript .function {
 }
 .powered-by {
   margin-right: 10px;
-}
-.powered-by::after {
-  content: "|";
-  padding-left: 10px;
+/*&::after {*/
+/*content: "|";*/
+/*padding-left: 10px;*/
+/*}*/
 }
 .cc-license {
   margin-top: 10px;
@@ -1699,6 +1699,9 @@ pre .javascript .function {
 }
 .theme-next #ds-thread #ds-reset {
   color: #555;
+}
+.theme-next #ds-thread {
+  margin-bottom: 40px;
 }
 .theme-next #ds-thread #ds-reset .ds-meta {
   border: none;
@@ -1810,7 +1813,7 @@ z
   background: #fff;
 }
 .theme-next #ds-thread #ds-reset .ds-post-options {
-  height: 40px;
+  height: 0px;
   border: none;
   background: none;
 }

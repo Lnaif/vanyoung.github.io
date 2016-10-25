@@ -6,7 +6,7 @@
     <entry>
       <title><![CDATA[基于KVM架构的VPS搭建ss及锐速优化教程]]></title>
       <url>http://lnaif.github.io/2016/kvm-vps-ss-rs/</url>
-      <content type="text"><![CDATA[为了速度和稳定性的考虑，我购买了一些文档并搜寻了大量资料整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。 准备 KVM架构虚拟服务器 xshell 服务器 任意一家运营商的KVM架构VPS服务器 Ubuntu 14.04 64bit系统 运行apt-get install vim 安装vim 完整文档余下为付费文档，50￥，请扫码联系作者获得完整教程。]]></content>
+      <content type="text"><![CDATA[为了速度和稳定性的考虑，我购买了一些文档并搜寻了大量资料整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。 准备 KVM架构虚拟服务器 xshell 服务器 任意一家运营商的KVM架构VPS服务器 Ubuntu 14.04 64bit系统 运行apt-get install vim 安装vim 完整文档余下为付费文档，请扫码联系作者获得完整教程。]]></content>
     </entry>
 
     

@@ -86,7 +86,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="EXCITING" />
+  <meta name="keywords" content="VPS,shadowsocks,服务器," />
 
 
 
@@ -102,15 +102,42 @@
 
 
 
-<meta name="description" content="Have been through many things, seen many things">
-<meta property="og:type" content="website">
-<meta property="og:title" content="EXCITED NOTES">
-<meta property="og:url" content="http://lnaif.github.io/categories/技术水波文/index.html">
+<meta name="description" content="为了速度和稳定性的考虑，我购买了一些文档并搜寻了大量资料整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。
+准备
+KVM架构虚拟服务器
+xshell
+
+服务器
+任意一家运营商的KVM架构VPS服务器
+Ubuntu 14.04 64bit系统
+运行apt-get install vim 安装vim">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于KVM架构的VPS搭建ss及锐速优化教程">
+<meta property="og:url" content="http://lnaif.github.io/2016/kvm-vps-ss-rs/index.html">
 <meta property="og:site_name" content="EXCITED NOTES">
-<meta property="og:description" content="Have been through many things, seen many things">
+<meta property="og:description" content="为了速度和稳定性的考虑，我购买了一些文档并搜寻了大量资料整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。
+准备
+KVM架构虚拟服务器
+xshell
+
+服务器
+任意一家运营商的KVM架构VPS服务器
+Ubuntu 14.04 64bit系统
+运行apt-get install vim 安装vim">
+<meta property="og:image" content="http://lnaif.github.io/uploads/IMG_20160926_125306.jpg">
+<meta property="og:updated_time" content="2016-10-25T05:53:07.751Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="EXCITED NOTES">
-<meta name="twitter:description" content="Have been through many things, seen many things">
+<meta name="twitter:title" content="基于KVM架构的VPS搭建ss及锐速优化教程">
+<meta name="twitter:description" content="为了速度和稳定性的考虑，我购买了一些文档并搜寻了大量资料整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。
+准备
+KVM架构虚拟服务器
+xshell
+
+服务器
+任意一家运营商的KVM架构VPS服务器
+Ubuntu 14.04 64bit系统
+运行apt-get install vim 安装vim">
+<meta name="twitter:image" content="http://lnaif.github.io/uploads/IMG_20160926_125306.jpg">
 
 
 
@@ -128,7 +155,7 @@
   };
 </script>
 
-  <title> 分类: 技术水波文 | EXCITED NOTES </title>
+  <title> 基于KVM架构的VPS搭建ss及锐速优化教程 | EXCITED NOTES </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans,en,default">
@@ -159,7 +186,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left  ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -280,75 +307,188 @@
           <div id="content" class="content">
             
 
-  <section id="posts" class="posts-collapse">
-    <div class="collection-title">
-      <h2 >
-        技术水波文
-        <small>分类</small>
-      </h2>
-    </div>
-
+  <div id="posts" class="posts-expand">
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/kvm-vps-ss-rs/" itemprop="url">
-              
-                <span itemprop="name">基于KVM架构的VPS搭建ss及锐速优化教程</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-10-25T13:40:27+08:00"
-              content="2016-10-25" >
-          10-25
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/duoshuo-theme-next/" itemprop="url">
-              
-                <span itemprop="name">契合NexT风格的多说CSS样式</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-10-21T16:00:31+08:00"
-              content="2016-10-21" >
-          10-21
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-  </section>
 
   
+  
 
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                基于KVM架构的VPS搭建ss及锐速优化教程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-25T13:40:27+08:00" content="2016-10-25">
+              2016-10-25
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/技术水波文/" itemprop="url" rel="index">
+                    <span itemprop="name">技术水波文</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/kvm-vps-ss-rs/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/kvm-vps-ss-rs/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>为了速度和稳定性的考虑，我购买了一些文档并搜寻了大量资料整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。</p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
+<li>KVM架构虚拟服务器</li>
+<li>xshell</li>
+</ul>
+<h1 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h1><ul>
+<li>任意一家运营商的KVM架构VPS服务器</li>
+<li>Ubuntu 14.04 64bit系统</li>
+<li>运行<code>apt-get install vim</code> 安装vim</li>
+</ul>
+<a id="more"></a>
+<p>余下为付费文档，50￥，请扫码联系作者获得完整教程。</p>
+<div align="center"><br><br><img src="uploads/IMG_20160926_125306.jpg" alt="img"><br><br></div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/VPS/" rel="tag">#VPS</a>
+          
+            <a href="/tags/shadowsocks/" rel="tag">#shadowsocks</a>
+          
+            <a href="/tags/服务器/" rel="tag">#服务器</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/duoshuo-theme-next/" rel="next" title="契合NexT风格的多说CSS样式">
+                <i class="fa fa-chevron-left"></i> 契合NexT风格的多说CSS样式
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/kvm-vps-ss-rs/"
+     data-title="基于KVM架构的VPS搭建ss及锐速优化教程"
+     data-content=""
+     data-url="http://lnaif.github.io/2016/kvm-vps-ss-rs/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
 
 
           </div>
@@ -356,6 +496,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/kvm-vps-ss-rs/"
+           data-title="基于KVM架构的VPS搭建ss及锐速优化教程" data-url="http://lnaif.github.io/2016/kvm-vps-ss-rs/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -375,8 +523,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.png"
@@ -455,6 +612,17 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务器"><span class="nav-number">2.</span> <span class="nav-text">服务器</span></a></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -565,6 +733,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 

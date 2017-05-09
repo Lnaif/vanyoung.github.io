@@ -1,0 +1,16 @@
+<% if (!is_year()) { %>
+  <%- partial('partials/archives/index.ejs') %>
+<% } else { %>
+  <div class="posts-container column-3">
+
+  </div>
+  <div id="content-list">
+    <% page.posts.each(function(post,index) {%>
+      <div class="content-item">
+        <%-partial('partials/posts', { post: post })%>
+      </div>
+    <% }); %>
+  </div>
+  <%-partial('partials/pagination', {base: url_for(config.root) + 'archives/' + page.year + '/', show: theme.pagination })%>
+<% } %>
+<%-partial('partials/fab/index')%>

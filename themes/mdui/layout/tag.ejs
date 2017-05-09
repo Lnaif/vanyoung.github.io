@@ -1,0 +1,14 @@
+<div class="posts-container column-3">
+
+</div>
+<div id="content-list">
+  <% page.posts.each(function(post,index) {%>
+    <div class="content-item">
+      <%-partial('partials/posts', { post: post })%>
+    </div>
+  <% }); %>
+</div>
+
+<%-partial('partials/pagination', {base: url_for(config.root) +  'tags/' + page.tag + '/', show: theme.pagination })%>
+
+<%-partial('partials/fab/index')%>

@@ -1,0 +1,111 @@
+# CDN for mathjax
+location:
+
+# style
+style:
+  bg_img: /img/bg.png
+  avatar: /img/avatar.png
+  slogan: "MOUTH SEALED, CASH IN"
+  hoverable: true
+
+# HTML head
+head:
+  favicon: /img/favicon.ico
+  high_res_favicon: /img/favicon.ico
+  apple_touch_icon: /img/favicon.ico
+  keywords: blog, 乃逸夫
+
+# color
+color:
+  primary_color: "indigo"
+  accent_color: "blue"
+  layout:
+  random: post
+  bg_color: "#eeeeee"
+
+# appbar
+appbar:
+  title: "EXCITING NOTES"
+  search: true
+  
+sidebar:
+  categories: true
+  tags: true
+  year: true
+
+index: 
+  welcome: "Welcome, Dhakkan"
+
+# post settings
+post:
+  entry_excerpt: 80
+  qr_code: true
+  prism: 
+    theme: 
+    line_number:
+  donate: false
+    # wechat: 
+    #   link: /img/avatar.ico
+    #   fa: 'fa-wechat'
+#    paypay:
+#      link: 'https://paypal.com'
+#      fa: 'fa-paypal'
+
+share_menu: #false
+  rss: false
+  weibo: true
+  twitter: true
+  qq: true
+  facebook: true
+  googleplus: true
+  linkedin: true 
+  telegram: false
+
+comment: 
+    use: false
+    shortname:
+
+# pagination
+# github@zllovesuki
+pagination: 2
+
+# footer
+footer:
+  since: 1997
+  ICP: 
+
+# Plugins
+busuanzi: 
+    all_site_uv: true
+    post_pv: true
+    busuanzi_pure_mini_js: "//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"
+
+service_woker:
+
+about_me: false
+
+random_pics: 25
+
+pages:
+  关于:
+    link: "/about"
+    fa: "fa-child"
+  友情链接:
+    link: "/friends"
+    fa: "fa-address-book"
+sns:
+  dhakkan@foxmail.com:
+    link: 'mailto:dhakkan@foxmail.com'
+    fa: 'fa-envelope'
+  知乎:
+    link: 'https://www.zhihu.com/people/lnaif'
+    fa: 'fa-quora'
+  Github:
+    link: 'https://github.com/lnaif'
+    fa: 'fa-github'
+
+# Vendors
+vendors:
+  style_min_css:
+  js_min_js:
+  outdatedbrowser_min_js:

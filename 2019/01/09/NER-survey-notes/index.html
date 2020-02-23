@@ -7,20 +7,21 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>NER-survey-notes - Lithium</title>
+<title>Reading Notes for A Survey on Deep Learning for Named Entity Recognition - Lithium</title>
 
 
-    <meta name="description" content="Reading Notes: A Survey on Deep Learning for Named Entity RecognitionSource：《A Survey on Deep Learning for Named Entity Recognition》 #0x01 Abstract  Named entity recognition (NER) is the task to ident">
+    <meta name="description" content="Source：《A Survey on Deep Learning for Named Entity Recognition》 #0x01 Abstract  Named entity recognition (NER) is the task to identify text spans that mention named entities, and to classify them into">
 <meta property="og:type" content="article">
-<meta property="og:title" content="NER-survey-notes">
-<meta property="og:url" content="https://p0st3r.github.io/2020/02/23/NER-survey-notes/index.html">
+<meta property="og:title" content="Reading Notes for A Survey on Deep Learning for Named Entity Recognition">
+<meta property="og:url" content="https://p0st3r.github.io/2019/01/09/NER-survey-notes/index.html">
 <meta property="og:site_name" content="Lithium">
-<meta property="og:description" content="Reading Notes: A Survey on Deep Learning for Named Entity RecognitionSource：《A Survey on Deep Learning for Named Entity Recognition》 #0x01 Abstract  Named entity recognition (NER) is the task to ident">
+<meta property="og:description" content="Source：《A Survey on Deep Learning for Named Entity Recognition》 #0x01 Abstract  Named entity recognition (NER) is the task to identify text spans that mention named entities, and to classify them into">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://p0st3r.github.io/images/og_image.png">
-<meta property="article:published_time" content="2020-02-23T13:38:29.088Z">
-<meta property="article:modified_time" content="2020-02-23T15:58:30.682Z">
+<meta property="article:published_time" content="2019-01-08T20:11:03.000Z">
+<meta property="article:modified_time" content="2020-02-23T16:03:15.014Z">
 <meta property="article:author" content="Lithium Atom">
+<meta property="article:tag" content="NER">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p0st3r.github.io/images/og_image.png">
 
@@ -30,7 +31,7 @@
 
 
 
-<link rel="alternative" href="/lithium.xml" title="NER-survey-notes" type="application/atom+xml">
+<link rel="alternative" href="/lithium.xml" title="Reading Notes for A Survey on Deep Learning for Named Entity Recognition" type="application/atom+xml">
 
 
 
@@ -84,7 +85,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.svg" alt="NER-survey-notes" height="28">
+                <img src="/images/logo.svg" alt="Reading Notes for A Survey on Deep Learning for Named Entity Recognition" height="28">
             
             </a>
         </div>
@@ -112,6 +113,10 @@
             <div class="navbar-end">
                 
                 
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
                 
                 <a class="navbar-item search" title="Search" href="javascript:;">
                     <i class="fas fa-search"></i>
@@ -133,15 +138,19 @@
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
                 <i class="fas fa-calendar-alt"></i>&nbsp;
-                <time class="level-item has-text-grey" datetime="2020-02-23T13:38:29.088Z">2020-02-23</time>
+                <time class="level-item has-text-grey" datetime="2019-01-08T20:11:03.000Z">2019-01-09</time>
                 <i class="fas fa-archive"></i>&nbsp;
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
+                </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    44 minutes read (About 6666 words)
+                    44 minutes read (About 6656 words)
                 </span>
                 
                 
@@ -155,15 +164,17 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                NER-survey-notes
+                Reading Notes for A Survey on Deep Learning for Named Entity Recognition
             
         </h1>
         <div class="content">
-            <h1 id="Reading-Notes-A-Survey-on-Deep-Learning-for-Named-Entity-Recognition"><a href="#Reading-Notes-A-Survey-on-Deep-Learning-for-Named-Entity-Recognition" class="headerlink" title="Reading Notes: A Survey on Deep Learning for Named Entity Recognition"></a>Reading Notes: A Survey on Deep Learning for Named Entity Recognition</h1><p>Source：<a href="https://arxiv.org/pdf/1812.09449.pdf">《A Survey on Deep Learning for Named Entity Recognition》</a></p>
+            <p>Source：<a href="https://arxiv.org/pdf/1812.09449.pdf">《A Survey on Deep Learning for Named Entity Recognition》</a></p>
 <p>#0x01 Abstract</p>
 <blockquote>
 <p>Named entity recognition (NER) is the task to identify text spans that mention named entities, and to classify them into predefined categories such as person, location, organization etc. NER serves as the basis for a variety of natural language applications such as question answering, text summarization, and machine translation.</p>
 </blockquote>
+<a id="more"></a>
+
 <p><strong>命名实体识别(NER)</strong>旨在从文本中识别出特殊对象，这些对象的语义类别通常在识别前被预定义好，预定义类别如人、地址、组织等。命名实体识别不仅仅是独立的信息抽取任务，它在许多大型自然语言处理应用系统如信息检索、自动文本概要、问答任务、机器翻译以及知识建库（知识图谱）中也扮演了关键的角色。</p>
 <blockquote>
 <p>This paper introduced four aspects of the NER:</p>
@@ -723,6 +734,15 @@
 
         </div>
         
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/NER/" rel="tag">NER</a>
+                </div>
+            </div>
+        </div>
+        
         
         
         <div class="social-share"></div>
@@ -768,10 +788,17 @@
 <div class="card card-transparent">
     <div class="level post-navigation is-flex-wrap is-mobile">
         
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/05/09/Wordng-vec-webshell-detect/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Use Word-NG vec to detect WebShell</span>
+            </a>
+        </div>
+        
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2019/05/09/word2vec-presentation/">
-                <span class="level-item">Word2vec的文档表示方法</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2018/05/09/RSA-in-ctf/">
+                <span class="level-item">CTF中RSA的常见攻击方法</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -870,7 +897,7 @@
                     </p>
                     <a href="/tags">
                         <p class="title has-text-weight-normal">
-                            10
+                            11
                         </p>
                     </a>
                 </div>
@@ -920,25 +947,124 @@
 </div>
     
         
+
+    <div class="card widget" id="toc">
+        <div class="card-content">
+            <div class="menu">
+                <h3 class="menu-label">
+                    Catalogue
+                </h3>
+                <ul class="menu-list"><li>
+        <a class="is-flex" href="#0x02-Intro">
+        <span class="has-mr-6">1</span>
+        <span>0x02 Intro</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Named-entity">
+        <span class="has-mr-6">1.1</span>
+        <span>Named entity</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Methods-for-NER">
+        <span class="has-mr-6">1.1.1</span>
+        <span>Methods for NER</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Formalize-Definition">
+        <span class="has-mr-6">1.2</span>
+        <span>Formalize Definition</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#0x03-Evaluation-Metrics">
+        <span class="has-mr-6">2</span>
+        <span>0x03 Evaluation Metrics</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Exact-match-Evaluation">
+        <span class="has-mr-6">2.1</span>
+        <span>Exact-match Evaluation</span>
+        </a></li><li>
+        <a class="is-flex" href="#Relaxed-match-Evaluation">
+        <span class="has-mr-6">2.2</span>
+        <span>Relaxed-match Evaluation</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#0x04-Traditional-Approaches-to-NER">
+        <span class="has-mr-6">3</span>
+        <span>0x04 Traditional Approaches to NER</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Rule-based-Approaches">
+        <span class="has-mr-6">3.1</span>
+        <span>Rule-based Approaches</span>
+        </a></li><li>
+        <a class="is-flex" href="#Unsupervised-Learning-Approaches">
+        <span class="has-mr-6">3.2</span>
+        <span>Unsupervised Learning Approaches</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#0x05-Deep-learning-Techniques-for-NER">
+        <span class="has-mr-6">4</span>
+        <span>0x05 Deep learning Techniques for NER</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Why-Deep-Learning-for-NER">
+        <span class="has-mr-6">4.1</span>
+        <span>Why Deep Learning for NER?</span>
+        </a></li><li>
+        <a class="is-flex" href="#Taxonomy">
+        <span class="has-mr-6">4.2</span>
+        <span>Taxonomy</span>
+        </a></li><li>
+        <a class="is-flex" href="#Character-level-Representation">
+        <span class="has-mr-6">4.3</span>
+        <span>Character-level Representation</span>
+        </a></li><li>
+        <a class="is-flex" href="#Hybrid-Representation">
+        <span class="has-mr-6">4.4</span>
+        <span>Hybrid Representation</span>
+        </a></li><li>
+        <a class="is-flex" href="#Convolutional-Neural-Networks">
+        <span class="has-mr-6">4.5</span>
+        <span>Convolutional Neural Networks</span>
+        </a></li><li>
+        <a class="is-flex" href="#Recurrent-Neural-Networks">
+        <span class="has-mr-6">4.6</span>
+        <span>Recurrent Neural Networks</span>
+        </a></li><li>
+        <a class="is-flex" href="#Recursive-Neural-Networks">
+        <span class="has-mr-6">4.7</span>
+        <span>Recursive Neural Networks</span>
+        </a></li><li>
+        <a class="is-flex" href="#Neural-Language-Model">
+        <span class="has-mr-6">4.8</span>
+        <span>Neural Language Model</span>
+        </a></li><li>
+        <a class="is-flex" href="#Deep-Transfomer">
+        <span class="has-mr-6">4.9</span>
+        <span>Deep Transfomer</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#0x08-Tag-Decoder">
+        <span class="has-mr-6">5</span>
+        <span>0x08 Tag Decoder</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Multi-Layer-Perceptron-Softmax">
+        <span class="has-mr-6">5.1</span>
+        <span>Multi-Layer Perceptron + Softmax</span>
+        </a></li><li>
+        <a class="is-flex" href="#Conditional-Random-Fields">
+        <span class="has-mr-6">5.2</span>
+        <span>Conditional Random Fields</span>
+        </a></li><li>
+        <a class="is-flex" href="#Recurrent-Neural-Networks-1">
+        <span class="has-mr-6">5.3</span>
+        <span>Recurrent Neural Networks</span>
+        </a></li><li>
+        <a class="is-flex" href="#Point-Networks">
+        <span class="has-mr-6">5.4</span>
+        <span>Point Networks</span>
+        </a></li></ul></li></ul>
+            </div>
+        </div>
+    </div>
+
     
         <div class="card widget">
     <div class="card-content">
         <h3 class="menu-label">
             Recent
         </h3>
-        
-        <article class="media">
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-23T13:38:29.088Z">2020-02-23</time></div>
-                    <a href="/2020/02/23/NER-survey-notes/" class="title has-link-black-ter is-size-6 has-text-weight-normal">NER-survey-notes</a>
-                    <p class="is-size-7 is-uppercase">
-                        
-                    </p>
-                </div>
-            </div>
-        </article>
         
         <article class="media">
             
@@ -959,6 +1085,19 @@
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time></div>
                     <a href="/2019/05/09/Wordng-vec-webshell-detect/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-01-08T20:11:03.000Z">2019-01-09</time></div>
+                    <a href="/2019/01/09/NER-survey-notes/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes for A Survey on Deep Learning for Named Entity Recognition</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -1020,7 +1159,7 @@
                 <span class="level-item">NLP</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">3</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Tutorial/">
@@ -1053,23 +1192,23 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/05/">
                 <span class="level-start">
                     <span class="level-item">May 2019</span>
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
                 </span>
             </a>
         </li>
@@ -1174,6 +1313,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/N-Gram/">
                         <span class="tag">N-Gram</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/NER/">
+                        <span class="tag">NER</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1272,7 +1418,7 @@
                 <span class="level-item">NLP</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">3</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Tutorial/">
@@ -1305,23 +1451,23 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">1</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/05/">
                 <span class="level-start">
                     <span class="level-item">May 2019</span>
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
                 </span>
             </a>
         </li>
@@ -1431,6 +1577,13 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/NER/">
+                        <span class="tag">NER</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/RSA/">
                         <span class="tag">RSA</span>
                         <span class="tag is-grey">1</span>
@@ -1503,7 +1656,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.svg" alt="NER-survey-notes" height="28">
+                    <img src="/images/logo.svg" alt="Reading Notes for A Survey on Deep Learning for Named Entity Recognition" height="28">
                 
                 </a>
                 <p class="is-size-7">

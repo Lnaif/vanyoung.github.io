@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://p0st3r.github.io/images/og_image.png">
 <meta property="article:published_time" content="2020-01-08T20:11:03.000Z">
-<meta property="article:modified_time" content="2020-02-23T16:04:49.666Z">
+<meta property="article:modified_time" content="2020-02-23T16:11:47.533Z">
 <meta property="article:author" content="Lithium Atom">
 <meta property="article:tag" content="NER">
 <meta name="twitter:card" content="summary">
@@ -150,7 +150,7 @@
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    44 minutes read (About 6656 words)
+                    44 minutes read (About 6639 words)
                 </span>
                 
                 
@@ -224,7 +224,7 @@
 <h2 id="Formalize-Definition"><a href="#Formalize-Definition" class="headerlink" title="Formalize Definition"></a>Formalize Definition</h2><blockquote>
 <p>Given a sequence of tokens $s=&lt;w_1,w_2,…,w_n&gt;$, NER is to output a list of tuples $&lt;I_s,I_e,t&gt;$, each of which is a named entity mentioned in $s$. Here, $I_s\in[1,N]$ and $I_e\in[1,N]$ are the start and the end indexes of a named entity mention; $t$ is the entity type from a predefined category set. Example as:</p>
 </blockquote>
-<p><img src="C:/Users/lithium/AppData/Roaming/Typora/typora-user-images/image-20200220192042801.png" alt="image-20200220192042801"></p>
+<p><img src="NER-survey-notes/for_def.png" alt="image-20200220192042801"></p>
 <p>给定标识符集合 $s=&lt;w_1,w_2,…,w_n&gt;$ ，NER 输出一个三元组的 $&lt;I_s,I_e,t&gt;$ 列表，列表中的每个三元组代表 $s$ 中的一个命名实体。此处 $I_s\in[1,N]$，$I_e\in[1,N]$ 分别为命名实体的起始索引以及结束索引；$t$ 指代从预定义类别中选择的实体类型</p>
 <p>##Tasks of NER</p>
 <blockquote>
@@ -560,7 +560,7 @@
 <li>标签解码（tag decoder）</li>
 </ol>
 <p>一个深度NER系统的结构示例如下：</p>
-<p><img src="NER-survey-notes/taxonomy.png" alt=""></p>
+<p><img src="taxonomy.png" alt=""></p>
 <p>#0x06 Distributed Representations for Input</p>
 <blockquote>
 <p>A straight forward option of representing a word is <em>one-hot</em> vector representation. In one-hot vector space, two distinct words have completely different representations and are orthogonal. <em>Distributed representation</em> represents words in low dimensional real-valued dense vectors where each dimension represents a latent feature. Automatically learned from text, distributed representation captures semantic and syntactic properties of word, which do not explicitly present in the input to NER. </p>
@@ -613,7 +613,7 @@
 <li>RNN-based</li>
 </ul>
 <p>Figures below illustrate the two architectures:</p>
-<p><img src="NER-survey-notes/cnn.png" alt="image-20200223221532541" style="zoom:80%;" /><img src="NER-survey-notes/rnn.png" alt="image-20200223221540202" style="zoom:80%;" /></p>
+<p><img src="cnn.png" alt="image-20200223221532541" style="zoom:80%;" /><img src="rnn.png" alt="image-20200223221540202" style="zoom:80%;" /></p>
 <p>Examples:</p>
 <ul>
 <li>CNN-based：<a href="https%3A//arxiv.org/abs/1802.05365">Deep contextualized word representations(ELMo)</a></li>
@@ -638,7 +638,7 @@
 <li>Deep Transformer</li>
 </ul>
 <h2 id="Convolutional-Neural-Networks"><a href="#Convolutional-Neural-Networks" class="headerlink" title="Convolutional Neural Networks"></a>Convolutional Neural Networks</h2><p>Collobert et al. proposed a sentence approach network where a word is tagged with the consideration of whole sentence:</p>
-<p><img src="NER-survey-notes/cnn_sentence.png" alt=""></p>
+<p><img src="cnn_sentence.png" alt=""></p>
 <blockquote>
 <p>Each word in the input sequence is embedded to an N-dimensional vector after the stage of input representation. Then a convolutional layer is used to produce local features around each word, and the size of the output of the convolutional layers depends on the number of words in the sentence. The global feature vector is constructed by combining local feature vectors extracted by the convolutional layers. The dimension of the global feature vector is fixed, independent of the sentence length, in order to apply subsequent standard affine layers. Two approaches are widely used to extract global features: a max or an averaging operation over the position(i.e., “time” step) in the sentence. Finally, these fixed-size global features are fed into tag decoder to compute distribution scores for all possible tags for the words in the network input.</p>
 </blockquote>
@@ -657,7 +657,7 @@
 <li>LSTM（long-short term memory）</li>
 </ol>
 <p>特别的，双向循环神经网络（bidirectional RNNs）能同时有效地利用过去的信息和未来的信息，即可以有效利用全局信息。因此，双向循环神经网络逐渐成为解决 NER 这类序列标注任务的标准解法。</p>
-<p><img src="NER-survey-notes/rnn_context_encoder.png" alt=""></p>
+<p><img src="rnn_context_encoder.png" alt=""></p>
 <p>Example:</p>
 <ul>
 <li><a href="https%3A//arxiv.org/abs/1508.01991">Bidirectional lstm-crf models for sequence tagging</a> is among the first to utilize a bidirectional LSTM CRF architecture to sequence tagging tasks (POS, chunking and NER).</li>
@@ -670,7 +670,7 @@
 <ul>
 <li><a href="http://aclanthology.info/papers/D17-1281/d17-1281">Leveraging linguistic structures for named entity recognition with bidirectional recursive neural networks</a></li>
 </ul>
-<p><img src="NER-survey-notes/recursive.png" alt=""></p>
+<p><img src="recursive.png" alt=""></p>
 <h2 id="Neural-Language-Model"><a href="#Neural-Language-Model" class="headerlink" title="Neural Language Model"></a>Neural Language Model</h2><p>Language model is a family of models describing the generation of sequences. Given a token sequence, $(t_1,t_2,…,t_N)$, a forward language model computes the probability of sequence by modeling the probability of token $t_k$ given its history $t_1,…,t_{k-1}$:<br>$$<br>p(t_1,t_2,…,t_N)=\prod_{k=1}^Np(t_k|t_1,t_2,…,t_{k-1})<br>$$<br>A backward language model is similar to a forward language model, except it runs over the sequence in reverse order, predicting the previous token given its future context:<br>$$<br>p(t_1,t_2,…,t_N)=\prod_{k=1}^Np(t_k|t_{k+1},t_{k+2},…,t_N)<br>$$<br>For neural language models, probability of token $t_k$ can be computed by the output of recurrent neural networks. At each position $k$, we can obtain two context-dependent representations (forward and backward) and then combine them as the final language model embedding for token $t_k$. Such language-model-augmented knowledge has been empirically verified to be helpful in numerous sequence labeling tasks.</p>
 <p>Typical application:</p>
 <ul>

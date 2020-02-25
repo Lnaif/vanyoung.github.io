@@ -7,21 +7,16 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>基于KVM架构的VPS服务器搭建ss及锐速优化教程 - Lithium</title>
+<title>Category: Model evaluation and selection - Lithium</title>
 
 
-    <meta name="description" content="由于最近需要科学上网，整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="基于KVM架构的VPS服务器搭建ss及锐速优化教程">
-<meta property="og:url" content="https://p0st3r.github.io/2016/10/25/kvm-vps-ss-rs/index.html">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="Lithium">
+<meta property="og:url" content="https://p0st3r.github.io/categories/Machine-Learning/Model-evaluation-and-selection/index.html">
 <meta property="og:site_name" content="Lithium">
-<meta property="og:description" content="由于最近需要科学上网，整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://p0st3r.github.io/images/og_image.png">
-<meta property="article:published_time" content="2016-10-24T20:11:03.000Z">
-<meta property="article:modified_time" content="2020-02-23T09:12:54.839Z">
 <meta property="article:author" content="Lithium Atom">
-<meta property="article:tag" content="shadowsocks">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p0st3r.github.io/images/og_image.png">
 
@@ -31,7 +26,7 @@
 
 
 
-<link rel="alternative" href="/lithium.xml" title="基于KVM架构的VPS服务器搭建ss及锐速优化教程" type="application/atom+xml">
+<link rel="alternative" href="/lithium.xml" title="Lithium" type="application/atom+xml">
 
 
 
@@ -85,7 +80,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.svg" alt="基于KVM架构的VPS服务器搭建ss及锐速优化教程" height="28">
+                <img src="/images/logo.svg" alt="Lithium" height="28">
             
             </a>
         </div>
@@ -126,7 +121,21 @@
     <section class="section">
         <div class="container">
             <div class="columns">
-                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    <div class="card-content">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="/categories">Categories</a></li>
+            
+            <li><a href="/categories/Machine-Learning/">Machine Learning</a></li>
+            
+            <li class="is-active"><a href="#" aria-current="page">Model evaluation and selection</a></li>
+        </ul>
+        </nav>
+    </div>
+</div>
+
+    
 <div class="card">
     
     <div class="card-content article ">
@@ -134,11 +143,11 @@
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
                 <i class="fas fa-calendar-alt"></i>&nbsp;
-                <time class="level-item has-text-grey" datetime="2016-10-24T20:11:03.000Z">2016-10-25</time>
+                <time class="level-item has-text-grey" datetime="2020-02-25T14:00:48.000Z">2020-02-25</time>
                 <i class="fas fa-archive"></i>&nbsp;
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Tutorial/">Tutorial</a>
+                <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/Machine-Learning/Model-evaluation-and-selection/">Model evaluation and selection</a>
                 </div>
                 
                 
@@ -146,211 +155,46 @@
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    7 minutes read (About 979 words)
+                    4 minutes read (About 661 words)
                 </span>
                 
-                
-                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
-                    <i class="far fa-eye"></i>
-                    <span id="busuanzi_value_page_pv">0</span> visits
-                </span>
                 
             </div>
         </div>
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                基于KVM架构的VPS服务器搭建ss及锐速优化教程
+                <a class="has-link-black-ter" href="/2020/">Reading notes of &lt;Machine Learning&gt; Chapter2</a>
             
         </h1>
         <div class="content">
-            <p>由于最近需要科学上网，整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。</p>
-<a id="more"></a>
-
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
-<li>KVM架构虚拟服务器</li>
-<li>xshell</li>
+            <p>Source: 《机器学习》周志华</p>
+<h1 id="Model-evaluation-and-selection"><a href="#Model-evaluation-and-selection" class="headerlink" title="Model evaluation and selection"></a>Model evaluation and selection</h1><h2 id="Error-and-overfitting"><a href="#Error-and-overfitting" class="headerlink" title="Error and overfitting"></a>Error and overfitting</h2><p>The  difference between the actual prediction by the learner and the true value of the sample is called <strong>error</strong>.</p>
+<ul>
+<li>Training error/Empirical error</li>
+<li>Test error</li>
+<li>Generalization error</li>
 </ul>
-<h1 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h1><ul>
-<li>任意一家运营商的KVM架构VPS服务器</li>
-<li>Ubuntu 14.04 64bit系统</li>
-<li>运行<code>apt-get install vim</code> 安装vim</li>
+<p>Obviously we need get a learner that has a small generalization error which perform well on new samples. Therefore the learner should learn the ‘general characteristics’ of university from the training set  as much as possible to judge new samples correctly.</p>
+<p>However, sometimes the learner goes to learned training sets too well that took some special features of  training samples as the general features. </p>
+<ul>
+<li>Overfitting</li>
 </ul>
-<h1 id="搭建shadowsocks环境"><a href="#搭建shadowsocks环境" class="headerlink" title="搭建shadowsocks环境"></a>搭建shadowsocks环境</h1><p>使用<code>xshell</code>连接服务器主机</p>
-<h2 id="安装shadowsocks服务端"><a href="#安装shadowsocks服务端" class="headerlink" title="安装shadowsocks服务端"></a>安装shadowsocks服务端</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get install python-pip</span><br><span class="line">pip install shadowsocks</span><br></pre></td></tr></table></figure>
-
-<h2 id="配置shadowsocks"><a href="#配置shadowsocks" class="headerlink" title="配置shadowsocks"></a>配置shadowsocks</h2><ul>
-<li><p>用vim新建<code>shadowsocks.json</code>文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;shadowsocks.json</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>复制以下内容进去</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;server&quot;:&quot;0.0.0.0&quot;,</span><br><span class="line">    &quot;local_address&quot;:&quot;127.0.0.1&quot;,</span><br><span class="line">    &quot;local_port&quot;:1080,</span><br><span class="line">    &quot;port_password&quot;:&#123;</span><br><span class="line">        &quot;10000&quot;:&quot;Password1&quot;,</span><br><span class="line">        &quot;10001&quot;:&quot;Password2&quot;,</span><br><span class="line">        &quot;10002&quot;:&quot;Password3&quot;,</span><br><span class="line">        &quot;10003&quot;:&quot;Password4&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;timeout&quot;: 300,</span><br><span class="line">        &quot;method&quot;:&quot;rc4-md5&quot;,</span><br><span class="line">        &quot;fast_open&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
+<p>While sometimes insufficient learning ability of learner makes basic feature of the training set have not been learned.</p>
+<ul>
+<li>Underfitting</li>
 </ul>
-<p>“10000”是指端口，“Password1”是指此端口的密码，均可以随意设置</p>
-<p><strong>常用 vim 操作自己百度，如果 vim 命令不可用是因为没安装 vim，可以用 vi 替代</strong></p>
-<p>保存刚才的文档，然后启动 shadowsocks 服务（每次重启服务器后都必须再 次执行下面的命令） ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssserver -c &#x2F;etc&#x2F;shadowsocks.json -d start</span><br></pre></td></tr></table></figure>
-
-<h1 id="锐速优化（可选）"><a href="#锐速优化（可选）" class="headerlink" title="锐速优化（可选）"></a>锐速优化（可选）</h1><p>锐速现在最低套餐是 300 元一年，新手不建议使用，如需使用百度锐速官网</p>
-<h2 id="更换内核"><a href="#更换内核" class="headerlink" title="更换内核"></a>更换内核</h2><h3 id="查询当前内核"><a href="#查询当前内核" class="headerlink" title="查询当前内核"></a>查询当前内核</h3><ul>
-<li><p>输入以下命令查询当前内核</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -r</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="安装指定内核"><a href="#安装指定内核" class="headerlink" title="安装指定内核"></a>安装指定内核</h3><ul>
-<li><p>目前锐速最高支持linux-image-3.13.0-46-generic内核，运行以下命令安装此内核</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install linux-image-3.13.0-46-generic</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="卸载其他内核"><a href="#卸载其他内核" class="headerlink" title="卸载其他内核"></a>卸载其他内核</h3><ul>
-<li><p>运行命令查询本系统的其他内核</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg --get-selections | grep linux-image</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>实例</strong>，查询出有其他5个内核</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">linux-image-3.16.0-30-generic</span><br><span class="line">linux-image-3.16.0-60-generic</span><br><span class="line">linux-image-extra-3.16.0-30-generic</span><br><span class="line">linux-image-extra-3.16.0-60-generic</span><br><span class="line">linux-image-generic-lts-utopic</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>运行命令卸载其他内核</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get remove linux-image-3.16.0-30-generic linux-image-3.16.0-60-generic linux-image-extra-3.16.0-30-generic linux-image-extra-3.16.0-60-generic linux-image-generic-lts-utopic</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除后执行grub更新和重启</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo update-grub</span><br><span class="line">sudo reboot now</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="固定内核版本"><a href="#固定内核版本" class="headerlink" title="固定内核版本"></a>固定内核版本</h2><ul>
-<li><p>防止内核意外升级</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-mark hold linux-image</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="优化内核"><a href="#优化内核" class="headerlink" title="优化内核"></a>优化内核</h2><ul>
-<li><p>使用vim打开<code>limits.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;security&#x2F;limits.conf</span><br></pre></td></tr></table></figure>
-
-<p>然后添加下面语句</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*    soft    nofile    51200</span><br><span class="line">*    hard    nofile    51200</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>修改<code>/etc/pam.d/common-session</code>,加入以下内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">session required pam_limits.so</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>修改<code>/etc/profile</code>,最下面加入以下内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ulimit    -SHn    51200</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>修改<code>/etc/sysctl.conf</code>,加入以下内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">fs.file-max &#x3D; 51200</span><br><span class="line">net.core.rmem_max &#x3D; 67108864</span><br><span class="line">net.core.wmem_max &#x3D; 67108864</span><br><span class="line">net.core.netdev_max_backlog &#x3D; 250000</span><br><span class="line">net.core.somaxconn &#x3D; 4096</span><br><span class="line">net.ipv4.tcp_syncookies &#x3D; 1</span><br><span class="line">net.ipv4.tcp_tw_reuse &#x3D; 1</span><br><span class="line">net.ipv4.tcp_tw_recycle &#x3D; 0</span><br><span class="line">net.ipv4.tcp_fin_timeout &#x3D; 30</span><br><span class="line">net.ipv4.tcp_keepalive_time &#x3D; 1200</span><br><span class="line">net.ipv4.ip_local_port_range &#x3D; 10000 65000</span><br><span class="line">net.ipv4.tcp_max_syn_backlog &#x3D; 8192</span><br><span class="line">net.ipv4.tcp_max_tw_buckets &#x3D; 5000</span><br><span class="line">net.ipv4.tcp_rmem &#x3D; 4096 87380 67108864</span><br><span class="line">net.ipv4.tcp_wmem &#x3D; 4096 65536 67108864</span><br><span class="line">net.ipv4.tcp_mtu_probing &#x3D; 1</span><br><span class="line">net.ipv4.tcp_congestion_control &#x3D; hybla</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p><strong>保存修改后执行 sysctl -p 使配置生效。 再额外使用一次 sudo reboot now 重启以生效。</strong></p>
-<h2 id="安装锐速"><a href="#安装锐速" class="headerlink" title="安装锐速"></a>安装锐速</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
-<li><p>输入以下命令安装锐速：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http :&#x2F;&#x2F;my.serverspeeder.com&#x2F;d&#x2F;ls&#x2F;serverSpeederInstaller.tar.gz</span><br><span class="line">tar -xzvf serverSpeederInstaller.tar.gz</span><br><span class="line">sudo bash serverSpeederInstaller.sh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装过程中依次输入以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">你的锐速邮箱</span><br><span class="line">你的锐速密码</span><br><span class="line">eth0</span><br><span class="line">1000000</span><br><span class="line">1000000</span><br><span class="line">0</span><br><span class="line">y</span><br><span class="line">y</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="优化锐速"><a href="#优化锐速" class="headerlink" title="优化锐速"></a>优化锐速</h3><ul>
-<li><p>打开<code>/serverspeeder/etc/config</code>，编辑如下内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rsc&#x3D;&quot;1&quot;</span><br><span class="line">gso&#x3D;&quot;1&quot;</span><br><span class="line">maxmode&#x3D;&quot;1&quot;</span><br><span class="line">advinacc&#x3D;&quot;1&quot;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h3><ul>
-<li><p>重启锐速完成优化</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service serverSpeeder restart</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h1 id="开机启动"><a href="#开机启动" class="headerlink" title="开机启动"></a>开机启动</h1><h2 id="添加路径"><a href="#添加路径" class="headerlink" title="添加路径"></a>添加路径</h2><ul>
-<li><p>在<code>/etc/init.d</code>目录下新建<code>ss_start</code>文件并加入如下内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup &#x2F;usr&#x2F;local&#x2F;bin&#x2F;ss-server -c &#x2F;etc&#x2F;shadowsocks.json &gt; &#x2F;dev&#x2F;null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在<code>/etc/init.d</code>目录下新建<code>rs_start</code>文件并加入如下内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;serverspeeder&#x2F;bin&#x2F;serverSpeeder.sh start</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h2 id="加权限"><a href="#加权限" class="headerlink" title="加权限"></a>加权限</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chmod +x &#x2F;etc&#x2F;init.d&#x2F;ss_start</span><br><span class="line">chmod +x &#x2F;etc&#x2F;init.d&#x2F;rs_start</span><br></pre></td></tr></table></figure>
-
-<h2 id="加自启"><a href="#加自启" class="headerlink" title="加自启"></a>加自启</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo update-rc.d ss_start defaults 91</span><br><span class="line">sudo update-rc.d rs_start defaults 91</span><br></pre></td></tr></table></figure>
-
-<h1 id="安全措施"><a href="#安全措施" class="headerlink" title="安全措施"></a>安全措施</h1><ul>
-<li><p>关闭 ping 功能：</p>
-<p>根据我的经验，如果不关闭 ping，会经常有黑客试探攻击服务器，所以最好 关闭 ping 服务，只需要每次启动或者重启服务器后执行一行代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1&quot; &gt;&#x2F;proc&#x2F;sys&#x2F;net&#x2F;ipv4&#x2F;icmp_echo_ignore_all</span><br></pre></td></tr></table></figure>
-
-<p>至此，搭建+优化SS全过程已完毕。</p>
-</li>
-</ul>
-
+<p>It can be seen that: in the overfitting problem, the training error is very small while the test error is large; In the underfitting problem, both the training error and the testing error are large. At present, the underfitting problem is relatively easy to overcome, such as by increasing the number of iterations, but there still not have a good solution to the overfitting problem. Overfitting is a key obstacle of machine learning.</p>
+<p><img src="https://camo.githubusercontent.com/3c5a03bf3c29a9c1926ce013d3ac938e93d87ac9/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313137323939362e706e67" alt=""></p>
+<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><p>Use test set to evaluate the generalization of the model</p>
+<h2 id="Partition-training-and-test-set"><a href="#Partition-training-and-test-set" class="headerlink" title="Partition training and test set"></a>Partition training and test set</h2><p>We want to use the test error of test set as an approximation of the generalization error, so we need to effectively divide initial data set into mutually exclusive training set and test set.</p>
+<h3 id="Hold-out"><a href="#Hold-out" class="headerlink" title="Hold-out"></a>Hold-out</h3><p>Data set $D$ is divided into two mutually exclusive sets, one as training set $S$ and the other as test set $T$, satisfying $D=S\subset T$ and $S\cap T=\varnothing$. The common classification is: approximately 2/3-4/5 samples are used for training, and the rest are used for testing. It is notable that the division of the training/test set should be as consistent as possible in the distribution of data to avoid introducing additional deviations due to differences in distribution, a common practice being to use stratified sampling. At the same time, due to the randomness of the division, the results of the single set hold-out are often not stable enough, so a number of random divisions and repeated experiments to take the mean value are usually used.</p>
+<h3 id="Cross-validation"><a href="#Cross-validation" class="headerlink" title="Cross validation"></a>Cross validation</h3><p>The data set $D$ is divided into $k$ mutually exclusive subsets of the same size, satisfying $D=D_1\cup D_2\cup…\cup D_k$, $Di\cap Dj=\varnothing (i ≠j)$, and also try to keep the consistency of data distribution as much as possible, such as obtain these subsets by stratified sampling. The idea of the cross validation is that use the union set of $k-1$ subsets as the training set and the remaining subset as the test set, so that there are $k$ kinds of training set/test set partition to carry out $k$ times of training and testing, and finally return the mean value of the test results of $k$ times. The cross validation is also known as <em>k-fold cross validation</em>, and usually the value of $k$ is 10. </p>
+<p><img src="https://camo.githubusercontent.com/bc0633094f7c687bb591366fc0a0a65fb489b789/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313135643232342e706e67" alt=""></p>
+<p>Similar to the hold-out, the process of dividing data set $D$ into $K$ subsets is random, so k-fold cross validation is usually repeated $p$ times, called p-fold k-fold cross validation. The common practice is 10 times 10-fold cross validation as 100 training/testing. In particular, when there is only one sample in each subset of k subsets, it is called “hold-one”. Obviously, the evaluation result of hold-one is relatively accurate, but it is also very expensive to the computer.</p>
+<h3 id="Bootstrap-Method"><a href="#Bootstrap-Method" class="headerlink" title="Bootstrap Method"></a>Bootstrap Method</h3>
         </div>
         
-        <div class="level is-size-7 is-uppercase">
-            <div class="level-start">
-                <div class="level-item">
-                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/shadowsocks/" rel="tag">shadowsocks</a>
-                </div>
-            </div>
-        </div>
-        
-        
-        
-        <div class="social-share"></div>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css">
-<script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script>
-        
-    </div>
-</div>
-
-
-
-<div class="card">
-    <div class="card-content">
-        <h3 class="menu-label has-text-centered">Donate a cup of coffee</h3>
-        <div class="buttons is-centered">
-            
-                
-<a class="button is-info donate">
-    <span class="icon is-small">
-        <i class="fab fa-alipay"></i>
-    </span>
-    <span>Alipay</span>
-    <div class="qrcode"><img src="/images/no2.jpg" alt="Alipay"></div>
-</a>
-
-                
-                
-<a class="button is-success donate">
-    <span class="icon is-small">
-        <i class="fab fa-weixin"></i>
-    </span>
-    <span>Wechat</span>
-    <div class="qrcode"><img src="/images/no.gif" alt="Wechat"></div>
-</a>
-
-                
-        </div>
-    </div>
-</div>
-
-
-
-<div class="card card-transparent">
-    <div class="level post-navigation is-flex-wrap is-mobile">
-        
-        <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/02/06/DVWA-SQL-injection-test/">
-                <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">DVWA的SQL注入测试</span>
-            </a>
-        </div>
         
         
     </div>
@@ -358,26 +202,11 @@
 
 
 
-<div class="card">
-    <div class="card-content">
-        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
-        
-<div id="valine-thread" class="content"></div>
-<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
-<script>
-    new Valine({
-        el: '#valine-thread' ,
-        notify: false,
-        verify: false,
-        app_id: 'GzbYgV54r0lAXM8EinjIWBBc-gzGzoHsz',
-        app_key: 'NoHDIIwlPBABfBSUjNMTL57g',
-        placeholder: 'Say something'
-    });
-</script>
 
-    </div>
-</div>
+
+
+
+
 </div>
                 
 
@@ -423,7 +252,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            12
+                            13
                         </p>
                     </a>
                 </div>
@@ -435,7 +264,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            6
+                            7
                         </p>
                     </a>
                 </div>
@@ -508,8 +337,21 @@
             
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T14:00:48.000Z">2020-02-25</time></div>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine Learning&gt; Chapter2</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Model-evaluation-and-selection/">Model evaluation and selection</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T09:00:22.000Z">2020-02-25</time></div>
-                    <a href="/2020/02/25/ML-notes-chapter1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">&lt;Machine learning&gt; -- Introduction</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine learning&gt; Chapter1</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Introduction/">Introduction</a>
                     </p>
@@ -522,7 +364,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-08T20:11:03.000Z">2020-01-09</time></div>
-                    <a href="/2020/01/09/NER-survey-notes/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -535,7 +377,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-09T08:06:45.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/word2vec-presentation/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -548,22 +390,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/Wordng-vec-webshell-detect/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-05-09T00:17:26.000Z">2018-05-09</time></div>
-                    <a href="/2018/05/09/RSA-in-ctf/" class="title has-link-black-ter is-size-6 has-text-weight-normal">CTF中RSA的常见攻击方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
                     </p>
                 </div>
             </div>
@@ -597,12 +426,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -651,7 +488,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -778,7 +615,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -890,12 +727,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -944,7 +789,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1071,7 +916,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -1162,7 +1007,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.svg" alt="基于KVM架构的VPS服务器搭建ss及锐速优化教程" height="28">
+                    <img src="/images/logo.svg" alt="Lithium" height="28">
                 
                 </a>
                 <p class="is-size-7">

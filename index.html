@@ -130,6 +130,78 @@
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
                 <i class="fas fa-calendar-alt"></i>&nbsp;
+                <time class="level-item has-text-grey" datetime="2020-02-25T14:00:48.000Z">2020-02-25</time>
+                <i class="fas fa-archive"></i>&nbsp;
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/Machine-Learning/Model-evaluation-and-selection/">Model evaluation and selection</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    <i class="fas fa-clock"></i>&nbsp;
+                    
+                    4 minutes read (About 661 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/">Reading notes of &lt;Machine Learning&gt; Chapter2</a>
+            
+        </h1>
+        <div class="content">
+            <p>Source: 《机器学习》周志华</p>
+<h1 id="Model-evaluation-and-selection"><a href="#Model-evaluation-and-selection" class="headerlink" title="Model evaluation and selection"></a>Model evaluation and selection</h1><h2 id="Error-and-overfitting"><a href="#Error-and-overfitting" class="headerlink" title="Error and overfitting"></a>Error and overfitting</h2><p>The  difference between the actual prediction by the learner and the true value of the sample is called <strong>error</strong>.</p>
+<ul>
+<li>Training error/Empirical error</li>
+<li>Test error</li>
+<li>Generalization error</li>
+</ul>
+<p>Obviously we need get a learner that has a small generalization error which perform well on new samples. Therefore the learner should learn the ‘general characteristics’ of university from the training set  as much as possible to judge new samples correctly.</p>
+<p>However, sometimes the learner goes to learned training sets too well that took some special features of  training samples as the general features. </p>
+<ul>
+<li>Overfitting</li>
+</ul>
+<p>While sometimes insufficient learning ability of learner makes basic feature of the training set have not been learned.</p>
+<ul>
+<li>Underfitting</li>
+</ul>
+<p>It can be seen that: in the overfitting problem, the training error is very small while the test error is large; In the underfitting problem, both the training error and the testing error are large. At present, the underfitting problem is relatively easy to overcome, such as by increasing the number of iterations, but there still not have a good solution to the overfitting problem. Overfitting is a key obstacle of machine learning.</p>
+<p><img src="https://camo.githubusercontent.com/3c5a03bf3c29a9c1926ce013d3ac938e93d87ac9/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313137323939362e706e67" alt=""></p>
+<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><p>Use test set to evaluate the generalization of the model</p>
+<h2 id="Partition-training-and-test-set"><a href="#Partition-training-and-test-set" class="headerlink" title="Partition training and test set"></a>Partition training and test set</h2><p>We want to use the test error of test set as an approximation of the generalization error, so we need to effectively divide initial data set into mutually exclusive training set and test set.</p>
+<h3 id="Hold-out"><a href="#Hold-out" class="headerlink" title="Hold-out"></a>Hold-out</h3><p>Data set $D$ is divided into two mutually exclusive sets, one as training set $S$ and the other as test set $T$, satisfying $D=S\subset T$ and $S\cap T=\varnothing$. The common classification is: approximately 2/3-4/5 samples are used for training, and the rest are used for testing. It is notable that the division of the training/test set should be as consistent as possible in the distribution of data to avoid introducing additional deviations due to differences in distribution, a common practice being to use stratified sampling. At the same time, due to the randomness of the division, the results of the single set hold-out are often not stable enough, so a number of random divisions and repeated experiments to take the mean value are usually used.</p>
+<h3 id="Cross-validation"><a href="#Cross-validation" class="headerlink" title="Cross validation"></a>Cross validation</h3><p>The data set $D$ is divided into $k$ mutually exclusive subsets of the same size, satisfying $D=D_1\cup D_2\cup…\cup D_k$, $Di\cap Dj=\varnothing (i ≠j)$, and also try to keep the consistency of data distribution as much as possible, such as obtain these subsets by stratified sampling. The idea of the cross validation is that use the union set of $k-1$ subsets as the training set and the remaining subset as the test set, so that there are $k$ kinds of training set/test set partition to carry out $k$ times of training and testing, and finally return the mean value of the test results of $k$ times. The cross validation is also known as <em>k-fold cross validation</em>, and usually the value of $k$ is 10. </p>
+<p><img src="https://camo.githubusercontent.com/bc0633094f7c687bb591366fc0a0a65fb489b789/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313135643232342e706e67" alt=""></p>
+<p>Similar to the hold-out, the process of dividing data set $D$ into $K$ subsets is random, so k-fold cross validation is usually repeated $p$ times, called p-fold k-fold cross validation. The common practice is 10 times 10-fold cross validation as 100 training/testing. In particular, when there is only one sample in each subset of k subsets, it is called “hold-one”. Obviously, the evaluation result of hold-one is relatively accurate, but it is also very expensive to the computer.</p>
+<h3 id="Bootstrap-Method"><a href="#Bootstrap-Method" class="headerlink" title="Bootstrap Method"></a>Bootstrap Method</h3>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <i class="fas fa-calendar-alt"></i>&nbsp;
                 <time class="level-item has-text-grey" datetime="2020-02-25T09:00:22.000Z">2020-02-25</time>
                 <i class="fas fa-archive"></i>&nbsp;
                 
@@ -142,7 +214,7 @@
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    3 minutes read (About 445 words)
+                    3 minutes read (About 454 words)
                 </span>
                 
                 
@@ -151,11 +223,12 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/02/25/ML-notes-chapter1/">&lt;Machine learning&gt; -- Introduction</a>
+                <a class="has-link-black-ter" href="/2020/">Reading notes of &lt;Machine learning&gt; Chapter1</a>
             
         </h1>
         <div class="content">
-            <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><p>The “experience” of people corresponds to the “data” in the computer, machine learning is just such a subject that  the computer learn these experience data and generate an algorithm model to make effective judgement in new situation.</p>
+            <p>Source: 《机器学习》周志华</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><p>The “experience” of people corresponds to the “data” in the computer, machine learning is just such a subject that  the computer learn these experience data and generate an algorithm model to make effective judgement in new situation.</p>
 <p>Mitchell, author of another classic text book, gives a formal definition that assumes:</p>
 <ul>
 <li>P: the performance of a computer program on a tasks class T</li>
@@ -169,7 +242,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/02/25/ML-notes-chapter1/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2020/#more">Read More</a>
                 </div>
             </div>
         </div>
@@ -214,7 +287,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/01/09/NER-survey-notes/">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
+                <a class="has-link-black-ter" href="/2020/">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
             
         </h1>
         <div class="content">
@@ -229,7 +302,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/01/09/NER-survey-notes/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2020/#more">Read More</a>
                 </div>
             </div>
         </div>
@@ -274,7 +347,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/05/09/word2vec-presentation/">Word2vec的文档表示方法</a>
+                <a class="has-link-black-ter" href="/2019/">Word2vec的文档表示方法</a>
             
         </h1>
         <div class="content">
@@ -296,7 +369,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/05/09/word2vec-presentation/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2019/#more">Read More</a>
                 </div>
             </div>
         </div>
@@ -341,7 +414,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/05/09/Wordng-vec-webshell-detect/">Use Word-NG vec to detect WebShell</a>
+                <a class="has-link-black-ter" href="/2019/">Use Word-NG vec to detect WebShell</a>
             
         </h1>
         <div class="content">
@@ -352,7 +425,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/05/09/Wordng-vec-webshell-detect/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2019/#more">Read More</a>
                 </div>
             </div>
         </div>
@@ -397,7 +470,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2018/05/09/RSA-in-ctf/">CTF中RSA的常见攻击方法</a>
+                <a class="has-link-black-ter" href="/2018/">CTF中RSA的常见攻击方法</a>
             
         </h1>
         <div class="content">
@@ -409,7 +482,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/05/09/RSA-in-ctf/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2018/#more">Read More</a>
                 </div>
             </div>
         </div>
@@ -454,7 +527,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2018/03/21/sqlmap-tamper-development/">sqlmap tamper 脚本编写</a>
+                <a class="has-link-black-ter" href="/2018/">sqlmap tamper 脚本编写</a>
             
         </h1>
         <div class="content">
@@ -468,7 +541,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/03/21/sqlmap-tamper-development/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2018/#more">Read More</a>
                 </div>
             </div>
         </div>
@@ -513,7 +586,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2017/09/12/MS08-067-analyze/">MS08-067漏洞原理分析及还原</a>
+                <a class="has-link-black-ter" href="/2017/">MS08-067漏洞原理分析及还原</a>
             
         </h1>
         <div class="content">
@@ -525,64 +598,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2017/09/12/MS08-067-analyze/#more">Read More</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <i class="fas fa-calendar-alt"></i>&nbsp;
-                <time class="level-item has-text-grey" datetime="2017-05-08T20:11:03.000Z">2017-05-09</time>
-                <i class="fas fa-archive"></i>&nbsp;
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/hack/">hack</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    <i class="fas fa-clock"></i>&nbsp;
-                    
-                    14 minutes read (About 2084 words)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2017/05/09/JNU-Wifi-sniff/">H3C校园网WIFI密码嗅探实验</a>
-            
-        </h1>
-        <div class="content">
-            <p>某高校校区的校园网WIFI的采用H3C的Web认证，在网页里输入学号和密码，post出去，你的这个mac地址就可以上网了。此方式不是wpa/wpa2，也不是802.1x，而只是单纯的web认证，是大有文章可做的。因此我想是否能在开放无线网环境中抓取到登陆时认证发送的数据包，从中取出用户名和密码。</p>
-<p>参考Freebuf的<a href="http://link.zhihu.com/?target=http%3A//www.freebuf.com/articles/network/129721.html">如何在开放无线网络中嗅探校园网密码**</a>这篇文章提供的python脚本，针对该校的网络进行了一些修改，使用该脚本嗅探校园网WIFI账号密码。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2017/05/09/JNU-Wifi-sniff/#more">Read More</a>
+                <a class="button is-size-7 is-light" href="/2017/#more">Read More</a>
                 </div>
             </div>
         </div>
@@ -662,7 +678,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            12
+                            13
                         </p>
                     </a>
                 </div>
@@ -674,7 +690,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            6
+                            7
                         </p>
                     </a>
                 </div>
@@ -747,8 +763,21 @@
             
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T14:00:48.000Z">2020-02-25</time></div>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine Learning&gt; Chapter2</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Model-evaluation-and-selection/">Model evaluation and selection</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T09:00:22.000Z">2020-02-25</time></div>
-                    <a href="/2020/02/25/ML-notes-chapter1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">&lt;Machine learning&gt; -- Introduction</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine learning&gt; Chapter1</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Introduction/">Introduction</a>
                     </p>
@@ -761,7 +790,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-08T20:11:03.000Z">2020-01-09</time></div>
-                    <a href="/2020/01/09/NER-survey-notes/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -774,7 +803,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-09T08:06:45.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/word2vec-presentation/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -787,22 +816,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/Wordng-vec-webshell-detect/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-05-09T00:17:26.000Z">2018-05-09</time></div>
-                    <a href="/2018/05/09/RSA-in-ctf/" class="title has-link-black-ter is-size-6 has-text-weight-normal">CTF中RSA的常见攻击方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
                     </p>
                 </div>
             </div>
@@ -836,12 +852,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -890,7 +914,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1017,7 +1041,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -1129,12 +1153,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -1183,7 +1215,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1310,7 +1342,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 

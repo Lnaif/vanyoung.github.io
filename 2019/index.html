@@ -7,21 +7,23 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>DVWA的SQL注入测试 - Lithium</title>
+<title>Use Word-NG vec to detect WebShell - Lithium</title>
 
 
-    <meta name="description" content="通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。 SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。 具体来说，它是利用现有的应">
+    <meta name="description" content="In order to cope with the current complex and flexible WebShell attack environment and better detect various types of webshells, an improved WebShell detection method based on CNN was proposed by impr">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DVWA的SQL注入测试">
-<meta property="og:url" content="https://p0st3r.github.io/2017/02/06/DVWA-SQL-injection-test/index.html">
+<meta property="og:title" content="Use Word-NG vec to detect WebShell">
+<meta property="og:url" content="https://p0st3r.github.io/2019/index.html">
 <meta property="og:site_name" content="Lithium">
-<meta property="og:description" content="通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。 SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。 具体来说，它是利用现有的应">
+<meta property="og:description" content="In order to cope with the current complex and flexible WebShell attack environment and better detect various types of webshells, an improved WebShell detection method based on CNN was proposed by impr">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://p0st3r.github.io/images/og_image.png">
-<meta property="article:published_time" content="2017-02-05T20:11:03.000Z">
-<meta property="article:modified_time" content="2019-05-09T08:10:34.318Z">
+<meta property="article:published_time" content="2019-05-08T22:24:49.000Z">
+<meta property="article:modified_time" content="2020-02-23T09:13:10.458Z">
 <meta property="article:author" content="Lithium Atom">
-<meta property="article:tag" content="Sql injection">
+<meta property="article:tag" content="Word2vec">
+<meta property="article:tag" content="Webshell">
+<meta property="article:tag" content="N-Gram">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p0st3r.github.io/images/og_image.png">
 
@@ -31,7 +33,7 @@
 
 
 
-<link rel="alternative" href="/lithium.xml" title="DVWA的SQL注入测试" type="application/atom+xml">
+<link rel="alternative" href="/lithium.xml" title="Use Word-NG vec to detect WebShell" type="application/atom+xml">
 
 
 
@@ -85,7 +87,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.svg" alt="DVWA的SQL注入测试" height="28">
+                <img src="/images/logo.svg" alt="Use Word-NG vec to detect WebShell" height="28">
             
             </a>
         </div>
@@ -138,11 +140,11 @@
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
                 <i class="fas fa-calendar-alt"></i>&nbsp;
-                <time class="level-item has-text-grey" datetime="2017-02-05T20:11:03.000Z">2017-02-06</time>
+                <time class="level-item has-text-grey" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time>
                 <i class="fas fa-archive"></i>&nbsp;
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/hack/">hack</a>
+                <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                 </div>
                 
                 
@@ -150,7 +152,7 @@
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    11 minutes read (About 1670 words)
+                    7 minutes read (About 993 words)
                 </span>
                 
                 
@@ -164,67 +166,131 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                DVWA的SQL注入测试
+                Use Word-NG vec to detect WebShell
             
         </h1>
         <div class="content">
-            <p>通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。</p>
-<p>SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。</p>
-<p>具体来说，它是利用现有的应用出现，将（恶意）的SQL目录注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入（恶意）SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者意图去执行SQL语句。</p>
+            <p>In order to cope with the current complex and flexible WebShell attack environment and better detect various types of webshells, an improved WebShell detection method based on CNN was proposed by improving text feature extraction and convolutional neural network structure. First, precompile the PHP data set to get the opcode instruction sequence. Secondly, Word2vec is used to extract the word vectors of the original text and the phrase segmented by bi-gram respectively, and it serves as the two inputs of the convolutional neural network. Finally, the detection is carried out through the designed convolutional neural network. Through experiments, this method effectively improves the accuracy, recall rate and other performance parameters while compared with other methods.</p>
 <a id="more"></a>
 
-<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="低安全等级文件包含"><a href="#低安全等级文件包含" class="headerlink" title="低安全等级文件包含"></a>低安全等级文件包含</h2><h3 id="登陆DVWA"><a href="#登陆DVWA" class="headerlink" title="登陆DVWA"></a>登陆DVWA</h3><p>使用浏览器打开``,输入用户名密码登陆。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_45413" alt="img"></p>
-<h3 id="调整安全级别"><a href="#调整安全级别" class="headerlink" title="调整安全级别"></a>调整安全级别</h3><p>登陆后将DVWA的安全级别调整为low（见红框内）。调整之后选择SQL Injection，进入页面。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_48342" alt="img"></p>
-<h3 id="简单的ID查询"><a href="#简单的ID查询" class="headerlink" title="简单的ID查询"></a>简单的ID查询</h3><p>提示输入User ID，输入正确的ID，将显示ID First name，Surname信息。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_64727" alt="img"></p>
-<h3 id="检测是否存在注入"><a href="#检测是否存在注入" class="headerlink" title="检测是否存在注入"></a>检测是否存在注入</h3><p>可以得知此处位注入点，尝试输入<code>&#39;</code>，返回错误。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_58203" alt="img"></p>
-<h3 id="遍历数据库表"><a href="#遍历数据库表" class="headerlink" title="遍历数据库表"></a>遍历数据库表</h3><p>尝试遍历数据库表，提示输入的值是ID，可以初步判断此处为数字类型的注入。尝试输入<code>1 or 1=1</code>，尝试遍历数据库表。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_24591" alt="img"></p>
-<p>可见并没有达成目的，猜测程序将此处看成了字符型，尝试输入<code>1&#39; or&#39; 1&#39; =&#39; 1</code>后遍历出了数据库中所有内容。下面尝试不同语句，得到不同的结果。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_87635" alt="img"></p>
-<h3 id="查询信息列表长度"><a href="#查询信息列表长度" class="headerlink" title="查询信息列表长度"></a>查询信息列表长度</h3><p>利用<code>order by [num]</code>语句来测试查询信息列表长度，修改num的值,这里我们输入<code>1&#39; order by 1 --</code>结果页面正常显示，<strong>注意–后面有空格</strong>。继续测试，<code>1&#39; order by 2 --</code>，<code>1&#39; order by 3 --</code>，当输入3时，页面报错。页面错误信息如下：<code>Unknown column &#39;3&#39; in &#39;order clause&#39;</code>，由此我们判断查询结果值为2列。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_15397" alt="img"></p>
-<h3 id="获取数据库名称、账户名、版本及操作系统信息"><a href="#获取数据库名称、账户名、版本及操作系统信息" class="headerlink" title="获取数据库名称、账户名、版本及操作系统信息"></a>获取数据库名称、账户名、版本及操作系统信息</h3><p>通过使用<code>user()</code>，<code>database()</code>，<code>version()</code>三个内置函数得到连接数据库的账户名、数据库名称、数据库版本信息。</p>
-<ul>
-<li>首先参数注入<code>1&#39; and 1=2 union select 1,2 --</code>(<strong>注意–后有空格</strong>)。</li>
-</ul>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_23692" alt="img"></p>
-<p>由上图得知，First name处显示结果位查询结果的第一列的值，surname处显示结果位查询结果第二列的值。</p>
-<ul>
-<li>通过注入<code>1&#39; and 1=2 union select user(),database() --</code>得到数据库用户为<strong>root@localhost</strong>及数据库名<strong>dvwa</strong></li>
-</ul>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_62655" alt="img"></p>
-<ul>
-<li>通过注入<code>1&#39; and 1=2 union select version(),database() --</code>得到数据库版本信息，此处数据库版本为<strong>5.0.90-community-nt</strong>。</li>
-</ul>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_83473" alt="img"></p>
-<ul>
-<li>通过注入<code>1&#39; and 1=2 union select 1,@@global.version_compile_os from mysql.user --</code>获得操作系统信息。</li>
-</ul>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_94423" alt="img"></p>
-<h3 id="查询mysql数据库所有数据库及表"><a href="#查询mysql数据库所有数据库及表" class="headerlink" title="查询mysql数据库所有数据库及表"></a>查询mysql数据库所有数据库及表</h3><p>通过注入<code>1&#39; and 1=2 union select 1,schema_name from information_schema.schemata --</code>查询mysql数据库的所有数据库名。</p>
-<p>这里利用mysql默认的数据库<strong>information_schema</strong>，该数据库存储了Mysql所以数据库和表的信息。如图所示</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_21763" alt="img"></p>
-<h3 id="猜解表名"><a href="#猜解表名" class="headerlink" title="猜解表名"></a>猜解表名</h3><p>通过注入<code>1&#39; and exists(select * from users) --</code>猜解dvwa数据库中的表名。</p>
-<p>利用<code>1&#39; and exists(select * from [表名])</code>，这里测试的结果，表名为users，在真实的渗透环境中，攻击者往往关心存储管理员用户和密码信息的表。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_36450" alt="img"></p>
-<h3 id="猜解字段名"><a href="#猜解字段名" class="headerlink" title="猜解字段名"></a>猜解字段名</h3><p>猜解字段名：<code>1&#39; and exists(select [表名] from users) --</code>。这里测试的字段名有<code>first_name</code>,<code>last_name</code>。</p>
-<p>通过注入<code>1&#39; and exists(select first_name from users) --</code>和<code>1&#39; and exists(select last_name from users) --</code>猜解字段名。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_21940" alt="img"></p>
-<h3 id="爆出数据库中字段内容"><a href="#爆出数据库中字段内容" class="headerlink" title="爆出数据库中字段内容"></a>爆出数据库中字段内容</h3><p>注入<code>1&#39; and 1=2 union select first_name,last_name from users --</code>，这里其实如果是存放管理员账户的表，那么用户名，密码信息字段就可以爆出来了。</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_94412" alt="img"></p>
-<h2 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h2><h3 id="low等级源代码"><a href="#low等级源代码" class="headerlink" title="low等级源代码"></a>low等级源代码</h3><p>如图所示</p>
-<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_37330" alt="img"></p>
-<p>通过代码可以看出，对输入<strong>$id</strong>的值没有进行任何过滤就直接放入了SQL语句中进行处理，这样带来了极大的隐患。</p>
-<h3 id="中等等级代码分析"><a href="#中等等级代码分析" class="headerlink" title="中等等级代码分析"></a>中等等级代码分析</h3><p>将DVWA安全级别调整位medium，查看源代码。<img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_95600" alt="img"></p>
-<p>通过源代码可以看出，在中等级别时对输入的<strong>$id</strong>值使用<code>mysql_real_eascape_string()</code>函数进行了处理。在PHP中，使用<code>mysql_real_eascape_string()</code>函数用来转移SQL语句中使用字符串的特殊字符。但是使用这个函数对参数进行转换是存在绕过的。只需要将攻击字转换一下编码格式即可绕过该防护函数。比如URL编码等方式。</p>
-<p>同时发现SQL语句中变成了<code>“WHRER user_id = “$id”</code> ，此处变成了数字型注入，所以此处使用<code>mysql_real_eascape_string()</code>函数并没有起到防护作用。可以通过类似于<code>1 or 1=1</code>的语句来进行注入。</p>
-<h3 id="高等级代码分析"><a href="#高等级代码分析" class="headerlink" title="高等级代码分析"></a>高等级代码分析</h3><p>将DVWA安全级别调整为high，查看源代码。<img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_75240" alt="img"></p>
-<p>从源代码可以看出，此处为字符型注入。对传入<strong>$id</strong>的值使用<code>stripslashes()</code>函数处理以后，再经过到<code>$mysql_real_escape_string()</code>函数进行第二次过滤。在默认情况下，PHP会对所有的GET，POST和cookie数据自动运行<code>addslashes()</code>,<code>addslashes()</code>函数返回在部分与定义之前添加<code>\</code>。</p>
-<p><code>Striptslashes()</code>函数则是删除由<code>addslashes()</code>函数添加的反斜杠。在使用两个函数进行过滤之后再使用<code>is_numric()</code>函数检查<strong>$id</strong>值是否位数字，彻底断绝了注入的存在。此种防护不存在绕过的可能。</p>
+<p>See repo at <a href="https://github.com/liyuanzi/WordNG-vec_WebShell_detect">https://github.com/liyuanzi/WordNG-vec_WebShell_detect</a></p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><h3 id="Word-NG-vec"><a href="#Word-NG-vec" class="headerlink" title="Word-NG vec"></a>Word-NG vec</h3><p>In fact, the word embedding learned in Word2vec are more reflect in semantic similarity features , such as “extract” and “take”, “compression” and “reduction”, but without taking the word order features into account. Sometimes there are some differences with the actual semantics, for example:</p>
+<blockquote>
+<p>The USA started a trade war on China</p>
+</blockquote>
+<p>The main predicates of two sentences are interchanged to express different meanings, but there is no difference in Word2Vec.  However, if N-Gram is used to divide the text into word groups ,  we can obtain the word order feature of the text，such as:</p>
+<table>
+<thead>
+<tr>
+<th>Orignal</th>
+<th>The USA started  a trade war on China</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Word2vec</td>
+<td>“The USA”，“started”，”a”，“trade war”，“on”，“China”   (vector)</td>
+</tr>
+<tr>
+<td>2-gram</td>
+<td>“The USA/The USA” ，“The USA/started”，”stared”/a”，“a/trade war”，”trade war/on”，“on China”</td>
+</tr>
+</tbody></table>
+<p><img src="1.jpg" alt="1"></p>
+<p>Combining N-Gram with Word2vec, the word vectors of the original text and 2-gram pharse are both trained by Word2vec as the general features of the text, taking into account not only the semantic features, but also the word order features. In this way, two similar sentences can be correctly classifcated.</p>
+<h3 id="Convolutional-Neural-Network"><a href="#Convolutional-Neural-Network" class="headerlink" title="Convolutional Neural Network"></a>Convolutional Neural Network</h3><p>Based on the Kim Y’s <a href="https://arxiv.org/abs/1408.5882">TextCNN</a>, combined with the two-channel convolutional neural network, a text classification model DCTF-CNN(Double-Channels and Trible-Filters Convolutional Neural Network)  was constructed.</p>
+<p>The structure of the neural network is shown below:</p>
+<p><img src="2.jpg" alt="2"></p>
+<p>The model includes five layers: input layer, convolution layer, pooling layer, full-link layer and output layer.In the input layer, T1 channel and T2 channel respectively input the word vector of the original text and the word vector of the 2-gram pharse. The convolution layer is composed of three convolution kernels of different widths, each of which covers the local characteristics of different granularity.In the pooling layer, the global maximum value is pooled, and the maximum value is reserved for each convolution kernel, which can effectively extract the most representative features.Two feature vectors were spliced in the full link layer, and finally two types of distributions, namely the probability distribution of WebShell and normal files, were output through Softmax in the output layer.</p>
+<h3 id="PHP-opcode"><a href="#PHP-opcode" class="headerlink" title="PHP opcode"></a>PHP opcode</h3><p>PHP is an interpreted language, and its code execution process can be divided into Lexical Analysis stage, Syntax Analysis stage, byte code compilation stage and code execution stage.The execution flow diagram is shown in the solid line section in the below:</p>
+<p><img src="3.jpg" alt="3"></p>
+<p>In the lexical analysis phase, the Lexer reads the source code sequence of characters in sequence and shred them into Token sequences according to PHP syntax rules.In the Syntax analysis stage, the Token sequence is read in by the Parser to be syntactically checked, and then the Abstract Syntax Tree (AST) is generated.In the bytecode compilation phase, the PHP virtual machine Zend reads in the abstract syntax tree and translates the action nodes in the syntax tree into the corresponding bytecode.In the code execution stage, the PHP virtual machine Zend loads the corresponding module according to the code call, initializes the running environment, and finally executes the bytecode instruction and outputs the result.</p>
+<p>For example, the following code:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span>’Hello World’;</span><br><span class="line">$a=<span class="number">1</span>+<span class="number">1</span>;</span><br><span class="line"><span class="keyword">echo</span> $a;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>After PHP code compilation by VLD extension, the code can be compiled into following opcode:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ZEND_ECHO ’Hello World’</span><br><span class="line">ZEND_ADD ~ 0 1 1</span><br><span class="line">ZEND_ASSIGN!0 ~ 0</span><br><span class="line">ZEND_ECHI ~ 0</span><br></pre></td></tr></table></figure>
+
+<p>In this paper, the collected PHP datasets is compiled into opcode to word embedding, so as to avoid the interference of useless annotations added in the WebShell which might bypass static detection. In this way the generalization of the model could be imporved</p>
+<h2 id="Assessment"><a href="#Assessment" class="headerlink" title="Assessment"></a>Assessment</h2><p>Experimental data sets were obtained from the following sources:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Type</th>
+<th align="left">sources</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">WebShell</td>
+<td align="left"><a href="https://github.com/tennc/webshell">https://github.com/tennc/webshell</a><br/>    <a href="https://github.com/JohnTroony/php-webshells">https://github.com/JohnTroony/php-webshells</a><br/>    <a href="https://github.com/ysrc/webshell-sample">https://github.com/ysrc/webshell-sample</a><br/>    <a href="https://github.com/tanjiti/webshellSample">https://github.com/tanjiti/webshellSample</a><br/>    <a href="https://github.com/xl7dev/WebShell">https://github.com/xl7dev/WebShell</a></td>
+</tr>
+<tr>
+<td align="center">Normal Page</td>
+<td align="left"><a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a><br/>    <a href="https://github.com/phpmyadmin/phpmyadmin">https://github.com/phpmyadmin/phpmyadmin</a><br/>    <a href="https://github.com/typecho/typecho">https://github.com/typecho/typecho</a><br/>    <a href="https://github.com/bcit-ci/CodeIgniter">https://github.com/bcit-ci/CodeIgniter</a><br/>    <a href="https://github.com/laravel/laravel">https://github.com/laravel/laravel</a></td>
+</tr>
+</tbody></table>
+<p>Remove duplicate files by md5 comparsion, a total of 2387 WebShell samples and 2316 Normal Page samples were obtained.</p>
+<p>The WebShell samples covers One-word Trojan, small Trojan and giant Trojan all types of WebShell.</p>
+<p>The Normal Page covers blog cms，php development framework and database management system, and the similar page was remove to optimize data sets.</p>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>Download code and data sets</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;liyuanzi&#x2F;WordNG-vec_WebShell_detect</span><br></pre></td></tr></table></figure>
+
+<p>This code requires Python2.7</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create --name py27 python&#x3D;2.7</span><br></pre></td></tr></table></figure>
+
+<p>Initialization environment</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requerments.txt</span><br></pre></td></tr></table></figure>
+
+<p>start trainning</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nohup python -u webshell.py &gt;dctf.txt 2&gt;&amp;1 &amp; tail -f dctf.txt</span><br></pre></td></tr></table></figure>
+
+<p>The word embedding process takes a very long time，use <code>nohup</code> to avoid the word embedding process fail because the terminal closed unexpectly. The result is loaded  into <code>dctf.txt</code></p>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p>A Comparsion examination on a small  size data sets .</p>
+<table>
+<thead>
+<tr>
+<th>features</th>
+<th>Accuracy</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2-gram</td>
+<td>0.798</td>
+<td>0.714</td>
+<td>0.196</td>
+<td>0.308</td>
+</tr>
+<tr>
+<td>opcode sequences</td>
+<td>0.969</td>
+<td>0.998</td>
+<td>0.823</td>
+<td>0.902</td>
+</tr>
+<tr>
+<td>Word2vec</td>
+<td>0.958</td>
+<td>0.994</td>
+<td>0.918</td>
+<td>0.954</td>
+</tr>
+<tr>
+<td>bigram-word2vec</td>
+<td>0.960</td>
+<td>0.978</td>
+<td>0.937</td>
+<td>0.958</td>
+</tr>
+<tr>
+<td>Word-NG vec</td>
+<td>0.984</td>
+<td>0.995</td>
+<td>0.971</td>
+<td>0.982</td>
+</tr>
+</tbody></table>
 
         </div>
         
@@ -232,7 +298,7 @@
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Sql-injection/" rel="tag">Sql injection</a>
+                    <a class="has-link-grey -link" href="/tags/N-Gram/" rel="tag">N-Gram</a>, <a class="has-link-grey -link" href="/tags/Webshell/" rel="tag">Webshell</a>, <a class="has-link-grey -link" href="/tags/Word2vec/" rel="tag">Word2vec</a>
                 </div>
             </div>
         </div>
@@ -283,16 +349,16 @@
     <div class="level post-navigation is-flex-wrap is-mobile">
         
         <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2017/04/20/Win-getshell-and-open-rdp/">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/">
                 <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">Windows服务器提权和开启3389远程连接</span>
+                <span class="level-item">Word2vec的文档表示方法</span>
             </a>
         </div>
         
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2016/10/25/kvm-vps-ss-rs/">
-                <span class="level-item">基于KVM架构的VPS服务器搭建ss及锐速优化教程</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2018/">
+                <span class="level-item">CTF中RSA的常见攻击方法</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -367,7 +433,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            12
+                            13
                         </p>
                     </a>
                 </div>
@@ -379,7 +445,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            6
+                            7
                         </p>
                     </a>
                 </div>
@@ -449,74 +515,34 @@
                     Catalogue
                 </h3>
                 <ul class="menu-list"><li>
-        <a class="is-flex" href="#步骤">
+        <a class="is-flex" href="#Introduction">
         <span class="has-mr-6">1</span>
-        <span>步骤</span>
+        <span>Introduction</span>
         </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#低安全等级文件包含">
+        <a class="is-flex" href="#Word-NG-vec">
         <span class="has-mr-6">1.1</span>
-        <span>低安全等级文件包含</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#登陆DVWA">
-        <span class="has-mr-6">1.1.1</span>
-        <span>登陆DVWA</span>
+        <span>Word-NG vec</span>
         </a></li><li>
-        <a class="is-flex" href="#调整安全级别">
-        <span class="has-mr-6">1.1.2</span>
-        <span>调整安全级别</span>
-        </a></li><li>
-        <a class="is-flex" href="#简单的ID查询">
-        <span class="has-mr-6">1.1.3</span>
-        <span>简单的ID查询</span>
-        </a></li><li>
-        <a class="is-flex" href="#检测是否存在注入">
-        <span class="has-mr-6">1.1.4</span>
-        <span>检测是否存在注入</span>
-        </a></li><li>
-        <a class="is-flex" href="#遍历数据库表">
-        <span class="has-mr-6">1.1.5</span>
-        <span>遍历数据库表</span>
-        </a></li><li>
-        <a class="is-flex" href="#查询信息列表长度">
-        <span class="has-mr-6">1.1.6</span>
-        <span>查询信息列表长度</span>
-        </a></li><li>
-        <a class="is-flex" href="#获取数据库名称、账户名、版本及操作系统信息">
-        <span class="has-mr-6">1.1.7</span>
-        <span>获取数据库名称、账户名、版本及操作系统信息</span>
-        </a></li><li>
-        <a class="is-flex" href="#查询mysql数据库所有数据库及表">
-        <span class="has-mr-6">1.1.8</span>
-        <span>查询mysql数据库所有数据库及表</span>
-        </a></li><li>
-        <a class="is-flex" href="#猜解表名">
-        <span class="has-mr-6">1.1.9</span>
-        <span>猜解表名</span>
-        </a></li><li>
-        <a class="is-flex" href="#猜解字段名">
-        <span class="has-mr-6">1.1.10</span>
-        <span>猜解字段名</span>
-        </a></li><li>
-        <a class="is-flex" href="#爆出数据库中字段内容">
-        <span class="has-mr-6">1.1.11</span>
-        <span>爆出数据库中字段内容</span>
-        </a></li></ul></li><li>
-        <a class="is-flex" href="#代码分析">
+        <a class="is-flex" href="#Convolutional-Neural-Network">
         <span class="has-mr-6">1.2</span>
-        <span>代码分析</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#low等级源代码">
-        <span class="has-mr-6">1.2.1</span>
-        <span>low等级源代码</span>
+        <span>Convolutional Neural Network</span>
         </a></li><li>
-        <a class="is-flex" href="#中等等级代码分析">
-        <span class="has-mr-6">1.2.2</span>
-        <span>中等等级代码分析</span>
+        <a class="is-flex" href="#PHP-opcode">
+        <span class="has-mr-6">1.3</span>
+        <span>PHP opcode</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#Assessment">
+        <span class="has-mr-6">2</span>
+        <span>Assessment</span>
         </a></li><li>
-        <a class="is-flex" href="#高等级代码分析">
-        <span class="has-mr-6">1.2.3</span>
-        <span>高等级代码分析</span>
-        </a></li></ul></li></ul></li></ul>
+        <a class="is-flex" href="#Usage">
+        <span class="has-mr-6">3</span>
+        <span>Usage</span>
+        </a></li><li>
+        <a class="is-flex" href="#Example">
+        <span class="has-mr-6">4</span>
+        <span>Example</span>
+        </a></li></ul>
             </div>
         </div>
     </div>
@@ -532,8 +558,21 @@
             
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T14:00:48.000Z">2020-02-25</time></div>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine Learning&gt; Chapter2</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Model-evaluation-and-selection/">Model evaluation and selection</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-25T09:00:22.000Z">2020-02-25</time></div>
-                    <a href="/2020/02/25/ML-notes-chapter1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">&lt;Machine learning&gt; -- Introduction</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading notes of &lt;Machine learning&gt; Chapter1</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Machine-Learning/">Machine Learning</a> / <a class="has-link-grey -link" href="/categories/Machine-Learning/Introduction/">Introduction</a>
                     </p>
@@ -546,7 +585,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-08T20:11:03.000Z">2020-01-09</time></div>
-                    <a href="/2020/01/09/NER-survey-notes/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
+                    <a href="/2020/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Reading Notes of &lt;A Survey on Deep Learning for Named Entity Recognition&gt;</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -559,7 +598,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-09T08:06:45.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/word2vec-presentation/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Word2vec的文档表示方法</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
                     </p>
@@ -572,22 +611,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-08T22:24:49.000Z">2019-05-09</time></div>
-                    <a href="/2019/05/09/Wordng-vec-webshell-detect/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
+                    <a href="/2019/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Use Word-NG vec to detect WebShell</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/NLP/">NLP</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-05-09T00:17:26.000Z">2018-05-09</time></div>
-                    <a href="/2018/05/09/RSA-in-ctf/" class="title has-link-black-ter is-size-6 has-text-weight-normal">CTF中RSA的常见攻击方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
                     </p>
                 </div>
             </div>
@@ -621,12 +647,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -675,7 +709,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -802,7 +836,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -914,12 +948,20 @@
                 <span class="level-item">Machine Learning</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Machine-Learning/Introduction/">
             <span class="level-start">
                 <span class="level-item">Introduction</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Machine-Learning/Model-evaluation-and-selection/">
+            <span class="level-start">
+                <span class="level-item">Model evaluation and selection</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -968,7 +1010,7 @@
                     <span class="level-item">February 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1095,7 +1137,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/ML/">
                         <span class="tag">ML</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -1186,7 +1228,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.svg" alt="DVWA的SQL注入测试" height="28">
+                    <img src="/images/logo.svg" alt="Use Word-NG vec to detect WebShell" height="28">
                 
                 </a>
                 <p class="is-size-7">

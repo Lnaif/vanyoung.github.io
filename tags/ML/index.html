@@ -152,7 +152,7 @@
                     
                     <i class="fas fa-clock"></i>&nbsp;
                     
-                    4 minutes read (About 661 words)
+                    4 minutes read (About 662 words)
                 </span>
                 
                 
@@ -173,25 +173,16 @@
 <li>Generalization error</li>
 </ul>
 <p>Obviously we need get a learner that has a small generalization error which perform well on new samples. Therefore the learner should learn the ‘general characteristics’ of university from the training set  as much as possible to judge new samples correctly.</p>
-<p>However, sometimes the learner goes to learned training sets too well that took some special features of  training samples as the general features. </p>
-<ul>
-<li>Overfitting</li>
-</ul>
-<p>While sometimes insufficient learning ability of learner makes basic feature of the training set have not been learned.</p>
-<ul>
-<li>Underfitting</li>
-</ul>
-<p>It can be seen that: in the overfitting problem, the training error is very small while the test error is large; In the underfitting problem, both the training error and the testing error are large. At present, the underfitting problem is relatively easy to overcome, such as by increasing the number of iterations, but there still not have a good solution to the overfitting problem. Overfitting is a key obstacle of machine learning.</p>
-<p><img src="https://camo.githubusercontent.com/3c5a03bf3c29a9c1926ce013d3ac938e93d87ac9/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313137323939362e706e67" alt=""></p>
-<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><p>Use test set to evaluate the generalization of the model</p>
-<h2 id="Partition-training-and-test-set"><a href="#Partition-training-and-test-set" class="headerlink" title="Partition training and test set"></a>Partition training and test set</h2><p>We want to use the test error of test set as an approximation of the generalization error, so we need to effectively divide initial data set into mutually exclusive training set and test set.</p>
-<h3 id="Hold-out"><a href="#Hold-out" class="headerlink" title="Hold-out"></a>Hold-out</h3><p>Data set $D$ is divided into two mutually exclusive sets, one as training set $S$ and the other as test set $T$, satisfying $D=S\subset T$ and $S\cap T=\varnothing$. The common classification is: approximately 2/3-4/5 samples are used for training, and the rest are used for testing. It is notable that the division of the training/test set should be as consistent as possible in the distribution of data to avoid introducing additional deviations due to differences in distribution, a common practice being to use stratified sampling. At the same time, due to the randomness of the division, the results of the single set hold-out are often not stable enough, so a number of random divisions and repeated experiments to take the mean value are usually used.</p>
-<h3 id="Cross-validation"><a href="#Cross-validation" class="headerlink" title="Cross validation"></a>Cross validation</h3><p>The data set $D$ is divided into $k$ mutually exclusive subsets of the same size, satisfying $D=D_1\cup D_2\cup…\cup D_k$, $Di\cap Dj=\varnothing (i ≠j)$, and also try to keep the consistency of data distribution as much as possible, such as obtain these subsets by stratified sampling. The idea of the cross validation is that use the union set of $k-1$ subsets as the training set and the remaining subset as the test set, so that there are $k$ kinds of training set/test set partition to carry out $k$ times of training and testing, and finally return the mean value of the test results of $k$ times. The cross validation is also known as <em>k-fold cross validation</em>, and usually the value of $k$ is 10. </p>
-<p><img src="https://camo.githubusercontent.com/bc0633094f7c687bb591366fc0a0a65fb489b789/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313135643232342e706e67" alt=""></p>
-<p>Similar to the hold-out, the process of dividing data set $D$ into $K$ subsets is random, so k-fold cross validation is usually repeated $p$ times, called p-fold k-fold cross validation. The common practice is 10 times 10-fold cross validation as 100 training/testing. In particular, when there is only one sample in each subset of k subsets, it is called “hold-one”. Obviously, the evaluation result of hold-one is relatively accurate, but it is also very expensive to the computer.</p>
-<h3 id="Bootstrap-Method"><a href="#Bootstrap-Method" class="headerlink" title="Bootstrap Method"></a>Bootstrap Method</h3>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2020/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>

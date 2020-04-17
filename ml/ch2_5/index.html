@@ -27,11 +27,11 @@
   
     
   
-  <meta name="description" content="Error The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called &lsquo;error&rsquo;. Definitions:
-  &lsquo;Training Error&rsquo; or &lsquo;Empirical Error&rsquo;: Error in the training set">
+  <meta name="description" content="Performance measures are evaluation criteria that measure the ability of models to generalize, and when comparing the ability of different models, different performance measures often results in different judgments.
+The Most Common Performance Measures Mean Squared Erro In the regression task which predict continuous values, the most commonly used is the Mean Squared Error, many classical algorithms are using MSE as an evaluation function.">
 
   
-  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/ml/ch2_1/">
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/ml/ch2_5/">
 
   
 
@@ -229,7 +229,7 @@
   <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
   <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
 
-  <link rel="canonical" href="https://p0st3r.github.io/ml/ch2_1/">
+  <link rel="canonical" href="https://p0st3r.github.io/ml/ch2_5/">
 
   
   
@@ -245,10 +245,10 @@
   <meta property="twitter:card" content="summary">
   
   <meta property="og:site_name" content="HumblePoster">
-  <meta property="og:url" content="https://p0st3r.github.io/ml/ch2_1/">
-  <meta property="og:title" content="Error and overfitting | HumblePoster">
-  <meta property="og:description" content="Error The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called &lsquo;error&rsquo;. Definitions:
-  &lsquo;Training Error&rsquo; or &lsquo;Empirical Error&rsquo;: Error in the training set"><meta property="og:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
+  <meta property="og:url" content="https://p0st3r.github.io/ml/ch2_5/">
+  <meta property="og:title" content="Performance Measure | HumblePoster">
+  <meta property="og:description" content="Performance measures are evaluation criteria that measure the ability of models to generalize, and when comparing the ability of different models, different performance measures often results in different judgments.
+The Most Common Performance Measures Mean Squared Erro In the regression task which predict continuous values, the most commonly used is the Mean Squared Error, many classical algorithms are using MSE as an evaluation function."><meta property="og:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
   <meta property="twitter:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png"><meta property="og:locale" content="en-us">
   
     
@@ -303,7 +303,7 @@
 
 
 
-  <title>Error and overfitting | HumblePoster</title>
+  <title>Performance Measure | HumblePoster</title>
 
 </head>
 
@@ -589,7 +589,7 @@
     <a class="docs-toc-link" href="/ml/ch2_1/">Evaluation and Selections of Models</a>
     <ul class="nav docs-sidenav">
       
-      <li class="active">
+      <li >
         <a href="/ml/ch2_1/">Error and overfitting</a>
       </li>
       
@@ -605,7 +605,7 @@
         <a href="/ml/ch2_4/">Parameter Tuning</a>
       </li>
       
-      <li >
+      <li class="active">
         <a href="/ml/ch2_5/">Performance Measure</a>
       </li>
       
@@ -712,8 +712,15 @@
 
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#error">Error</a></li>
-    <li><a href="#overfitting">Overfitting</a></li>
+    <li><a href="#the-most-common-performance-measures">The Most Common Performance Measures</a>
+      <ul>
+        <li><a href="#mean-squared-erro">Mean Squared Erro</a></li>
+        <li><a href="#error-rate--precision">Error rate & Precision</a></li>
+      </ul>
+    </li>
+    <li><a href="#accuracyrecallf1">Accuracy/Recall/F1</a></li>
+    <li><a href="#roc--auc">ROC & AUC</a></li>
+    <li><a href="#cost-sensitive-error-rate--cost-curve">Cost-sensitive Error Rate & Cost Curve</a></li>
   </ul>
 </nav>
 
@@ -726,35 +733,101 @@
       <article class="article">
 
         <div class="docs-article-container">
-          <h1>Error and overfitting</h1>
+          <h1>Performance Measure</h1>
 
           <div class="article-style">
-            <h2 id="error">Error</h2>
-<p>The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called &lsquo;error&rsquo;. Definitions:</p>
-<ul>
-<li>
-<p>&lsquo;Training Error&rsquo; or &lsquo;Empirical Error&rsquo;: Error in the training set</p>
-</li>
-<li>
-<p>&lsquo;Test Error&rsquo;: Error in the test set</p>
-</li>
-<li>
-<p>&lsquo;generalization error&rsquo;: The learner&rsquo;s error in all new samples</p>
-</li>
-</ul>
-<h2 id="overfitting">Overfitting</h2>
-<p>Apparently, we want learners perform well on the new sample which with small generalization errors. Therefore, the learners should be able to learn as many universal <strong>general characterisitics</strong> from the training set as possible, so as to make the correct discrimination when encountering new samples.</p>
-<p>However, when learners learn the traing set <strong>too wel</strong> that take some of the training sample&rsquo;s own characteristics as a general feature; there are also cases where the learning capacity is insufficient to learn the basic characteristics of the training set. Definitions:</p>
-<ul>
-<li>
-<p>&lsquo;Overfitting&rsquo;: Over-learning to the point of learning the not-so-generic characteristics included in the training sample</p>
-</li>
-<li>
-<p>&lsquo;Underfitting&rsquo;: The learning ability is so poor that the general properties of the training sample have not been learned well</p>
-</li>
-</ul>
-<p>It is known that in the overfitting problem, the training error is very small, but the test error is large; in the underfitting problem, both the training error and the test error are large. Currently, the underfitting problem is relatively easy to overcome, such as increasing the number of iterations, but there is still no very good solution to the overfitting problem, and overfitting is a key obstacle to machine learning.</p>
-<p><img src="https://camo.githubusercontent.com/3c5a03bf3c29a9c1926ce013d3ac938e93d87ac9/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313137323939362e706e67" alt="img"></p>
+            <p>Performance measures are evaluation criteria that measure the ability of models to generalize, and when comparing the ability of different models, different performance measures often results in different judgments.</p>
+<h2 id="the-most-common-performance-measures">The Most Common Performance Measures</h2>
+<h3 id="mean-squared-erro">Mean Squared Erro</h3>
+<p>In the regression task which predict continuous values, the most commonly used is the <code>Mean Squared Error</code>, many classical algorithms are using MSE as an evaluation function.</p>
+<p>$E(f;D)=\frac{1}{m}\sum\limits_{i=1}^{m}(f(x_i)-y_i)^2$</p>
+<p>More generally, for data distribution $\mathcal{D}$ and probability density functions $p(\cdot)$, the MSE can be described as</p>
+<p>$E(f;\mathcal{D})=\int_{x\sim\mathcal{D}}(f(x)-y)^2p(x)dx$</p>
+<h3 id="error-rate--precision">Error rate &amp; Precision</h3>
+<p>In the classification task which predict discrete values, the most commonly used are error rate and precision, where error rate is the number of samples classified incorrectly as a proportion of the total number of samples, and precision is the number of correctly classified samples as a proportion of the total number of samples, easily known that error rate + precision = 1.</p>
+<p>Error rate is defined as:</p>
+<p>$E(f;D)=\frac{1}{m}\sum\limits_{i=1}^{m}\mathbb I(f(x_i)\neq{y_i})$</p>
+<p>Precision is defined as:</p>
+<p>$\begin{align*}acc(f;D)&amp;=\frac{1}{m}\sum\limits_{i=1}^{m}\mathbb I(f(x_i)=y_i)=1-E(f;D)\end{align*}$</p>
+<p>More generally, for data distribution $\mathcal{D}$ and probability density functions $p(\cdot)$, the Error Rate and Precision can be described as:</p>
+<p>$E(f;\mathcal{D})=\int_{x\sim\mathcal{D}}\mathbb I(f(x)\neq{y})p(x)dx$</p>
+<p>$acc(f;\mathcal{D})=\int_{x\sim\mathcal{D}}\mathbb I(f(x)=y)p(x)dx=1-E(f;\mathcal{D})$</p>
+<h2 id="accuracyrecallf1">Accuracy/Recall/F1</h2>
+<p>For example, in a recommendation system, we only care about whether the content pushed to the user is of interest to the user (i.e. accuracy), or how much of all the content of interest to the user we pushed (i.e. recall). Therefore, the search accuracy/recall is more appropriate to describe such issues. For the binary classification, the classification result confusion matrix and the accuracy/racall are defined as follows:</p>
+<table>
+    <tr>
+		<td rowspan="2">Fact</td>
+        <td colspan="2" >Prediction</td>
+        <tr>
+        	<td>Positive</td>
+			<td>Negative</td>
+    	</tr>
+     </tr>
+	</tr>
+		<td>Positive</td>
+		<td>TP(Ture Positive)</td>
+    	<td>FN(False Negative)</td>
+	<tr>
+    	<td>Negative</td>
+        <td>FP(False Positive)</td>
+		<td>TN(Ture Negative)</td>
+	</tr>
+</table>
+<p>Accuracy $P$ and Recall $R$ are defined as:</p>
+<p>$P=\frac{TP}{TP+FP}$</p>
+<p>$R=\frac{TP}{TP+FN}$</p>
+<p>Accuracy and Recall are a pair of contradictory measures. For example, if we want content pushed to be as interesting as possible to all users, we can only push the content which is certainly so that some content users are interestd will be missed, leads to low racall; if we want all the content which users are interested pushed, we only push all the content so that accuracy is very low.</p>
+<p>The <code>P-R curve</code> is precisely the curve describing the change of the accuracy/racall, the P-R curve is defined as follows: according to the prediction result of the learner (generally a real value or probability), the test samples are ranked, the samples most likely to be the <em>positive example</em> in the front, the least likely to be the <em>positive example</em> in the back, and the samples are predicted as the <em>positive example</em> one by one in this order, and the current $P$ and $R$ values are calculated each time, as shown in the figure below:</p>
+<p><img src="https://camo.githubusercontent.com/89c709b82bf20efde039fe32fff5724ec6bbe6d9/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373164616663343431312e706e67" alt="img"></p>
+<p>How is the P-R curve evaluated? If the P-R curve of one learner $A$ is completely covered by the P-R curve of another learner $B$, then the performance of $B$ is better than that of $A$. If the curves of $A$ and $B$ intersect, then who has a larger area under the curve and whose performance is better. But in general, the area under the curve is difficult to estimate, so the &ldquo;Break-Event Point&rdquo; (BEP) is derived, i.e. when P=R, the higher the value of the Break-Event Point, the better the performance.</p>
+<p>The P and R indicators are sometimes contradictory, so they need to be considered together, and the most common method is F-Measure, also known as <code>F-Score</code>, which is a weighted reconciliation average of $P$ and $R$. i.e.</p>
+<p>$\frac{1}{F_\beta}=\frac{1}{1+\beta^2}\cdot(\frac{1}{P}+\frac{\beta^2}{R})$</p>
+<p>$F_\beta=\frac{(1+\beta^2)\times{P}\times{R}}{(\beta^2\times{P})+R}$</p>
+<p>n particular, when $\beta=1$ it becomes the common $F1$ measure, is a reconciled average of $P$ and $R$, the better the model performs when $F1$ is higher.</p>
+<p>$\frac{1}{F1}=\frac{1}{2}\cdot(\frac{1}{P}+\frac{1}{R})$</p>
+<p>$F1=\frac{2\times{P}\times{R}}{P+R}=\frac{2\times{TP}}{ALL+TP-TN}$</p>
+<p>Sometimes we have multiple bicategorical confusion matrices, e.g., multiple trainings or training on multiple datasets, then there are two ways to estimate global performance, which are macro and micro. Macro is to calculate the $P$ and $R$ values of each confusion matrix first, then obtain the average P value $macroP$ and the average R value $macroR$ to calculating $F\beta$ or $F1$, while micro is to calculate the average TP, FP, TN, FN of the confusion matrix, then calculate $P$, $R$, and thus $F\beta$ or $F1$.</p>
+<p>$macroP=\frac{1}{n}\sum\limits_{i=1}^{n}P_i$</p>
+<p>$macroR=\frac{1}{n}\sum\limits_{i=1}{n}R_i$</p>
+<p>$macro-F1=\frac{2\times{macroP}\times{macroR}}{macroP+macroR}$</p>
+<p>$microP=\frac{\overline{TP}}{\overline{TP}+\overline{FN}}$</p>
+<p>$microF1=\frac{2\times{microP}\times{microR}}{microP+microR}$</p>
+<h2 id="roc--auc">ROC &amp; AUC</h2>
+<p>The ROC curve is very similar to the P-R curve, both are predicted according to the positive cases one by one according to the order of the order, the difference is that the ROC curve takes the &ldquo;True Positive Rate&rdquo; (TPR) as the horizontal axis and the vertical axis as the &ldquo;False Positive Rate&rdquo; (FPR), the ROC focuses on studying the order of the test sample based on the evaluation value.</p>
+<p>$TPR=\frac{TP}{TP+FN}$</p>
+<p>$FPR=\frac{FP}{TN+FP}$</p>
+<p><img src="https://camo.githubusercontent.com/fd910cedcf687728efd0d67d938504c5ee7f3cf3/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373165643735636566652e706e67" alt="img"></p>
+<p>A simple analysis of the image shows that when FN=0, TN must also be 0, and vice versa. We can draw a queue and try to split the queue using different truncation points (i.e. thresholds) to analyze the shape of the curve, (0,0) means that all samples are predicted as negative cases, (1,1) means that all samples are predicted as positive cases, (0,1) means the ideal case that all positive cases appear before negative cases, (1,0) means the worst case that all negative cases appear before positive cases.</p>
+<p>Similarly, if the ROC curve of one learner $A$ is completely covered by the other learner $B$, the performance of $B$ is said to superior to that of $A$. If the curves of A and B intersect, then whose curve has more area under it and whose performance is better. The Area under the ROC Curve is defined as AUC (Area Uder ROC Curve). Different from P-R, the AUC here is estimable,i.e. the sum of the Area of each small rectangle under the AOC Curve. It&rsquo;s easy to see that the larger the AUC is, the better the quality of the sort. When the AUC is 1, it mean that all the positive examples are in front of the negative ones, and when the AUC is 0 means all the negative examples are in front of the positive ones.</p>
+<p>$AUC=\frac{1}{2}\sum\limits_{i=1}^{m-1}(x_{i+1}-x_i)\cdot(y_i+y_{i+1})$</p>
+<h2 id="cost-sensitive-error-rate--cost-curve">Cost-sensitive Error Rate &amp; Cost Curve</h2>
+<p>In the above approach, the mistakes of the learner are treated equally, but in reality the cost of predicting positive samples into negative is often not the same as predicting negative samples into positive, e.g., predicting no disease &ndash;&gt; having disease just increases the number of checks, but having disease &ndash;&gt; no disease increases the risk to life. Take the binary classification for example, which thus introduces a <code>cost matrix</code>.</p>
+<table>
+    <tr>
+		<td rowspan="2">Fact</td>
+        <td colspan="2" >Prediction</td>
+        <tr>
+        	<td>class 0</td>
+			<td>class 1</td>
+    	</tr>
+     </tr>
+	</tr>
+		<td>class 0</td>
+		<td>0</td>
+    	<td>$cost_{10}$</td>
+	<tr>
+    	<td>class 1</td>
+        <td>$cost_{01}$</td>
+		<td>0</td>
+	</tr>
+</table>
+<p>Under non-equal error costs, we want to minimize the <code>overall cost</code> so that the <code>cost-sensitive</code> error rate is:</p>
+<p>$E(f;D;cost)=\frac{1}{m}(\sum\limits_{x_i\in{D}^+}\mathbb I(f(x_i)\neq{y_i})\times{cost_{01}}+\sum\limits_{x_i\in{D^-}}{\mathbb I}(f(x_i)\neq{y_i})\times{cost_{10}})$</p>
+<p>Similarly, for the ROC curve, it evolves into a <em>cost curve</em> at non-equal error costs, where the horizontal axis of the cost curve is the probability cost of taking the positive case between [0,1], where $p$ is the probability of taking the positive case, and the vertical axis is the normalized cost of taking the value [0,1].</p>
+<p>$P(+)cost=\frac{p\times{cost_{01}}}{p\times{cost_{01}}+(1-p)\times{cost_{10}}}$</p>
+<p>$cost_{norm}=\frac{FNR\times{p}\times{cost_{01}}+FPR\times(1-p)\times{cost_{10}}}{p\times{cost_{01}}+(1-p)\times{cost_{10}}}$</p>
+<p>Plot the cost curve is simple: set the coordinates of a point on the ROC curve as (TPR, FPR) to calculated FNR, then plot a line segment from (0, FPR) to (1, FNR) in the cost plane, the area under the line segment represents the desired overall cost under that condition, so transform each point of the ROC curve earth into a line segment in the cost plane, and take the lower boundary of all line segments, the enclosed area is the desired overall cost of the learner under all conditions, as shown in the figure:</p>
+<p><img src="https://camo.githubusercontent.com/181fd50db67c159c2e84a1a45c8d8a8e7480cc5c/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373165643731366530642e706e67" alt="img"></p>
 
           </div>
 
@@ -771,14 +844,14 @@
   
   <div class="post-nav-item">
     <div class="meta-nav">Previous</div>
-    <a href="/ml/ch1_2/" rel="next">Terms</a>
+    <a href="/ml/ch2_4/" rel="next">Parameter Tuning</a>
   </div>
   
   
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/ml/ch2_2/" rel="prev">Method of Evaluation</a>
+    <a href="/ml/ch3_1/" rel="prev">Linear regression</a>
   </div>
   
 </div>
@@ -800,7 +873,7 @@
   
 
 <p class="edit-page">
-  <a href="https://github.com/gcushen/hugo-academic/edit/master/content/ml%5cch2_1.md">
+  <a href="https://github.com/gcushen/hugo-academic/edit/master/content/ml%5cch2_5.md">
     <i class="fas fa-pen pr-2"></i>Edit this page
   </a>
 </p>

@@ -5,7 +5,7 @@
     <link>https://p0st3r.github.io/</link>
       <atom:link href="https://p0st3r.github.io/index.xml" rel="self" type="application/rss+xml" />
     <description>HumblePoster</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Sun, 12 May 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>Lithium©2016</copyright><lastBuildDate>Sun, 12 May 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
       <title>HumblePoster</title>
@@ -158,11 +158,136 @@
       <guid>https://p0st3r.github.io/ml/ch2_3/</guid>
       <description>&lt;p&gt;In order to use the &lt;strong&gt;test error&lt;/strong&gt; of a &lt;strong&gt;test set&lt;/strong&gt; as an approximation of the &lt;strong&gt;generalization error&lt;/strong&gt;, we need to effectively split the initial data set into mutually exclusive &lt;strong&gt;training sets&lt;/strong&gt; and &lt;strong&gt;test sets&lt;/strong&gt;. The following are some common methods.&lt;/p&gt;
 &lt;h2 id=&#34;hold-out&#34;&gt;Hold-out&lt;/h2&gt;
-&lt;p&gt;The data set $D$ is divided into two mutually exclusive sets, one as the training set $S$ and one as the test set $T$, satisfying $D=S\cupT$ and $S\capT=\phi$. The common division is about 2/3-4/5 samples are used for training and the rest for testing.&lt;/p&gt;
-&lt;p&gt;It is important to note that the division of the training/test sets should be as consistent as possible in the distribution of the data to avoid additional bias, and the stratified sampling is commonly used.&lt;/p&gt;
+&lt;p&gt;Divide the data set $D$ into two mutually exclusive sets, one as the training set $S$ and one as the test set $T$, satisfying $D=S{\cup}T$ and $S{\cap}T=\phi$. The common division is about 2/3-4/5 samples are used for training and the rest for testing.&lt;/p&gt;
+&lt;p&gt;It is notable that the division of the training/test sets should be as consistent as possible in the distribution of the data to avoid additional bias, the stratification is commonly used to sovle this problem.&lt;/p&gt;
 &lt;p&gt;At the same time, the results of the single hold-out are often not stable enough due to the random nature of the division, and generally we take the average of a number of random division repeated experiments.&lt;/p&gt;
 &lt;h2 id=&#34;cross-validation&#34;&gt;Cross Validation&lt;/h2&gt;
+&lt;p&gt;Divide the data set $D$ into $k$ mutually exclusive subsets of equal size, satisfying $D=D_1{\cup}D_2{\cup}&amp;hellip; {\cup}D_k$, $D_i{\cap}D_j=\phi (i{\neq}j)$, similarly using stratification to obtain these subsets that keeping the data distribution as consistent as possible.&lt;/p&gt;
+&lt;p&gt;The idea of the cross-validation method is that each time a sum of $k-1$ subsets is used as the training set and the remaining is used as the test set, so as to obtain $k$ cases of training/test set division to do $k$ training &amp;amp;testing, and return the mean of the $k$ test results eventually.&lt;/p&gt;
+&lt;h3 id=&#34;k-fold-cross-validation&#34;&gt;K-fold Cross Validation&lt;/h3&gt;
+&lt;p&gt;Cross-validation is also called &lt;code&gt;K-fold Cross Validation&lt;/code&gt;, the most common value of $k$ is 10. The following gives a diagram of 10-fold cross-validation.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://camo.githubusercontent.com/bc0633094f7c687bb591366fc0a0a65fb489b789/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313135643232342e706e67&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;leave-one-out&#34;&gt;Leave-One-Out&lt;/h3&gt;
+&lt;p&gt;Similar to the hold-out, the data set $D$ is divided into $k$ subsets at random. Therefore K-fold Cross Validation is usually repeated $p$ times as p-times k-fold Cross Validation, which is commonly 10-times 10-fold Cross Validation that performe 100 training/testing sessions.&lt;/p&gt;
+&lt;p&gt;In particular, when there is only one sample in each subsets of divied $k$ subsets, it is known as the &lt;code&gt;Leave-One-Out&lt;/code&gt;. The results of the Leave-One-Out are more accurate, but with significant computer consumption.&lt;/p&gt;
 &lt;h2 id=&#34;bootstrapping&#34;&gt;Bootstrapping&lt;/h2&gt;
+&lt;p&gt;What we want to evaluate is the model that was trained with the whole $D$. However, in the Hold-out and Cross Validation, the actual evaluated model uses a smaller training set than $D$ because a portion of the sample is retained for testing, which inevitably introduces some estimation biases due to differences in training sample size. The Leave-One-Out is less affected by changes in training sample size, but the computational complexity is too high. The Bootstrapping solves precisely that problem.&lt;/p&gt;
+&lt;p&gt;The basic idea of the Bootstrapping is given a dataset $D$ containing $m$ samples, randomly selected from $D$ one sample at a time copied into $D&#39;$, and then put it back into the initial dataset $D$ to be picked up at the next sampling. Repeating $m$ times to obtain a dataset $D&#39;$ containing $m$ samples.&lt;/p&gt;
+&lt;p&gt;It can be known that the limit of the probability that the sample remain uncollected in $m$ times of sampling is:&lt;/p&gt;
+&lt;p&gt;${\lim\limits_{m\to\infty}}{(1-\frac{1}{m})^m\to\frac{1}{e}\approx0.368}$&lt;/p&gt;
+&lt;p&gt;Thus, approximately 36.8% of the initial sample set $D$ did not appear in $D&#39;$ through bootstrapping sampling, so $D&#39;$ could be used as the training set and $D-D&#39;$ as the test set. The Bootstrapping is useful when the data set is small which is difficult to spilt the training/test set effectively, however it introduces estimation bias because the data set generated by the bootstraping (random sampling) alters the distribution of the initial data set. When the initial data set is sufficient, Hold-out and Cross Validation are more commonly used.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Parameter Tuning</title>
+      <link>https://p0st3r.github.io/ml/ch2_4/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch2_4/</guid>
+      <description>&lt;p&gt;Most learning algorithms have some parameters that need to be set, which is commonly referred to as &lt;code&gt;parameter tuning&lt;/code&gt;, and the performance of the learned model often varies significantly depending on the parameter configuration.&lt;/p&gt;
+&lt;p&gt;Many parameters of the learning algorithm are taken in the real range, so it is not feasible to train a model for each parameter. It is common to select a range and step $\lambda$ for each parameter, which makes the learning process feasible.&lt;/p&gt;
+&lt;p&gt;For example, assuming that the algorithm has 3 parameters, each considering only 5 candidate values, there are $5^3$ = $125$ models to examine for each training/test set.&lt;/p&gt;
+&lt;p&gt;It is notable that once the model and paramters have been set, we need to retrain the model using the initial dataset $D$. This means that the test set initially divided for evaluation is also learned by the model to enhance the learning effct.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Performance Measure</title>
+      <link>https://p0st3r.github.io/ml/ch2_5/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch2_5/</guid>
+      <description>&lt;p&gt;Performance measures are evaluation criteria that measure the ability of models to generalize, and when comparing the ability of different models, different performance measures often results in different judgments.&lt;/p&gt;
+&lt;h2 id=&#34;the-most-common-performance-measures&#34;&gt;The Most Common Performance Measures&lt;/h2&gt;
+&lt;h3 id=&#34;mean-squared-erro&#34;&gt;Mean Squared Erro&lt;/h3&gt;
+&lt;p&gt;In the regression task which predict continuous values, the most commonly used is the &lt;code&gt;Mean Squared Error&lt;/code&gt;, many classical algorithms are using MSE as an evaluation function.&lt;/p&gt;
+&lt;p&gt;$E(f;D)=\frac{1}{m}\sum\limits_{i=1}^{m}(f(x_i)-y_i)^2$&lt;/p&gt;
+&lt;p&gt;More generally, for data distribution $\mathcal{D}$ and probability density functions $p(\cdot)$, the MSE can be described as&lt;/p&gt;
+&lt;p&gt;$E(f;\mathcal{D})=\int_{x\sim\mathcal{D}}(f(x)-y)^2p(x)dx$&lt;/p&gt;
+&lt;h3 id=&#34;error-rate--precision&#34;&gt;Error rate &amp;amp; Precision&lt;/h3&gt;
+&lt;p&gt;In the classification task which predict discrete values, the most commonly used are error rate and precision, where error rate is the number of samples classified incorrectly as a proportion of the total number of samples, and precision is the number of correctly classified samples as a proportion of the total number of samples, easily known that error rate + precision = 1.&lt;/p&gt;
+&lt;p&gt;Error rate is defined as:&lt;/p&gt;
+&lt;p&gt;$E(f;D)=\frac{1}{m}\sum\limits_{i=1}^{m}\mathbb I(f(x_i)\neq{y_i})$&lt;/p&gt;
+&lt;p&gt;Precision is defined as:&lt;/p&gt;
+&lt;p&gt;$\begin{align*}acc(f;D)&amp;amp;=\frac{1}{m}\sum\limits_{i=1}^{m}\mathbb I(f(x_i)=y_i)=1-E(f;D)\end{align*}$&lt;/p&gt;
+&lt;p&gt;More generally, for data distribution $\mathcal{D}$ and probability density functions $p(\cdot)$, the Error Rate and Precision can be described as:&lt;/p&gt;
+&lt;p&gt;$E(f;\mathcal{D})=\int_{x\sim\mathcal{D}}\mathbb I(f(x)\neq{y})p(x)dx$&lt;/p&gt;
+&lt;p&gt;$acc(f;\mathcal{D})=\int_{x\sim\mathcal{D}}\mathbb I(f(x)=y)p(x)dx=1-E(f;\mathcal{D})$&lt;/p&gt;
+&lt;h2 id=&#34;accuracyrecallf1&#34;&gt;Accuracy/Recall/F1&lt;/h2&gt;
+&lt;p&gt;For example, in a recommendation system, we only care about whether the content pushed to the user is of interest to the user (i.e. accuracy), or how much of all the content of interest to the user we pushed (i.e. recall). Therefore, the search accuracy/recall is more appropriate to describe such issues. For the binary classification, the classification result confusion matrix and the accuracy/racall are defined as follows:&lt;/p&gt;
+&lt;table&gt;
+    &lt;tr&gt;
+		&lt;td rowspan=&#34;2&#34;&gt;Fact&lt;/td&gt;
+        &lt;td colspan=&#34;2&#34; &gt;Prediction&lt;/td&gt;
+        &lt;tr&gt;
+        	&lt;td&gt;Positive&lt;/td&gt;
+			&lt;td&gt;Negative&lt;/td&gt;
+    	&lt;/tr&gt;
+     &lt;/tr&gt;
+	&lt;/tr&gt;
+		&lt;td&gt;Positive&lt;/td&gt;
+		&lt;td&gt;TP(Ture Positive)&lt;/td&gt;
+    	&lt;td&gt;FN(False Negative)&lt;/td&gt;
+	&lt;tr&gt;
+    	&lt;td&gt;Negative&lt;/td&gt;
+        &lt;td&gt;FP(False Positive)&lt;/td&gt;
+		&lt;td&gt;TN(Ture Negative)&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+&lt;p&gt;Accuracy $P$ and Recall $R$ are defined as:&lt;/p&gt;
+&lt;p&gt;$P=\frac{TP}{TP+FP}$&lt;/p&gt;
+&lt;p&gt;$R=\frac{TP}{TP+FN}$&lt;/p&gt;
+&lt;p&gt;Accuracy and Recall are a pair of contradictory measures. For example, if we want content pushed to be as interesting as possible to all users, we can only push the content which is certainly so that some content users are interestd will be missed, leads to low racall; if we want all the content which users are interested pushed, we only push all the content so that accuracy is very low.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;P-R curve&lt;/code&gt; is precisely the curve describing the change of the accuracy/racall, the P-R curve is defined as follows: according to the prediction result of the learner (generally a real value or probability), the test samples are ranked, the samples most likely to be the &lt;em&gt;positive example&lt;/em&gt; in the front, the least likely to be the &lt;em&gt;positive example&lt;/em&gt; in the back, and the samples are predicted as the &lt;em&gt;positive example&lt;/em&gt; one by one in this order, and the current $P$ and $R$ values are calculated each time, as shown in the figure below:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://camo.githubusercontent.com/89c709b82bf20efde039fe32fff5724ec6bbe6d9/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373164616663343431312e706e67&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;How is the P-R curve evaluated? If the P-R curve of one learner $A$ is completely covered by the P-R curve of another learner $B$, then the performance of $B$ is better than that of $A$. If the curves of $A$ and $B$ intersect, then who has a larger area under the curve and whose performance is better. But in general, the area under the curve is difficult to estimate, so the &amp;ldquo;Break-Event Point&amp;rdquo; (BEP) is derived, i.e. when P=R, the higher the value of the Break-Event Point, the better the performance.&lt;/p&gt;
+&lt;p&gt;The P and R indicators are sometimes contradictory, so they need to be considered together, and the most common method is F-Measure, also known as &lt;code&gt;F-Score&lt;/code&gt;, which is a weighted reconciliation average of $P$ and $R$. i.e.&lt;/p&gt;
+&lt;p&gt;$\frac{1}{F_\beta}=\frac{1}{1+\beta^2}\cdot(\frac{1}{P}+\frac{\beta^2}{R})$&lt;/p&gt;
+&lt;p&gt;$F_\beta=\frac{(1+\beta^2)\times{P}\times{R}}{(\beta^2\times{P})+R}$&lt;/p&gt;
+&lt;p&gt;n particular, when $\beta=1$ it becomes the common $F1$ measure, is a reconciled average of $P$ and $R$, the better the model performs when $F1$ is higher.&lt;/p&gt;
+&lt;p&gt;$\frac{1}{F1}=\frac{1}{2}\cdot(\frac{1}{P}+\frac{1}{R})$&lt;/p&gt;
+&lt;p&gt;$F1=\frac{2\times{P}\times{R}}{P+R}=\frac{2\times{TP}}{ALL+TP-TN}$&lt;/p&gt;
+&lt;p&gt;Sometimes we have multiple bicategorical confusion matrices, e.g., multiple trainings or training on multiple datasets, then there are two ways to estimate global performance, which are macro and micro. Macro is to calculate the $P$ and $R$ values of each confusion matrix first, then obtain the average P value $macroP$ and the average R value $macroR$ to calculating $F\beta$ or $F1$, while micro is to calculate the average TP, FP, TN, FN of the confusion matrix, then calculate $P$, $R$, and thus $F\beta$ or $F1$.&lt;/p&gt;
+&lt;p&gt;$macroP=\frac{1}{n}\sum\limits_{i=1}^{n}P_i$&lt;/p&gt;
+&lt;p&gt;$macroR=\frac{1}{n}\sum\limits_{i=1}{n}R_i$&lt;/p&gt;
+&lt;p&gt;$macro-F1=\frac{2\times{macroP}\times{macroR}}{macroP+macroR}$&lt;/p&gt;
+&lt;p&gt;$microP=\frac{\overline{TP}}{\overline{TP}+\overline{FN}}$&lt;/p&gt;
+&lt;p&gt;$microF1=\frac{2\times{microP}\times{microR}}{microP+microR}$&lt;/p&gt;
+&lt;h2 id=&#34;roc--auc&#34;&gt;ROC &amp;amp; AUC&lt;/h2&gt;
+&lt;p&gt;The ROC curve is very similar to the P-R curve, both are predicted according to the positive cases one by one according to the order of the order, the difference is that the ROC curve takes the &amp;ldquo;True Positive Rate&amp;rdquo; (TPR) as the horizontal axis and the vertical axis as the &amp;ldquo;False Positive Rate&amp;rdquo; (FPR), the ROC focuses on studying the order of the test sample based on the evaluation value.&lt;/p&gt;
+&lt;p&gt;$TPR=\frac{TP}{TP+FN}$&lt;/p&gt;
+&lt;p&gt;$FPR=\frac{FP}{TN+FP}$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://camo.githubusercontent.com/fd910cedcf687728efd0d67d938504c5ee7f3cf3/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373165643735636566652e706e67&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;A simple analysis of the image shows that when FN=0, TN must also be 0, and vice versa. We can draw a queue and try to split the queue using different truncation points (i.e. thresholds) to analyze the shape of the curve, (0,0) means that all samples are predicted as negative cases, (1,1) means that all samples are predicted as positive cases, (0,1) means the ideal case that all positive cases appear before negative cases, (1,0) means the worst case that all negative cases appear before positive cases.&lt;/p&gt;
+&lt;p&gt;Similarly, if the ROC curve of one learner $A$ is completely covered by the other learner $B$, the performance of $B$ is said to superior to that of $A$. If the curves of A and B intersect, then whose curve has more area under it and whose performance is better. The Area under the ROC Curve is defined as AUC (Area Uder ROC Curve). Different from P-R, the AUC here is estimable,i.e. the sum of the Area of each small rectangle under the AOC Curve. It&amp;rsquo;s easy to see that the larger the AUC is, the better the quality of the sort. When the AUC is 1, it mean that all the positive examples are in front of the negative ones, and when the AUC is 0 means all the negative examples are in front of the positive ones.&lt;/p&gt;
+&lt;p&gt;$AUC=\frac{1}{2}\sum\limits_{i=1}^{m-1}(x_{i+1}-x_i)\cdot(y_i+y_{i+1})$&lt;/p&gt;
+&lt;h2 id=&#34;cost-sensitive-error-rate--cost-curve&#34;&gt;Cost-sensitive Error Rate &amp;amp; Cost Curve&lt;/h2&gt;
+&lt;p&gt;In the above approach, the mistakes of the learner are treated equally, but in reality the cost of predicting positive samples into negative is often not the same as predicting negative samples into positive, e.g., predicting no disease &amp;ndash;&amp;gt; having disease just increases the number of checks, but having disease &amp;ndash;&amp;gt; no disease increases the risk to life. Take the binary classification for example, which thus introduces a &lt;code&gt;cost matrix&lt;/code&gt;.&lt;/p&gt;
+&lt;table&gt;
+    &lt;tr&gt;
+		&lt;td rowspan=&#34;2&#34;&gt;Fact&lt;/td&gt;
+        &lt;td colspan=&#34;2&#34; &gt;Prediction&lt;/td&gt;
+        &lt;tr&gt;
+        	&lt;td&gt;class 0&lt;/td&gt;
+			&lt;td&gt;class 1&lt;/td&gt;
+    	&lt;/tr&gt;
+     &lt;/tr&gt;
+	&lt;/tr&gt;
+		&lt;td&gt;class 0&lt;/td&gt;
+		&lt;td&gt;0&lt;/td&gt;
+    	&lt;td&gt;$cost_{10}$&lt;/td&gt;
+	&lt;tr&gt;
+    	&lt;td&gt;class 1&lt;/td&gt;
+        &lt;td&gt;$cost_{01}$&lt;/td&gt;
+		&lt;td&gt;0&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+&lt;p&gt;Under non-equal error costs, we want to minimize the &lt;code&gt;overall cost&lt;/code&gt; so that the &lt;code&gt;cost-sensitive&lt;/code&gt; error rate is:&lt;/p&gt;
+&lt;p&gt;$E(f;D;cost)=\frac{1}{m}(\sum\limits_{x_i\in{D}^+}\mathbb I(f(x_i)\neq{y_i})\times{cost_{01}}+\sum\limits_{x_i\in{D^-}}{\mathbb I}(f(x_i)\neq{y_i})\times{cost_{10}})$&lt;/p&gt;
+&lt;p&gt;Similarly, for the ROC curve, it evolves into a &lt;em&gt;cost curve&lt;/em&gt; at non-equal error costs, where the horizontal axis of the cost curve is the probability cost of taking the positive case between [0,1], where $p$ is the probability of taking the positive case, and the vertical axis is the normalized cost of taking the value [0,1].&lt;/p&gt;
+&lt;p&gt;$P(+)cost=\frac{p\times{cost_{01}}}{p\times{cost_{01}}+(1-p)\times{cost_{10}}}$&lt;/p&gt;
+&lt;p&gt;$cost_{norm}=\frac{FNR\times{p}\times{cost_{01}}+FPR\times(1-p)\times{cost_{10}}}{p\times{cost_{01}}+(1-p)\times{cost_{10}}}$&lt;/p&gt;
+&lt;p&gt;Plot the cost curve is simple: set the coordinates of a point on the ROC curve as (TPR, FPR) to calculated FNR, then plot a line segment from (0, FPR) to (1, FNR) in the cost plane, the area under the line segment represents the desired overall cost under that condition, so transform each point of the ROC curve earth into a line segment in the cost plane, and take the lower boundary of all line segments, the enclosed area is the desired overall cost of the learner under all conditions, as shown in the figure:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://camo.githubusercontent.com/181fd50db67c159c2e84a1a45c8d8a8e7480cc5c/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373165643731366530642e706e67&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
 </description>
     </item>
     

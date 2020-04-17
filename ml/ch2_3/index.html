@@ -382,25 +382,16 @@
         
         
         
-          
-        
 
         
         
         
         
         
-        
-          
-          
-          
-            
-          
-          
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/#about"><span>Home</span></a>
+          <a class="nav-link " href="/#"><span>Home</span></a>
         </li>
 
         
@@ -442,7 +433,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link  active" href="/ml"><span>ML</span></a>
+          <a class="nav-link  active" href="/ml"><span>Machine Learning</span></a>
         </li>
 
         
@@ -605,7 +596,15 @@
       </li>
       
       <li class="active">
-        <a href="/ml/ch2_3/">Split Traing set and Test set</a>
+        <a href="/ml/ch2_3/">Split Data set</a>
+      </li>
+      
+      <li >
+        <a href="/ml/ch2_4/">Parameter Tuning</a>
+      </li>
+      
+      <li >
+        <a href="/ml/ch2_5/">Performance Measure</a>
       </li>
       
     </ul>
@@ -712,7 +711,12 @@
       <nav id="TableOfContents">
   <ul>
     <li><a href="#hold-out">Hold-out</a></li>
-    <li><a href="#cross-validation">Cross Validation</a></li>
+    <li><a href="#cross-validation">Cross Validation</a>
+      <ul>
+        <li><a href="#k-fold-cross-validation">K-fold Cross Validation</a></li>
+        <li><a href="#leave-one-out">Leave-One-Out</a></li>
+      </ul>
+    </li>
     <li><a href="#bootstrapping">Bootstrapping</a></li>
   </ul>
 </nav>
@@ -731,11 +735,24 @@
           <div class="article-style">
             <p>In order to use the <strong>test error</strong> of a <strong>test set</strong> as an approximation of the <strong>generalization error</strong>, we need to effectively split the initial data set into mutually exclusive <strong>training sets</strong> and <strong>test sets</strong>. The following are some common methods.</p>
 <h2 id="hold-out">Hold-out</h2>
-<p>The data set $D$ is divided into two mutually exclusive sets, one as the training set $S$ and one as the test set $T$, satisfying $D=S\cupT$ and $S\capT=\phi$. The common division is about 2/3-4/5 samples are used for training and the rest for testing.</p>
-<p>It is important to note that the division of the training/test sets should be as consistent as possible in the distribution of the data to avoid additional bias, and the stratified sampling is commonly used.</p>
+<p>Divide the data set $D$ into two mutually exclusive sets, one as the training set $S$ and one as the test set $T$, satisfying $D=S{\cup}T$ and $S{\cap}T=\phi$. The common division is about 2/3-4/5 samples are used for training and the rest for testing.</p>
+<p>It is notable that the division of the training/test sets should be as consistent as possible in the distribution of the data to avoid additional bias, the stratification is commonly used to sovle this problem.</p>
 <p>At the same time, the results of the single hold-out are often not stable enough due to the random nature of the division, and generally we take the average of a number of random division repeated experiments.</p>
 <h2 id="cross-validation">Cross Validation</h2>
+<p>Divide the data set $D$ into $k$ mutually exclusive subsets of equal size, satisfying $D=D_1{\cup}D_2{\cup}&hellip; {\cup}D_k$, $D_i{\cap}D_j=\phi (i{\neq}j)$, similarly using stratification to obtain these subsets that keeping the data distribution as consistent as possible.</p>
+<p>The idea of the cross-validation method is that each time a sum of $k-1$ subsets is used as the training set and the remaining is used as the test set, so as to obtain $k$ cases of training/test set division to do $k$ training &amp;testing, and return the mean of the $k$ test results eventually.</p>
+<h3 id="k-fold-cross-validation">K-fold Cross Validation</h3>
+<p>Cross-validation is also called <code>K-fold Cross Validation</code>, the most common value of $k$ is 10. The following gives a diagram of 10-fold cross-validation.</p>
+<p><img src="https://camo.githubusercontent.com/bc0633094f7c687bb591366fc0a0a65fb489b789/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313135643232342e706e67" alt="img"></p>
+<h3 id="leave-one-out">Leave-One-Out</h3>
+<p>Similar to the hold-out, the data set $D$ is divided into $k$ subsets at random. Therefore K-fold Cross Validation is usually repeated $p$ times as p-times k-fold Cross Validation, which is commonly 10-times 10-fold Cross Validation that performe 100 training/testing sessions.</p>
+<p>In particular, when there is only one sample in each subsets of divied $k$ subsets, it is known as the <code>Leave-One-Out</code>. The results of the Leave-One-Out are more accurate, but with significant computer consumption.</p>
 <h2 id="bootstrapping">Bootstrapping</h2>
+<p>What we want to evaluate is the model that was trained with the whole $D$. However, in the Hold-out and Cross Validation, the actual evaluated model uses a smaller training set than $D$ because a portion of the sample is retained for testing, which inevitably introduces some estimation biases due to differences in training sample size. The Leave-One-Out is less affected by changes in training sample size, but the computational complexity is too high. The Bootstrapping solves precisely that problem.</p>
+<p>The basic idea of the Bootstrapping is given a dataset $D$ containing $m$ samples, randomly selected from $D$ one sample at a time copied into $D'$, and then put it back into the initial dataset $D$ to be picked up at the next sampling. Repeating $m$ times to obtain a dataset $D'$ containing $m$ samples.</p>
+<p>It can be known that the limit of the probability that the sample remain uncollected in $m$ times of sampling is:</p>
+<p>${\lim\limits_{m\to\infty}}{(1-\frac{1}{m})^m\to\frac{1}{e}\approx0.368}$</p>
+<p>Thus, approximately 36.8% of the initial sample set $D$ did not appear in $D'$ through bootstrapping sampling, so $D'$ could be used as the training set and $D-D'$ as the test set. The Bootstrapping is useful when the data set is small which is difficult to spilt the training/test set effectively, however it introduces estimation bias because the data set generated by the bootstraping (random sampling) alters the distribution of the initial data set. When the initial data set is sufficient, Hold-out and Cross Validation are more commonly used.</p>
 
           </div>
 
@@ -759,7 +776,7 @@
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/ml/ch3_1/" rel="prev">Linear regression</a>
+    <a href="/ml/ch2_4/" rel="prev">Parameter Tuning</a>
   </div>
   
 </div>
@@ -806,7 +823,8 @@
   
 
   <p class="powered-by">
-    2016 &middot;  ©Lithium No rights reserved.
+     Lithium©2016 &middot; 
+    No rights reserved.
 
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>

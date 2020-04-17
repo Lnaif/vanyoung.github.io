@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DVWA | HumblePoster</title>
+    <link>https://p0st3r.github.io/tags/dvwa/</link>
+      <atom:link href="https://p0st3r.github.io/tags/dvwa/index.xml" rel="self" type="application/rss+xml" />
+    <description>DVWA</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Thu, 09 Feb 2017 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>DVWA</title>
+      <link>https://p0st3r.github.io/tags/dvwa/</link>
+    </image>
+    
+    <item>
+      <title>DVWA的SQL注入测试</title>
+      <link>https://p0st3r.github.io/post/dvwa-sql-injection-test/</link>
+      <pubDate>Thu, 09 Feb 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/dvwa-sql-injection-test/</guid>
+      <description>&lt;p&gt;SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。&lt;/p&gt;
+&lt;p&gt;具体来说，它是利用现有的应用出现，将（恶意）的SQL目录注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入（恶意）SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者意图去执行SQL语句。&lt;/p&gt;
+&lt;h1 id=&#34;步骤&#34;&gt;步骤&lt;/h1&gt;
+&lt;h2 id=&#34;低安全等级文件包含&#34;&gt;低安全等级文件包含&lt;/h2&gt;
+&lt;h3 id=&#34;登陆dvwa&#34;&gt;登陆DVWA&lt;/h3&gt;
+&lt;p&gt;使用浏览器打开``,输入用户名密码登陆。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_45413&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;调整安全级别&#34;&gt;调整安全级别&lt;/h3&gt;
+&lt;p&gt;登陆后将DVWA的安全级别调整为low（见红框内）。调整之后选择SQL Injection，进入页面。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_48342&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;简单的id查询&#34;&gt;简单的ID查询&lt;/h3&gt;
+&lt;p&gt;提示输入User ID，输入正确的ID，将显示ID First name，Surname信息。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_64727&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;检测是否存在注入&#34;&gt;检测是否存在注入&lt;/h3&gt;
+&lt;p&gt;可以得知此处位注入点，尝试输入&lt;code&gt;&#39;&lt;/code&gt;，返回错误。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_58203&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;遍历数据库表&#34;&gt;遍历数据库表&lt;/h3&gt;
+&lt;p&gt;尝试遍历数据库表，提示输入的值是ID，可以初步判断此处为数字类型的注入。尝试输入&lt;code&gt;1 or 1=1&lt;/code&gt;，尝试遍历数据库表。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_24591&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可见并没有达成目的，猜测程序将此处看成了字符型，尝试输入&lt;code&gt;1&#39; or&#39; 1&#39; =&#39; 1&lt;/code&gt;后遍历出了数据库中所有内容。下面尝试不同语句，得到不同的结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_87635&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;查询信息列表长度&#34;&gt;查询信息列表长度&lt;/h3&gt;
+&lt;p&gt;利用&lt;code&gt;order by [num]&lt;/code&gt;语句来测试查询信息列表长度，修改num的值,这里我们输入&lt;code&gt;1&#39; order by 1 --&lt;/code&gt;结果页面正常显示，&lt;strong&gt;注意–后面有空格&lt;/strong&gt;。继续测试，&lt;code&gt;1&#39; order by 2 --&lt;/code&gt;，&lt;code&gt;1&#39; order by 3 --&lt;/code&gt;，当输入3时，页面报错。页面错误信息如下：&lt;code&gt;Unknown column &#39;3&#39; in &#39;order clause&#39;&lt;/code&gt;，由此我们判断查询结果值为2列。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_15397&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;获取数据库名称账户名版本及操作系统信息&#34;&gt;获取数据库名称、账户名、版本及操作系统信息&lt;/h3&gt;
+&lt;p&gt;通过使用&lt;code&gt;user()&lt;/code&gt;，&lt;code&gt;database()&lt;/code&gt;，&lt;code&gt;version()&lt;/code&gt;三个内置函数得到连接数据库的账户名、数据库名称、数据库版本信息。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首先参数注入&lt;code&gt;1&#39; and 1=2 union select 1,2 --&lt;/code&gt;(&lt;strong&gt;注意–后有空格&lt;/strong&gt;)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_23692&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由上图得知，First name处显示结果位查询结果的第一列的值，surname处显示结果位查询结果第二列的值。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select user(),database() --&lt;/code&gt;得到数据库用户为&lt;strong&gt;root@localhost&lt;/strong&gt;及数据库名&lt;strong&gt;dvwa&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_62655&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select version(),database() --&lt;/code&gt;得到数据库版本信息，此处数据库版本为&lt;strong&gt;5.0.90-community-nt&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_83473&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select 1,@@global.version_compile_os from mysql.user --&lt;/code&gt;获得操作系统信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_94423&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;查询mysql数据库所有数据库及表&#34;&gt;查询mysql数据库所有数据库及表&lt;/h3&gt;
+&lt;p&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select 1,schema_name from information_schema.schemata --&lt;/code&gt;查询mysql数据库的所有数据库名。&lt;/p&gt;
+&lt;p&gt;这里利用mysql默认的数据库&lt;strong&gt;information_schema&lt;/strong&gt;，该数据库存储了Mysql所以数据库和表的信息。如图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_21763&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;猜解表名&#34;&gt;猜解表名&lt;/h3&gt;
+&lt;p&gt;通过注入&lt;code&gt;1&#39; and exists(select * from users) --&lt;/code&gt;猜解dvwa数据库中的表名。&lt;/p&gt;
+&lt;p&gt;利用&lt;code&gt;1&#39; and exists(select * from [表名])&lt;/code&gt;，这里测试的结果，表名为users，在真实的渗透环境中，攻击者往往关心存储管理员用户和密码信息的表。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_36450&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;猜解字段名&#34;&gt;猜解字段名&lt;/h3&gt;
+&lt;p&gt;猜解字段名：&lt;code&gt;1&#39; and exists(select [表名] from users) --&lt;/code&gt;。这里测试的字段名有&lt;code&gt;first_name&lt;/code&gt;,&lt;code&gt;last_name&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;通过注入&lt;code&gt;1&#39; and exists(select first_name from users) --&lt;/code&gt;和&lt;code&gt;1&#39; and exists(select last_name from users) --&lt;/code&gt;猜解字段名。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_21940&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;爆出数据库中字段内容&#34;&gt;爆出数据库中字段内容&lt;/h3&gt;
+&lt;p&gt;注入&lt;code&gt;1&#39; and 1=2 union select first_name,last_name from users --&lt;/code&gt;，这里其实如果是存放管理员账户的表，那么用户名，密码信息字段就可以爆出来了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_94412&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;代码分析&#34;&gt;代码分析&lt;/h2&gt;
+&lt;h3 id=&#34;low等级源代码&#34;&gt;low等级源代码&lt;/h3&gt;
+&lt;p&gt;如图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_37330&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通过代码可以看出，对输入&lt;strong&gt;$id&lt;/strong&gt;的值没有进行任何过滤就直接放入了SQL语句中进行处理，这样带来了极大的隐患。&lt;/p&gt;
+&lt;h3 id=&#34;中等等级代码分析&#34;&gt;中等等级代码分析&lt;/h3&gt;
+&lt;p&gt;将DVWA安全级别调整位medium，查看源代码。&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_95600&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通过源代码可以看出，在中等级别时对输入的&lt;strong&gt;$id&lt;/strong&gt;值使用&lt;code&gt;mysql_real_eascape_string()&lt;/code&gt;函数进行了处理。在PHP中，使用&lt;code&gt;mysql_real_eascape_string()&lt;/code&gt;函数用来转移SQL语句中使用字符串的特殊字符。但是使用这个函数对参数进行转换是存在绕过的。只需要将攻击字转换一下编码格式即可绕过该防护函数。比如URL编码等方式。&lt;/p&gt;
+&lt;p&gt;同时发现SQL语句中变成了&lt;code&gt;“WHRER user_id = “$id”&lt;/code&gt; ，此处变成了数字型注入，所以此处使用&lt;code&gt;mysql_real_eascape_string()&lt;/code&gt;函数并没有起到防护作用。可以通过类似于&lt;code&gt;1 or 1=1&lt;/code&gt;的语句来进行注入。&lt;/p&gt;
+&lt;h3 id=&#34;高等级代码分析&#34;&gt;高等级代码分析&lt;/h3&gt;
+&lt;p&gt;将DVWA安全级别调整为high，查看源代码。&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_75240&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;从源代码可以看出，此处为字符型注入。对传入&lt;strong&gt;$id&lt;/strong&gt;的值使用&lt;code&gt;stripslashes()&lt;/code&gt;函数处理以后，再经过到&lt;code&gt;$mysql_real_escape_string()&lt;/code&gt;函数进行第二次过滤。在默认情况下，PHP会对所有的GET，POST和cookie数据自动运行&lt;code&gt;addslashes()&lt;/code&gt;,&lt;code&gt;addslashes()&lt;/code&gt;函数返回在部分与定义之前添加&lt;code&gt;\&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Striptslashes()&lt;/code&gt;函数则是删除由&lt;code&gt;addslashes()&lt;/code&gt;函数添加的反斜杠。在使用两个函数进行过滤之后再使用&lt;code&gt;is_numric()&lt;/code&gt;函数检查&lt;strong&gt;$id&lt;/strong&gt;值是否位数字，彻底断绝了注入的存在。此种防护不存在绕过的可能。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,1286 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Proposed a WebShell detection method by combaining N-Gram and Word2vec.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PQ63HJL');
+</script>
+
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="HumblePoster">
+  <meta property="og:url" content="https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/">
+  <meta property="og:title" content="WebShell detection based on semantic features | HumblePoster">
+  <meta property="og:description" content="Proposed a WebShell detection method by combaining N-Gram and Word2vec."><meta property="og:image" content="https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/featured.jpg">
+  <meta property="twitter:image" content="https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/featured.jpg"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2017-01-01T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2019-05-12T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/"
+  },
+  "headline": "WebShell detection based on semantic features",
+  
+  "image": [
+    "https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/featured.jpg"
+  ],
+  
+  "datePublished": "2017-01-01T00:00:00Z",
+  "dateModified": "2019-05-12T00:00:00Z",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "HumblePoster",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "Proposed a WebShell detection method by combaining N-Gram and Word2vec."
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>WebShell detection based on semantic features | HumblePoster</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/hack"><span>Hack</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/ml"><span>ML</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/nlp"><span>NLP</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-md-auto">
+      
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/categories"><span>Categories</span></a>
+        </li>
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tags"><span>Tags</span></a>
+        </li>
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <div class="pub">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>WebShell detection based on semantic features</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span><a href="/authors/admin/">admin</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    2019-05-12
+  </span>
+  
+
+  
+
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span>
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+    
+  
+<a class="btn btn-outline-primary my-1 mr-1" href="https://github.com/p0st3r/WordNG-vec_WebShell_detect/blob/master/webshell.py" target="_blank" rel="noopener">
+  Code
+</a>
+
+
+  
+  
+    
+  
+<a class="btn btn-outline-primary my-1 mr-1" href="https://github.com/p0st3r/WordNG-vec_WebShell_detect/tree/master/data" target="_blank" rel="noopener">
+  Dataset
+</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    
+    <h3>Abstract</h3>
+    <p class="pub-abstract">In order to cope with the current complex and flexible WebShell attack environment and better detect various types of webshells, an improved WebShell detection method based on CNN was proposed by improving text feature extraction and convolutional neural network structure. First, precompile the PHP data set to get the opcode instruction sequence. Secondly, Word2vec is used to extract the word vectors of the original text and the phrase segmented by bi-gram respectively, and it serves as the two inputs of the convolutional neural network. Finally, the detection is carried out through the designed convolutional neural network. Through experiments, this method effectively improves the accuracy, recall rate and other performance parameters while compared with other methods.</p>
+    
+
+    
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <div class="row">
+          <div class="col-12 col-md-3 pub-row-heading">Type</div>
+          <div class="col-12 col-md-9">
+            
+            
+            <a href="/publication/#7">
+              Thesis
+            </a>
+            
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+    <div class="d-md-none space-below"></div>
+    
+
+    
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <div class="row">
+          <div class="col-12 col-md-3 pub-row-heading">Publication</div>
+          <div class="col-12 col-md-9">基于CNN的WebShell改进检测算法</div>
+        </div>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+    <div class="d-md-none space-below"></div>
+    
+
+    <div class="space-below"></div>
+
+    <div class="article-style"><h2 id="background">Background</h2>
+<p>In order to cope with the current complex and flexible WebShell attack environment and better detect various types of webshells, a text classfication method that combains word2vec and Bi-Gram, which not only considered the semantic features but also the word order features, has a better classfication result than using two features alone.</p>
+<p>In order to cope with the current complex and flexible WebShell attack environment and better detect various types of webshells, an improved WebShell detection method based on CNN was proposed by improving text feature extraction and convolutional neural network structure. First, precompile the PHP data set to get the opcode instruction sequence. Secondly, Word2vec is used to extract the word vectors of the original text and the phrase segmented by bi-gram respectively, and it serves as the two inputs of the convolutional neural network. Finally, the detection is carried out through the designed convolutional neural network. Through experiments, this method effectively improves the accuracy, recall rate and other performance parameters while compared with other methods.</p>
+<h2 id="introduction">Introduction</h2>
+<h3 id="word-ng-vec">Word-NG vec</h3>
+<p>In fact, the word embedding learned in Word2vec are more reflect in semantic similarity features , such as &ldquo;extract&rdquo; and &ldquo;take&rdquo;, &ldquo;compression&rdquo; and &ldquo;reduction&rdquo;, but without taking the word order features into account. Sometimes there are some differences with the actual semantics, for example:</p>
+<blockquote>
+<p>The USA started a trade war on China</p>
+</blockquote>
+<p>The main predicates of two sentences are interchanged to express different meanings, but there is no difference in Word2Vec. However, if N-Gram is used to divide the text into word groups , we can obtain the word order feature of the text，such as:</p>
+<table>
+<thead>
+<tr>
+<th>Orignal</th>
+<th>The USA started a trade war on China</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Word2vec</td>
+<td>“The USA”，“started”，&ldquo;a&rdquo;，“trade war”，“on”，“China” (vector)</td>
+</tr>
+<tr>
+<td>2-gram</td>
+<td>“The USA/The USA” ，“The USA/started”，&ldquo;stared&rdquo;/a”，“a/trade war”，&ldquo;trade war/on&rdquo;，“on China”</td>
+</tr>
+</tbody>
+</table>
+<p>
+<a href="https://github.com/liyuanzi/WordNG-vec_WebShell_detect/blob/master/assets/1.jpg" target="_blank" rel="noopener"><img src="https://github.com/liyuanzi/WordNG-vec_WebShell_detect/raw/master/assets/1.jpg" alt="1"></a></p>
+<p>Combining N-Gram with Word2vec, the word vectors of the original text and 2-gram pharse are both trained by Word2vec as the general features of the text, taking into account not only the semantic features, but also the word order features. In this way, two similar sentences can be correctly classifcated.</p>
+<h3 id="convolutional-neural-network">Convolutional Neural Network</h3>
+<p>Based on the Kim Y&rsquo;s 
+<a href="https://arxiv.org/abs/1408.5882" target="_blank" rel="noopener">TextCNN</a>, combined with the two-channel convolutional neural network, a text classification model DCTF-CNN(Double-Channels and Trible-Filters Convolutional Neural Network) was constructed.</p>
+<p>The structure of the neural network is shown below:</p>
+<p>
+<a href="https://github.com/liyuanzi/WordNG-vec_WebShell_detect/blob/master/assets/2.jpg" target="_blank" rel="noopener"><img src="https://github.com/liyuanzi/WordNG-vec_WebShell_detect/raw/master/assets/2.jpg" alt="2"></a></p>
+<p>The model includes five layers: input layer, convolution layer, pooling layer, full-link layer and output layer.In the input layer, T1 channel and T2 channel respectively input the word vector of the original text and the word vector of the 2-gram pharse. The convolution layer is composed of three convolution kernels of different widths, each of which covers the local characteristics of different granularity.In the pooling layer, the global maximum value is pooled, and the maximum value is reserved for each convolution kernel, which can effectively extract the most representative features.Two feature vectors were spliced in the full link layer, and finally two types of distributions, namely the probability distribution of WebShell and normal files, were output through Softmax in the output layer.</p>
+<h3 id="php-opcode">PHP opcode</h3>
+<p>PHP is an interpreted language, and its code execution process can be divided into Lexical Analysis stage, Syntax Analysis stage, byte code compilation stage and code execution stage.The execution flow diagram is shown in the solid line section in the below:</p>
+<p>
+<a href="https://github.com/liyuanzi/WordNG-vec_WebShell_detect/blob/master/assets/3.jpg" target="_blank" rel="noopener"><img src="https://github.com/liyuanzi/WordNG-vec_WebShell_detect/raw/master/assets/3.jpg" alt="3"></a></p>
+<p>In the lexical analysis phase, the Lexer reads the source code sequence of characters in sequence and shred them into Token sequences according to PHP syntax rules.In the Syntax analysis stage, the Token sequence is read in by the Parser to be syntactically checked, and then the Abstract Syntax Tree (AST) is generated.In the bytecode compilation phase, the PHP virtual machine Zend reads in the abstract syntax tree and translates the action nodes in the syntax tree into the corresponding bytecode.In the code execution stage, the PHP virtual machine Zend loads the corresponding module according to the code call, initializes the running environment, and finally executes the bytecode instruction and outputs the result.</p>
+<p>For example, the following code:</p>
+<pre><code>&lt;?php
+echo’Hello World’;
+$a=1+1;
+echo $a;
+?&gt;
+</code></pre><p>After PHP code compilation by VLD extension, the code can be compiled into following opcode:</p>
+<pre><code>ZEND_ECHO ’Hello World’
+ZEND_ADD ~ 0 1 1
+ZEND_ASSIGN!0 ~ 0
+ZEND_ECHI ~ 0
+</code></pre><p>In this paper, the collected PHP datasets is compiled into opcode to word embedding, so as to avoid the interference of useless annotations added in the WebShell which might bypass static detection. In this way the generalization of the model could be imporved</p>
+<h2 id="assessment">Assessment</h2>
+<p>Experimental data sets were obtained from the following sources:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>sources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WebShell</td>
+<td><a href="https://github.com/tennc/webshell">https://github.com/tennc/webshell</a> <a href="https://github.com/JohnTroony/php-webshells">https://github.com/JohnTroony/php-webshells</a> <a href="https://github.com/ysrc/webshell-sample">https://github.com/ysrc/webshell-sample</a> <a href="https://github.com/tanjiti/webshellSample">https://github.com/tanjiti/webshellSample</a> <a href="https://github.com/xl7dev/WebShell">https://github.com/xl7dev/WebShell</a></td>
+</tr>
+<tr>
+<td>Normal Page</td>
+<td><a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a> <a href="https://github.com/phpmyadmin/phpmyadmin">https://github.com/phpmyadmin/phpmyadmin</a> <a href="https://github.com/typecho/typecho">https://github.com/typecho/typecho</a> <a href="https://github.com/bcit-ci/CodeIgniter">https://github.com/bcit-ci/CodeIgniter</a> <a href="https://github.com/laravel/laravel">https://github.com/laravel/laravel</a></td>
+</tr>
+</tbody>
+</table>
+<p>Remove duplicate files by md5 comparsion, a total of 2387 WebShell samples and 2316 Normal Page samples were obtained.</p>
+<p>The WebShell samples covers One-word Trojan, small Trojan and giant Trojan all types of WebShell.</p>
+<p>The Normal Page covers blog cms，php development framework and database management system, and the similar page was remove to optimize data sets.</p>
+<h2 id="usage">Usage</h2>
+<p>Download code and data sets</p>
+<pre><code>git clone https://github.com/liyuanzi/WordNG-vec_WebShell_detect
+</code></pre><p>This code requires Python2.7</p>
+<pre><code>conda create --name py27 python=2.7
+</code></pre><p>Initialization environment</p>
+<pre><code>pip install -r requerments.txt
+</code></pre><p>start trainning</p>
+<pre><code>$ nohup python -u webshell.py &gt;dctf.txt 2&gt;&amp;1 &amp; tail -f dctf.txt
+</code></pre><p>The word embedding process takes a very long time，use <code>nohup</code> to avoid the word embedding process fail because the terminal closed unexpectly. The result is loaded into <code>dctf.txt</code></p>
+<h2 id="example">Example</h2>
+<p>A Comparsion examination on a small size data sets .</p>
+<table>
+<thead>
+<tr>
+<th>features</th>
+<th>Accuracy</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2-gram</td>
+<td>0.798</td>
+<td>0.714</td>
+<td>0.196</td>
+<td>0.308</td>
+</tr>
+<tr>
+<td>opcode sequences</td>
+<td>0.969</td>
+<td>0.998</td>
+<td>0.823</td>
+<td>0.902</td>
+</tr>
+<tr>
+<td>Word2vec</td>
+<td>0.958</td>
+<td>0.994</td>
+<td>0.918</td>
+<td>0.954</td>
+</tr>
+<tr>
+<td>bigram-word2vec</td>
+<td>0.960</td>
+<td>0.978</td>
+<td>0.937</td>
+<td>0.958</td>
+</tr>
+<tr>
+<td>Word-NG vec</td>
+<td>0.984</td>
+<td>0.995</td>
+<td>0.971</td>
+<td>0.982</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/nlp/">NLP</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/&amp;text=WebShell%20detection%20based%20on%20semantic%20features" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/&amp;t=WebShell%20detection%20based%20on%20semantic%20features" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=WebShell%20detection%20based%20on%20semantic%20features&amp;body=https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/&amp;title=WebShell%20detection%20based%20on%20semantic%20features" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=WebShell%20detection%20based%20on%20semantic%20features%20https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://p0st3r.github.io/publication/webshell-detection-based-on-semantic-features/&amp;title=WebShell%20detection%20based%20on%20semantic%20features" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu4bb7090cebbbe4a3e0580de401f23728_6887_270x270_fill_q90_lanczos_center.jpg" alt="">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://p0st3r.github.io/"></a></h5>
+        <h6 class="card-subtitle">Researcher of NTA</h6>
+        <p class="card-text">My research interests include Hacking, Cryptography, Reverse Analysis, and NLP</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:dhakkan@foxmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/p0st3r" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/publication/ms-08-067-analyise/" rel="prev">MS08-067漏洞原理及复现分析</a>
+  </div>
+  
+</div>
+
+</div>
+
+
+
+  
+  
+
+
+
+  </div>
+</div>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.37431be2d92d7fb0160054761ab79602.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    2016 &middot;  ©Lithium No rights reserved.
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>
+    &middot;
+    <span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span>
+    
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

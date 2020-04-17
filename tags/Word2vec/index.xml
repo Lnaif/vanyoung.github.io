@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Word2Vec | HumblePoster</title>
+    <link>https://p0st3r.github.io/tags/word2vec/</link>
+      <atom:link href="https://p0st3r.github.io/tags/word2vec/index.xml" rel="self" type="application/rss+xml" />
+    <description>Word2Vec</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Thu, 09 May 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>Word2Vec</title>
+      <link>https://p0st3r.github.io/tags/word2vec/</link>
+    </image>
+    
+    <item>
+      <title>Word2vec的文档表示方法</title>
+      <link>https://p0st3r.github.io/post/word2vec-presentation/</link>
+      <pubDate>Thu, 09 May 2019 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/word2vec-presentation/</guid>
+      <description>&lt;p&gt;Word2vec是一种将文本转化为词向量的算法，即将词条映射为一个定长的连续的稠密向量，由这些向量构成一个向量空间，该向量的维数可以在事前确定，一般可以为50维或100维。&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Apple = [1.2,0.2,0.3,0.5]
+Pear = [0.1,0.3,0.5,1.5]
+Banana = [2.2,0.2,0.4,0.6]
+Orange = [0.6,0.1,1.0,0.2]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;每个词被表示成一个[1,4]的向量矩阵。&lt;/p&gt;
+&lt;p&gt;在文本处理的任务中直接处理的是文当，而一个文本中包含很多词，所以需要将文本想办法用Word2vec向量表示 。这里有两种思路：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;直接将各个词的词向量串接起来，将整个文档表示成一个三维的向量&lt;/li&gt;
+&lt;li&gt;将文本中各个词的词向量相加求平均，由最终的平均向量代表整个文本&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;三维文档向量&#34;&gt;三维文档向量&lt;/h2&gt;
+&lt;p&gt;处理如图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2.jpg&#34; alt=&#34;2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;最终将文档表示成一个[M, P, F]三维向量，其中M代表文档个数，P代表每个文档的长度，为了便于神 经网络处理会将P处理成统一 长度，F代表最大特征值，即Word2vec训练出的向量大小。&lt;/p&gt;
+&lt;p&gt;这种表示方法CNN处理效果较好。&lt;/p&gt;
+&lt;p&gt;代码实例如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#为了统一文本长度，设置最大文本长度，超过的截断，不足的用0.向量补齐&lt;/span&gt;
+max_document_length &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;500&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#最大特征长度，即训练的词向量维度&lt;/span&gt;
+max_feature &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;200&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;getVecsByWord2Vec&lt;/span&gt;(model, corpus, size):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; max_document_length
+
+    all_vectors &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    embeddingDim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;vector_size
+    &lt;span style=&#34;color:#75715e&#34;&gt;#0.向量，用于填充&lt;/span&gt;
+    embeddingUnknown &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#ae81ff&#34;&gt;0.&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(embeddingDim)]
+    
+    &lt;span style=&#34;color:#75715e&#34;&gt;#逐句获取词向量并拼接&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; text &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; corpus:
+        this_vector &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+        &lt;span style=&#34;color:#75715e&#34;&gt;#切除掉最大文档长度后的词&lt;/span&gt;
+        text &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; text[:max_document_length]
+        &lt;span style=&#34;color:#75715e&#34;&gt;#逐词获取词向量并拼接&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i,word &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; enumerate(text):
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; word &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;wv&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;vocab:        
+                this_vector&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(model[word])
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+                this_vector&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(embeddingUnknown)
+        
+        &lt;span style=&#34;color:#75715e&#34;&gt;#不足长度的填充至最大文档长度     &lt;/span&gt;
+        dim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;shape(this_vector)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; dim[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; max_document_length:    
+            pad_length &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; max_document_length&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,pad_length):
+                this_vector&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(embeddingUnknown)    
+        all_vectors&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(this_vector)
+
+    x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;array(all_vectors)
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get_feature_by_opcode_word2vec&lt;/span&gt;():
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; max_document_length
+
+    x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    
+	&lt;span style=&#34;color:#75715e&#34;&gt;# 若有三维文档向量直接加载&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(wv_data_pkl_file) &lt;span style=&#34;color:#f92672&#34;&gt;and&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(label_pkl_file):
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(label_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#75715e&#34;&gt;# 导入训练数据，自定&lt;/span&gt;
+        x, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; load_data_pkl_file()
+
+        cores&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;multiprocessing&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;cpu_count()
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若有训练好的词向量模型则直接加载&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(word2vec_bin):
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Find cache file &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; word2vec_bin
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(word2vec_bin)
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若没有则训练再保存词向量模型&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec(size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;max_features, window&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, min_count&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, iter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, workers&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;cores)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;build_vocab(x)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;train(x, total_examples&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;corpus_count, epochs&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;iter)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(word2vec_bin)
+		
+        &lt;span style=&#34;color:#75715e&#34;&gt;#循环拼接出三维文档集合向量&lt;/span&gt;
+        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; getVecsByWord2Vec(model, x, max_features)
+
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;wb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;dump(x, f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x,y
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;平均词向量&#34;&gt;平均词向量&lt;/h2&gt;
+&lt;p&gt;直接将每个文档中所有词的词向量相加求平均 ，用一个[1,F]的二维平均向量代表改文档。再将所有文档逐个拼接得到一个[M,F]的向量来表示整个文档集合。这种表示方法计算量较小 ，MLP处理效果还好，CNN效果极差。&lt;/p&gt;
+&lt;p&gt;代码实例如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#最大特征长度，即训练的词向量维度&lt;/span&gt;
+max_feature &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;200&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;buildWordVector&lt;/span&gt;(model,text, size):
+    vec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;zeros(size)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reshape((&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, size))
+    count &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;#逐词获取词向量并累加&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; word &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; text:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+            vec &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; model[word]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reshape((&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, size))
+            count &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;KeyError&lt;/span&gt;:
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;#求平均向量&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; count &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+        vec &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; count
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; vec
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get_feature_by_opcode_word2vec&lt;/span&gt;():
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; max_document_length
+
+    x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    
+	&lt;span style=&#34;color:#75715e&#34;&gt;# 若有三维文档向量直接加载&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(wv_data_pkl_file) &lt;span style=&#34;color:#f92672&#34;&gt;and&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(label_pkl_file):
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(label_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#75715e&#34;&gt;# 导入训练数据，自定&lt;/span&gt;
+        x, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; load_data_pkl_file()
+
+        cores&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;multiprocessing&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;cpu_count()
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若有训练好的词向量模型则直接加载&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(word2vec_bin):
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Find cache file &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; word2vec_bin
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(word2vec_bin)
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若没有则训练再保存词向量模型&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec(size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;max_features, window&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, min_count&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, iter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, workers&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;cores)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;build_vocab(x)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;train(x, total_examples&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;corpus_count, epochs&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;iter)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(word2vec_bin)
+		
+        &lt;span style=&#34;color:#75715e&#34;&gt;#循环拼接出二维文档集合向量&lt;/span&gt;
+        x&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;concatenate([buildWordVector(model,z, max_features) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; z &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; x])
+        &lt;span style=&#34;color:#75715e&#34;&gt;#归一化&lt;/span&gt;
+		x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scale(x)
+        
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;wb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;dump(x, f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x,y
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Competion &amp; Conference | HumblePoster</title>
+    <link>https://p0st3r.github.io/talk/</link>
+      <atom:link href="https://p0st3r.github.io/talk/index.xml" rel="self" type="application/rss+xml" />
+    <description>Competion &amp; Conference</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Fri, 19 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>Competion &amp; Conference</title>
+      <link>https://p0st3r.github.io/talk/</link>
+    </image>
+    
+    <item>
+      <title>Xp0intCTF2018</title>
+      <link>https://p0st3r.github.io/talk/xp0intctf2018/</link>
+      <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/talk/xp0intctf2018/</guid>
+      <description>&lt;h2 id=&#34;奖项设置&#34;&gt;奖项设置&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;一等奖（1名）&lt;/p&gt;
+&lt;p&gt;1000现金或实物&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;二等奖（2名）&lt;/p&gt;
+&lt;p&gt;500现金或实物（jbl蓝牙耳机）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;三等奖（5名）&lt;/p&gt;
+&lt;p&gt;200现金或实物（razer键盘）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;优秀奖（10名）&lt;/p&gt;
+&lt;p&gt;金士顿u盘一个&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Xp0intCTF2017</title>
+      <link>https://p0st3r.github.io/talk/xp0intctf2017/</link>
+      <pubDate>Sat, 21 Oct 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/talk/xp0intctf2017/</guid>
+      <description>&lt;h2 id=&#34;报名方式&#34;&gt;报名方式&lt;/h2&gt;
+&lt;p&gt;登录网站 &lt;a href=&#34;http://www.giantbranch.cn&#34;&gt;www.giantbranch.cn&lt;/a&gt;:8889&lt;/p&gt;
+&lt;p&gt;点击Register&amp;ndash;&amp;gt;填写邮箱队伍名字及密码；最后点击Login输入队伍名字和密码登录网站；点击challenge进行比赛)&lt;/p&gt;
+&lt;h2 id=&#34;比赛规则&#34;&gt;比赛规则&lt;/h2&gt;
+&lt;p&gt;本次比赛采取线上赛，只需要一台电脑便能完成比赛，选手通过平台进行做题，每道题目有相应的分值，解题多者且分值高将获得更高的排位，分数相同时将按flag提交的时间先后进行排名。&lt;/p&gt;
+&lt;p&gt;详细规则请阅读&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.giantbranch.cn&#34;&gt;http://www.giantbranch.cn&lt;/a&gt;:8889/%E8%A7%84%E5%88%99&lt;/p&gt;
+&lt;h2 id=&#34;ctf&#34;&gt;CTF&lt;/h2&gt;
+&lt;p&gt;CTF（Capture The Flag）起源于1996年DEFCON全球黑客大会，在网络安全领域中指的是网络安全技术人员之间进行技术竞技的一种比赛形式，以代替之前黑客们通过互相发起真实攻击进行技术比拼的方式，发展至今已经成为全球范围网络安全圈流行的竞赛形式。&lt;/p&gt;
+&lt;p&gt;CTF竞赛模式具体分为以下三类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;解题模式（Jeopardy）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在解题模式CTF赛制中，参赛队伍可以通过互联网或者现场网络参与，题目主要包含逆向、漏洞挖掘与利用、Web渗透、密码、取证、隐写、安全编程等类别。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;攻防模式（Attack-Defense）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在攻防模式CTF赛制中，参赛队伍在网络空间互相进行攻击和防守，挖掘网络服务漏洞并攻击对手服务来得分，修补自身服务漏洞进行防御来避免丢分，最终以得分直接分出胜负。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;混合模式（Mix）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;结合了解题模式与攻防模式的CTF赛制，参赛队伍通过解题获取初始分数，然后通过攻防对抗进行得分增减，最终以得分高低分出胜负。&lt;/p&gt;
+&lt;h2 id=&#34;ctf入门资料&#34;&gt;CTF入门资料&lt;/h2&gt;
+&lt;h3 id=&#34;web&#34;&gt;Web&lt;/h3&gt;
+&lt;p&gt;《白帽子讲web安全》，吴翰清著&lt;/p&gt;
+&lt;p&gt;《黑客攻防技术宝典：Web实战篇》，Dafydd Stuttard著&lt;/p&gt;
+&lt;h3 id=&#34;reverse&#34;&gt;Reverse&lt;/h3&gt;
+&lt;p&gt;吾爱破解：http://www.52pojie.cn/&lt;/p&gt;
+&lt;p&gt;看雪论坛：http://bbs.pediy.com/&lt;/p&gt;
+&lt;p&gt;《加密与解密》，段钢著&lt;/p&gt;
+&lt;p&gt;《汇编语言》，王爽著&lt;/p&gt;
+&lt;p&gt;《逆向工程核心原理》,李承远著&lt;/p&gt;
+&lt;h3 id=&#34;crypto&#34;&gt;Crypto&lt;/h3&gt;
+&lt;p&gt;《图解密码学技术》，结城浩著&lt;/p&gt;
+&lt;p&gt;《现代密码学——原理与协议》，Jonathan Katz著&lt;/p&gt;
+&lt;h3 id=&#34;pwn&#34;&gt;Pwn&lt;/h3&gt;
+&lt;p&gt;《0day安全软件漏洞分析技术》&lt;/p&gt;
+&lt;p&gt;《漏洞战争》&lt;/p&gt;
+&lt;h2 id=&#34;ctf练习网站&#34;&gt;CTF练习网站&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;合天&lt;/strong&gt;：http://www.hetianlab.com/CTFrace.html&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实验吧&lt;/strong&gt;：http://www.shiyanbar.com/ctf/practice&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;i春秋&lt;/strong&gt;：https://www.ichunqiu.com/racing&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;南邮攻防平台&lt;/strong&gt;：http://ctf.nuptsast.com/&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;JarvisOJ&lt;/strong&gt;：https://www.jarvisoj.com/&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;XCTF-OJ&lt;/strong&gt;：http://oj.xctf.org.cn&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;SniperOJ&lt;/strong&gt;：http://www.sniperoj.com/&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;CTF常用工具下载&lt;/strong&gt;：https://www.ctftools.com/down/&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Xp0int团队是于2016年成立的暨南大学校园信息安全团队，团队成立至今，举办过补天暨大校园行、合天暨大网安见面会、Xp0intCon等大型活动。成员曾获过广东省第一届”强网杯”网络安全大赛高校组冠军、信息安全“铁人三项”个人赛华南赛区冠军、广东省首届“红帽杯”网络安全大赛高校组亚军等奖项，多位成员现任职于阿里巴巴、腾讯、绿盟科技等安全公司。&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Xp0intCon2017</title>
+      <link>https://p0st3r.github.io/talk/xp0intcon2017/</link>
+      <pubDate>Fri, 16 Jun 2017 14:30:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/talk/xp0intcon2017/</guid>
+      <description>&lt;h2 id=&#34;议题安排&#34;&gt;议题安排&lt;/h2&gt;
+&lt;h3 id=&#34;xp0int团队介绍&#34;&gt;Xp0int团队介绍&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;giantbranch&lt;/li&gt;
+&lt;li&gt;简介：包含Xp0int团队简要介绍，Xp0int团队由来，Xp0int团队名称的多重含义，Xp0int团队活动，Xp0int团队的加入与退出，Xp0int团队及团队成员目前所获奖项，Xp0int团队所能获得的好处等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;why-is-printf-unsafe&#34;&gt;Why is printf unsafe&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;mingo&lt;/li&gt;
+&lt;li&gt;简介：无论是在编写程序的时候使用printf报不安全的警告，还是老师上课说的printf存在安全隐患，都说明了printf确实不安全。那么为什么呢？2017 Xp0intCon，由mingo来分享why is printf unsafe、如何利用printf的格式化字符串漏洞进行任意内存的读写以及如何防御格式化字符串漏洞。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;基于-windowslinuxandroid-三大平台的-ctf-逆向题基本解题思路&#34;&gt;基于 Windows、Linux、Android 三大平台的 CTF 逆向题基本解题思路&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;梁家浩&lt;/li&gt;
+&lt;li&gt;简介：本次分享针对 Windows、Linux、Android 三大平台，分别对每个平台下面的逆向题作  ”介绍、工具、方法、做法“ 四个方面的介绍，给逆向初学者以及一些非逆向CTF选手提供逆向题的基本解题思路。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;我的安全之路及比赛经历&#34;&gt;我的安全之路及比赛经历&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;giantbranch&lt;/li&gt;
+&lt;li&gt;简介：简述我的信息安全学习之路，来一个ctf的小入门，之后说一些比赛的经历，经验。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;从crackme谈软件保护中的序列号保护技术&#34;&gt;从CrackMe谈软件保护中的序列号保护技术&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;sherlly&lt;/li&gt;
+&lt;li&gt;简介：CTF比赛中，一般有Web, RE, Pwn, Misc四大类型，而其中的CrackMe可以说是RE类的一大题型了，本次分享将以一个简单的CrackMe程序作切入点，进而展开对软件保护中的序列号保护技术的分析总结，然后结合实战，分析前段日子刚刚结束的DDCTF第8题，最后总结一些个人在逆向上的经验。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;wannacry元凶nsa方程式工具利用与分析&#34;&gt;WannaCry元凶：NSA方程式工具利用与分析&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Lithium&lt;/li&gt;
+&lt;li&gt;前阵子Shadow Brokers泄露了NSA的一批黑客工具包，引起了一场网络大地震，其中包含了多个Windows 远程漏洞利用工具，覆盖了全球 70% 的 Windows 服务器，任何人都可以直接下载并远程攻击利用。最近利用本工具对测试环境进行了实验复现，对其原理进行了分析。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;anonymous-communication-network-techniques&#34;&gt;Anonymous communication network techniques&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;陈艺康&lt;/li&gt;
+&lt;li&gt;简介：主要介绍匿名通信网络的相关技术&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;sqlmap&#34;&gt;sqlmap&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;pyz&lt;/li&gt;
+&lt;li&gt;简介：浅谈sqlmap之如何写sqlmap的tamper&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;告别伸手党自己写python渗透小工具&#34;&gt;告别伸手党！自己写python渗透小工具&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;lynn&lt;/li&gt;
+&lt;li&gt;简介：分享下在安全学习中python的一些应用，介绍python一些库，包括：scapy、beautifulsoup、socket、multiprocessing、PIL等，通过实例说明库的作用，例如：arp欺骗、嗅探、模拟SSH、TCP代理、获取验证码等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;sql注入简单介绍&#34;&gt;SQL注入简单介绍&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;陈婉萍&lt;/li&gt;
+&lt;li&gt;简介：SQL注入是OWASP TOP 10之一，也是本人接触的第一个漏洞类型。本次分享简单介绍了sql注入的原理、数据库结构、分类以及以access注入为例的注入过程等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;cdlinux下的wifi入侵&#34;&gt;CDLinux下的wifi入侵&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;沈德&lt;/li&gt;
+&lt;li&gt;简介：主要介绍如何利用CDLinux系统上的工具进行wifi密码破解，成功获取wifi密码。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;一句话木马绕过和防御&#34;&gt;一句话木马绕过和防御&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;莫锦成&lt;/li&gt;
+&lt;li&gt;简介：主要介绍什么是一句话木马，利用解析漏洞，数据库备份，文件上传，文件包含等方式生成和利用一句话木马，还提及了一些绕过安全狗的小知识。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;大白话讲网络安全法&#34;&gt;大白话讲《网络安全法》&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;giantbranch, mm0rys&lt;/li&gt;
+&lt;li&gt;简介：以大白话讲解《网络安全法》，提醒同学们在学习信息安全的道路上一定要遵纪守法。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;免责声明&#34;&gt;免责声明：&lt;/h2&gt;
+&lt;p&gt;  以上成员分享言论内容不代表Xp0int立场，所分享的内容仅作学习交流所用，个人造成的严重后果，Xp0int不负任何责任&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;以上活动解释权归Xp0int团队所有&lt;/strong&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Xp0intCTF2016</title>
+      <link>https://p0st3r.github.io/talk/xp0intctf2016/</link>
+      <pubDate>Mon, 10 Oct 2016 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/talk/xp0intctf2016/</guid>
+      <description>&lt;h2 id=&#34;报名方式&#34;&gt;报名方式&lt;/h2&gt;
+&lt;p&gt;登录网站 &lt;a href=&#34;http://www.giantbranch.cn&#34;&gt;www.giantbranch.cn&lt;/a&gt;:8889&lt;/p&gt;
+&lt;p&gt;点击Register&amp;ndash;&amp;gt;填写邮箱队伍名字及密码；最后点击Login输入队伍名字和密码登录网站；点击challenge进行比赛)&lt;/p&gt;
+&lt;h2 id=&#34;比赛规则&#34;&gt;比赛规则&lt;/h2&gt;
+&lt;p&gt;本次比赛采取线上赛，只需要一台电脑便能完成比赛，选手通过平台进行做题，每道题目有相应的分值，解题多者且分值高将获得更高的排位，分数相同时将按flag提交的时间先后进行排名。&lt;/p&gt;
+&lt;p&gt;详细规则请阅读&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.giantbranch.cn&#34;&gt;http://www.giantbranch.cn&lt;/a&gt;:8889/%E8%A7%84%E5%88%99&lt;/p&gt;
+&lt;p&gt;补充一下，校内的同学，认真写writeup（题解），排名靠前的可获得神秘奖品&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

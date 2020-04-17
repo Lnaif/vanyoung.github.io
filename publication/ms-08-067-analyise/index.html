@@ -1,0 +1,1296 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="对著名的MS08-067漏洞进行了详细的原理讲解和复现分析。">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/publication/ms-08-067-analyise/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PQ63HJL');
+</script>
+
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://p0st3r.github.io/publication/ms-08-067-analyise/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="HumblePoster">
+  <meta property="og:url" content="https://p0st3r.github.io/publication/ms-08-067-analyise/">
+  <meta property="og:title" content="MS08-067漏洞原理及复现分析 | HumblePoster">
+  <meta property="og:description" content="对著名的MS08-067漏洞进行了详细的原理讲解和复现分析。"><meta property="og:image" content="https://p0st3r.github.io/publication/ms-08-067-analyise/featured.png">
+  <meta property="twitter:image" content="https://p0st3r.github.io/publication/ms-08-067-analyise/featured.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2017-01-01T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2017-09-12T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://p0st3r.github.io/publication/ms-08-067-analyise/"
+  },
+  "headline": "MS08-067漏洞原理及复现分析",
+  
+  "image": [
+    "https://p0st3r.github.io/publication/ms-08-067-analyise/featured.png"
+  ],
+  
+  "datePublished": "2017-01-01T00:00:00Z",
+  "dateModified": "2017-09-12T00:00:00Z",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "HumblePoster",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "对著名的MS08-067漏洞进行了详细的原理讲解和复现分析。"
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>MS08-067漏洞原理及复现分析 | HumblePoster</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/hack"><span>Hack</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/ml"><span>ML</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/nlp"><span>NLP</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-md-auto">
+      
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/categories"><span>Categories</span></a>
+        </li>
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tags"><span>Tags</span></a>
+        </li>
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <div class="pub">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>MS08-067漏洞原理及复现分析</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span><a href="/authors/admin/">admin</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    2017-09-12
+  </span>
+  
+
+  
+
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span>
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  
+  
+    
+  
+  <a class="btn btn-outline-primary my-1 mr-1" href="https://www.freebuf.com/vuls/203881.html" target="_blank" rel="noopener">
+    
+    发表于Freebuf
+  </a>
+
+
+</div>
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    
+    <h3>Abstract</h3>
+    <p class="pub-abstract">最近利用MS17-010漏洞肆虐的WanaCry勒索病毒让445端口走进了大众的视线，除了这次的MS17-010，在08年年底爆出的MS08-067特大漏洞同样是利用了445端口。在《Metasploit渗透测试魔鬼训练营》中讲过MS08-067的漏洞原理，不过内容十分晦涩难懂难以消化，我反复阅读钻研了几遍并通过实践分析，对该部分的内容用通俗易懂的语言重新组织一遍，画了该漏洞溢出的原理图，就当做分享和学习总结吧。</p>
+    
+
+    
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <div class="row">
+          <div class="col-12 col-md-3 pub-row-heading">Type</div>
+          <div class="col-12 col-md-9">
+            
+            
+            <a href="/publication/#4">
+              Report
+            </a>
+            
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+    <div class="d-md-none space-below"></div>
+    
+
+    
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <div class="row">
+          <div class="col-12 col-md-3 pub-row-heading">Publication</div>
+          <div class="col-12 col-md-9">MS08-067漏洞原理及复现分析</div>
+        </div>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+    <div class="d-md-none space-below"></div>
+    
+
+    <div class="space-below"></div>
+
+    <div class="article-style"><h2 id="445端口">445端口</h2>
+<p>首先介绍一下这个引发了诸多特大漏洞的445端口。</p>
+<p>TCP 445端口主要运行两种服务：</p>
+<ul>
+<li>SMB 网络服务</li>
+<li>MSRPC 网络服务</li>
+</ul>
+<p>**SMB（Server Message Block，服务器消息块）**首先提供了 Windows 网络中最常用的远程文件与打印机共享网络服务，其次，SMB的命名管道是 MSRPC 协议认证和调用本地服务的承载传输层。</p>
+<p>SMB 作为应用层协议，其直接运行在TCP 445端口上，也可通过调用 NBT 的 TCP 139端口来接收数据。</p>
+<p>**MSRPC（Microsoft Remote Procedure Call，微软远程过程调用）**是对 DCE/RPC 在 Windows 系统下的重新改进和实现，用以支持Windows系统中的应用程序能够无缝地通过网络调用远程主机上服务进程中的过程。</p>
+<p>DCE/RPC 独立运行于网络传输层协议上，采用的网络传输层协议包括：</p>
+<ul>
+<li>ncacn_ip_tcp =&gt; TCP 139</li>
+<li>ncadg_ip_udp =&gt; UDP 135</li>
+<li>ncacn_np =&gt; TCP 139、445</li>
+</ul>
+<p>其中，主要使用的是 ncacn_np（SMB命名管道传输协议），也就是利用 SMB 命名管道机制作为 RPC 的承载传输协议（MSRPC over SMB）。</p>
+<p>只有少数如MS09-050是直接针对SMB服务的，而MSRPC作为调用大量本地服务进程的网络接口，常常被利用 MSRPC over SMB 为通道如MS08-067来攻击本地服务中存在的安全漏洞。</p>
+<h1 id="0x01-ms08-067漏洞原理">0x01 MS08-067漏洞原理</h1>
+<p>MS08-067漏洞是通过 MSRPC over SMB 通道调用 Server 服务程序中的 NetPathCanonicalize 函数时触发的，而 NetPathCanonicalize 函数在远程访问其他主机时，会调用 NetpwPathCanonicalize 函数，对远程访问的路径进行规范化，而在 NetpwPathCanonicalize 函数中存在的逻辑错误，造成栈缓冲区可被溢出，而获得远程代码执行（Remote Code Execution）。</p>
+<p>所谓路径规范化，就是将路径字符串中的【/】转换为【\】，同时去除相对路径【.\】和【..\】。如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">**/*/./**   =&gt;  **\*\**
+**\*\..\**  =&gt;  **\**
+</code></pre></div><p>在路径规范化的操作中，服务程序对路径字符串的地址空间检查存在逻辑漏洞。攻击者通过精心设计输入路径，可以在函数去除【..\】字符串时，把路径字符串中内容复制到路径串之前的地址空间中（低地址），达到覆盖函数返回地址，执行任意代码的目的。</p>
+<h2 id="路径处理流程">路径处理流程</h2>
+<p>NetpwPathCanonicalize 函数并没有直接进行输入路径和规范化，而是继续调用了下级函数CanonicalizePathName 来进行路径整理，将待整理的路径字符串进行规范化，然后再<strong>保存到预先分配的输出路径缓冲区buffer中</strong>。</p>
+<p>路径处理流程：</p>
+<ol>
+<li>检查待整理路径的第一个字符</li>
+<li>调用msvcrt.dll模块的wcslen函数计算路径长度</li>
+<li>调用msvcrt.dll模块的wcscat函数把待整理路径全部复制到新申请的内存中</li>
+</ol>
+<p>\4. 调用wcscpy函数，去掉待整理路径中第一个表示父目录的相对路径复制到strTemp，如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">\******\..\..\***   =&gt;  \..\***
+</code></pre></div><p>5.循环调用wcscpy，直到路径整理完毕</p>
+<p>在这里我们知道了，在规范化复制时要寻找表示父目录的【..\】字符串及其前面的一个【\】字符串，将这一段去掉并将新路径复制。</p>
+<p><img src="v2-a227e632597e472caec3c37457455d8a_hd.png" alt="img"></p>
+<p>如图，第一次检查时去掉了第一个相对路径并复制到缓冲区</p>
+<p><strong>但是，当【..\】字符串在路径字符串的最前面时，那么其前面的一个【\】就在缓冲区外面了，就是在这里产生了向前（低地址）的溢出。</strong></p>
+<p><img src="v2-9709d2768dff1383b5a1dbb6567016a1_hd.png" alt="img"></p>
+<h2 id="缓冲区溢出">缓冲区溢出</h2>
+<p>需要明确的是，微软对路径规范化时的字符串复制可能出现的缓冲区溢出做了初步的防御。</p>
+<p>在每次向缓冲区中复制字符串时，无论是用 wcsccpy 还是 wcscat，在复制前总要比较源字符串的长度，保证长度小于某个值（207），否则不会继续复制，这一策略确保缓冲区不会向高地址溢出，即当前函数返回时不会发生问题。</p>
+<p>**但是注意，**在规范化表示路径，寻找父目录的【..\】字符串前面的【\】字符时，程序做了判断和边界检查：如果当前比较字符的地址与源字符串地址相同，就表明整个字符串已经查找完毕，程序就会停止查找。</p>
+<p>然而它唯独漏了一种情况，就是当父目录相对路径【..\】字符串在源字符串的开头时，在开始查找时比较的字符串(【\】到【..\】)位于缓冲区之外，这导致了复制的字符串向低地址的溢出，造成函数wcscpy的返回地址被覆盖。</p>
+<p><img src="v2-f51502175256d3571f471872250a7d2a_hd.png" alt="img"></p>
+<h1 id="0x02-漏洞还原分析">0x02 漏洞还原分析</h1>
+<p><strong>实验环境</strong></p>
+<ul>
+<li>靶机 Windows2003 SP0 EN</li>
+<li>漏洞组件 netapi32.dll</li>
+<li>工具 IDA Pro、OllyDbg</li>
+</ul>
+<p>选择 Windows XP SP3 EN 系统主机作为分析环境，定位到包含该安全漏洞的系统模块netapi32.dll（路径C:\Windows\system32）和调用漏洞服务 Server 的进程 svchost.exe，目标进程命令行为</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">C:\Windows\System32\svchost.exe-k netsvcs
+</code></pre></div><p>用 IDA pro 打开 netapi32.dll，找到漏洞所在的 NetpwPathCanonicalize 函（每次运行堆栈中的地址会不同，但各函数的地址一样），如图在书中提到</p>
+<blockquote>
+<p>查看该函数流程图，可以看到，此函数并没有直接进行输入路径的规范化， 而是继续调用了下级函数 CanonicalizePathName</p>
+</blockquote>
+<p>然而在实际操作中并没有发现 CanonicalizePathName 这个函数，并且多种资料表明应当是调用 CanonPathName 函数进行规范化。</p>
+<p>IDA分析 NetpwPathCanonicalize 函数代码（F5 + 整理 + 主要代码）：</p>
+<p>该函数声明如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">DWORD NetpwPathCanonicalize(
+    LPWSTR PathName, <span style="color:#75715e">//需要标准化的路径
+</span><span style="color:#75715e"></span>    LPWSTR Outbuf, <span style="color:#75715e">//存储标准化后的路径的Buffer
+</span><span style="color:#75715e"></span>    DWORD OutbufLen, <span style="color:#75715e">//Buffer长度
+</span><span style="color:#75715e"></span>    LPWSTR Prefix, <span style="color:#75715e">//可选参数，当PathName是相对路径时有用
+</span><span style="color:#75715e"></span>    LPDWORD PathType, <span style="color:#75715e">//存储路径类型
+</span><span style="color:#75715e"></span>    DWORD Flags <span style="color:#75715e">// 保留，为0
+</span><span style="color:#75715e"></span> )
+</code></pre></div><h2 id="动态调试">动态调试</h2>
+<p>通过wmic查看命令行参数为svchost.exe -k netsvcs的进程pid</p>
+<p><img src="v2-1288255ae58fb85ca4ac480f2c53a1e0_hd.png" alt="img"></p>
+<p>打开OllyDbg，点击file-&gt;attach，附着到svchost.exe进程上</p>
+<p><img src="1557342950869.png" alt="1557342950869"></p>
+<p>View-&gt;Executable modules双击netapi32，在cpu指令窗口右键选Search for查找exec(label) in current module，找到函数NetpwPathCanonicalize，地址为71C44A3E，在此处设下断点。</p>
+<p><img src="1557343007573.png" alt="1557343007573"></p>
+<h2 id="追踪漏洞触发过程">追踪漏洞触发过程</h2>
+<p>回到CPU指令窗口运行程序，然后攻击机Metasploit加载ms08_067_netapi模块并exploit</p>
+<p><img src="1557343016344.png" alt="1557343016344"></p>
+<h3 id="netpwpathcanonicalize中断">NetpwPathCanonicalize中断</h3>
+<p>分析环境中的svchost程序会中断在 NetpwPathCanonicalize 函数的入口地址处。该函数的传入参数如下所示：</p>
+<p><img src="1557343159242.png" alt="1557343159242"></p>
+<pre><code>esp    		[esp]		* 注释 *
+00ECF924	02248D34	;指向待整理路径
+00ECF928	022321D8	;指向输出路径buffer
+00ECF92C	000003F1	;输出buffer的长度
+00ECF930	02248FB0	;指向prefix，值为 \x5C\x00 ，即unicode ‘\’
+00ECF934	02248FB4	;指向路径类型，值为 0x1001
+00ECF938	00000000	;WORD Flags保留，值为0
+</code></pre><h3 id="canonicalizepathname中断">CanonicalizePathName中断</h3>
+<p>结合IDA pro对 NetpwPathCanonicalize 的流程分析，在 地址处将调用下一级函数 CanonPathName，在此地址设下断点。</p>
+<p><img src="1557343329568.png" alt="1557343329568"></p>
+<p>运行到此断点，然后跟踪函数 CanonPathName，传入参数如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">00F0F8FC	00157570	;指向prefix，值为\x5C\00，即Unicode&#34;\&#34;
+00F0F900	001572F4	;指向待整理路径
+00F0F904	02132E80	;指向输出路径的buffer
+00F0F908	000003F9	;输出buffer的长度
+00F0F90C	00000000	;WORD Flag保留字，值为0
+</code></pre></div><p>从上两个函数的参数传递可以看出，函数 CanonPathName 进行路径整理，然后再保存到预先分配的输出路径缓冲区buffer中。</p>
+<h3 id="待整理路径结构">待整理路径结构</h3>
+<p>在OD中查看待整理路径的结构，路径是Unicode字符串，以【\x5C\x00】(Unicode字符“\”)开始，【\x00\x00】结束，中间包含一些随机的大小写字母，较长一段不可显示的字符是经过编码的Shellcode，其中最关键的是两个连在一起的父目录相对路径【....\】。</p>
+<p><img src="1557343359609.png" alt="1557343359609"></p>
+<p>整个待整理路径形如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">\******\..\..\***
+</code></pre></div><h3 id="整理路径前的预操作">整理路径前的预操作</h3>
+<p>在待整理路径所在内存地址000C0F50处4字节上设内存访问断点</p>
+<p><img src="1557343390836.png" alt="1557343390836"></p>
+<p>按F9运行，会中断3次，前两次分别是检查待整理路径的第一个字符和调用wcslen函数，第三次是在调用wcscat函数。分析第三次传入栈中两个参数</p>
+<p><img src="1557343410176.png" alt="1557343410176"></p>
+<p>第一个是strDestination，指向一段以【\x5c\x00】开头的内存空间；第二个是strSource，指向上述待整理路径前两字节【\x5c\x00】后的内容。</p>
+<p>程序把待整理路径全部复制到strDestination，即0x001572F6处。在此4字节设断点，类型选择&quot;Hardware, on access&quot;DWord。</p>
+<p><img src="1557343435014.png" alt="1557343435014"></p>
+<h3 id="复制路径到缓冲区">复制路径到缓冲区</h3>
+<p>F9继续运行，第4次中断在0x77BD4010 ，内存里显示这里将src的前两个字符复制到了dest的【\x5C\x00】后面，这是由于这两个字节设了断点的原因。</p>
+<p><img src="1557343573648.png" alt="1557343573648"></p>
+<p>第5次中断在0x71C44B1C，位于wcscat函数内，内存显示已将src复制到dest，如图:</p>
+<p><img src="1557343589111.png" alt="1557343589111"></p>
+<p><img src="1557343606903.png" alt="1557343606903"></p>
+<h3 id="第一次路径规范化">第一次路径规范化</h3>
+<p>按F9运行，中断多次后停在内存0x77bd4d36处，通过栈可知此处属于wcscpy函数。此处调用该函数进行第一次路径规范化。如图</p>
+<p><img src="1557343631915.png" alt="1557343631915"></p>
+<p>当前参数src值为0x00EC6E0，指向【..***】;参数 strDestination 值为0x00ECF4DC，指向temp中的第一个字符【\】。 显然，这次路径规范化即把待整理路径中第一个字符【\】和第一个【..\】相对路径之间的内容抛弃。</p>
+<p><img src="1557343644183.png" alt="1557343644183"></p>
+<p>而此时wcscpy源地址src在edx寄存器中，指向【..***】；目的地址dest在ecx寄存器中，指向待整理路径第一个字符【\】，如图</p>
+<p><img src="1557343668919.png" alt="1557343668919"></p>
+<p>所以，这次字符串复制操作就是去掉第一个表示父目录的相对路径，即待整理路径temp中的第一个【\】和第一个【..\】之间的内容成为无用路径被抛弃。操作完成后，temp中的路径字符形如【..***】。</p>
+<p>第一次规范化后，待整理路径形如</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">\..\***
+</code></pre></div><p>由于还有【..\】，还需要进行一次规范化，而这第二次规范化正是玄机所在。</p>
+<h3 id="第二次路径规范化">第二次路径规范化</h3>
+<p>由于每次路径规范化都会调用wcscpy函数，接下来删除0x00ECF4DC的硬件断点，直接在wcscpy函数的入口地址0x77BD4D28处下断点。</p>
+<p><img src="1557343841212.png" alt="1557343841212"></p>
+<p>F9运行后中断在wcscpy函数入口0x77BD4D28处，调用wcscpy函数传入的参数</p>
+<p><img src="1557343857034.png" alt="1557343857034"></p>
+<pre><code>esp			[esp]		* 注释 *
+00ECF4AC	00ECF494	目的地址，指向的内存区域值为\x5c\x00，即【\】
+00ECF4B0	00ECF4E2	源地址，指向第二个相对路径【\..\】的最后一个斜杠
+</code></pre><p>正常情况下，这次规范化处理会和第一次执行同样的操作，去除第二个相对路径【..\】，从而完成第二次的路径规范化。但这里出现了一个意外的情况，temp的首地址是0x00ECF4DC，而此次字符串复制操作的目的地址dest却在0x00ECF494，在temp之前，如图</p>
+<p><img src="1557343903100.png" alt="1557343903100"></p>
+<p>同时注意到，栈指针ESP值为0x00ECF4A8，该地址指向wcscpy函数的返回地址0x71C52FD4。ESP到复制目的dest地址0x00ECF494只有0x14字节，于是，函数wcscpy如果继续执行，将用源字符串src覆盖wcscpy函数的返回地址。</p>
+<p>执行到retn命令，可以看到返回地址变成了0x0100129E，，该地址的指令为：</p>
+<pre><code>00100129E		FFD6		call esi
+</code></pre><p>执行 call esi（ES=0x00F0F4DE）指令，正好将EIP指向复制尽量的字符串中构造好的第8字节空指令，接着是【\xeb\x62】（jmp 0x62），此jmp指令跳过中间的随机字符串，指向经过编码的Shellcode，如图</p>
+<p><img src="1557343946968.png" alt="1557343946968"></p>
+<p>所以这里是由于内存0x00F0F494处的一个【\】(0x5C)，使得出现在处理父母了相对路径【..\】时往前溢出了待处理路径，从而将字符串覆盖到函数wcscpy返回地址的位置，跳转到shellcode造成远程代码执行。</p>
+<p>正如前面所提到的，当【..\】在源字符串开头的时候，在开始查找时，比较的字符位于缓冲区之外导致了向前的溢出。</p>
+</div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/cve/">CVE</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://p0st3r.github.io/publication/ms-08-067-analyise/&amp;text=MS08-067%e6%bc%8f%e6%b4%9e%e5%8e%9f%e7%90%86%e5%8f%8a%e5%a4%8d%e7%8e%b0%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://p0st3r.github.io/publication/ms-08-067-analyise/&amp;t=MS08-067%e6%bc%8f%e6%b4%9e%e5%8e%9f%e7%90%86%e5%8f%8a%e5%a4%8d%e7%8e%b0%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=MS08-067%e6%bc%8f%e6%b4%9e%e5%8e%9f%e7%90%86%e5%8f%8a%e5%a4%8d%e7%8e%b0%e5%88%86%e6%9e%90&amp;body=https://p0st3r.github.io/publication/ms-08-067-analyise/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://p0st3r.github.io/publication/ms-08-067-analyise/&amp;title=MS08-067%e6%bc%8f%e6%b4%9e%e5%8e%9f%e7%90%86%e5%8f%8a%e5%a4%8d%e7%8e%b0%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=MS08-067%e6%bc%8f%e6%b4%9e%e5%8e%9f%e7%90%86%e5%8f%8a%e5%a4%8d%e7%8e%b0%e5%88%86%e6%9e%90%20https://p0st3r.github.io/publication/ms-08-067-analyise/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://p0st3r.github.io/publication/ms-08-067-analyise/&amp;title=MS08-067%e6%bc%8f%e6%b4%9e%e5%8e%9f%e7%90%86%e5%8f%8a%e5%a4%8d%e7%8e%b0%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu4bb7090cebbbe4a3e0580de401f23728_6887_270x270_fill_q90_lanczos_center.jpg" alt="">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://p0st3r.github.io/"></a></h5>
+        <h6 class="card-subtitle">Researcher of NTA</h6>
+        <p class="card-text">My research interests include Hacking, Cryptography, Reverse Analysis, and NLP</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:dhakkan@foxmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/p0st3r" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/publication/webshell-detection-based-on-semantic-features/" rel="next">WebShell detection based on semantic features</a>
+  </div>
+  
+  
+</div>
+
+</div>
+
+
+
+  
+  
+
+
+
+  </div>
+</div>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.37431be2d92d7fb0160054761ab79602.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    2016 &middot;  ©Lithium No rights reserved.
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>
+    &middot;
+    <span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span>
+    
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

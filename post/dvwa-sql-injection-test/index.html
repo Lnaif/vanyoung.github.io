@@ -1,0 +1,1165 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/post/dvwa-sql-injection-test/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PQ63HJL');
+</script>
+
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://p0st3r.github.io/post/dvwa-sql-injection-test/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="HumblePoster">
+  <meta property="og:url" content="https://p0st3r.github.io/post/dvwa-sql-injection-test/">
+  <meta property="og:title" content="DVWA的SQL注入测试 | HumblePoster">
+  <meta property="og:description" content="通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。"><meta property="og:image" content="https://p0st3r.github.io/post/dvwa-sql-injection-test/featured.jpg">
+  <meta property="twitter:image" content="https://p0st3r.github.io/post/dvwa-sql-injection-test/featured.jpg"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2017-02-09T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2017-02-09T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://p0st3r.github.io/post/dvwa-sql-injection-test/"
+  },
+  "headline": "DVWA的SQL注入测试",
+  
+  "image": [
+    "https://p0st3r.github.io/post/dvwa-sql-injection-test/featured.jpg"
+  ],
+  
+  "datePublished": "2017-02-09T00:00:00Z",
+  "dateModified": "2017-02-09T00:00:00Z",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "HumblePoster",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "通过使用DVWA实例理解PHP中SQL注入漏洞产生的原理及利用方法，结合实例掌握其过滤方式。"
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>DVWA的SQL注入测试 | HumblePoster</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/hack"><span>Hack</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/ml"><span>ML</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/nlp"><span>NLP</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-md-auto">
+      
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/categories"><span>Categories</span></a>
+        </li>
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tags"><span>Tags</span></a>
+        </li>
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+
+<div class="article-container pt-3">
+  <h1>DVWA的SQL注入测试</h1>
+
+  
+
+  
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span><a href="/authors/admin/">admin</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    2017-02-09
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    5 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/hack/">Hack</a></span>
+  
+  <span class="middot-divider"></span>
+  <span id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span>
+
+</div>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+<div class="article-header article-container featured-image-wrapper mt-4 mb-4" style="max-width: 720px; max-height: 489px;">
+  <div style="position: relative">
+    <img src="/post/dvwa-sql-injection-test/featured_huf89b380ead4a6baec157dae7c52ca286_150832_720x0_resize_q90_lanczos.jpg" alt="" class="featured-image">
+    
+  </div>
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <p>SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。</p>
+<p>具体来说，它是利用现有的应用出现，将（恶意）的SQL目录注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入（恶意）SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者意图去执行SQL语句。</p>
+<h1 id="步骤">步骤</h1>
+<h2 id="低安全等级文件包含">低安全等级文件包含</h2>
+<h3 id="登陆dvwa">登陆DVWA</h3>
+<p>使用浏览器打开``,输入用户名密码登陆。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_45413" alt="img"></p>
+<h3 id="调整安全级别">调整安全级别</h3>
+<p>登陆后将DVWA的安全级别调整为low（见红框内）。调整之后选择SQL Injection，进入页面。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_48342" alt="img"></p>
+<h3 id="简单的id查询">简单的ID查询</h3>
+<p>提示输入User ID，输入正确的ID，将显示ID First name，Surname信息。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_64727" alt="img"></p>
+<h3 id="检测是否存在注入">检测是否存在注入</h3>
+<p>可以得知此处位注入点，尝试输入<code>'</code>，返回错误。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_58203" alt="img"></p>
+<h3 id="遍历数据库表">遍历数据库表</h3>
+<p>尝试遍历数据库表，提示输入的值是ID，可以初步判断此处为数字类型的注入。尝试输入<code>1 or 1=1</code>，尝试遍历数据库表。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_24591" alt="img"></p>
+<p>可见并没有达成目的，猜测程序将此处看成了字符型，尝试输入<code>1' or' 1' =' 1</code>后遍历出了数据库中所有内容。下面尝试不同语句，得到不同的结果。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_87635" alt="img"></p>
+<h3 id="查询信息列表长度">查询信息列表长度</h3>
+<p>利用<code>order by [num]</code>语句来测试查询信息列表长度，修改num的值,这里我们输入<code>1' order by 1 --</code>结果页面正常显示，<strong>注意–后面有空格</strong>。继续测试，<code>1' order by 2 --</code>，<code>1' order by 3 --</code>，当输入3时，页面报错。页面错误信息如下：<code>Unknown column '3' in 'order clause'</code>，由此我们判断查询结果值为2列。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_15397" alt="img"></p>
+<h3 id="获取数据库名称账户名版本及操作系统信息">获取数据库名称、账户名、版本及操作系统信息</h3>
+<p>通过使用<code>user()</code>，<code>database()</code>，<code>version()</code>三个内置函数得到连接数据库的账户名、数据库名称、数据库版本信息。</p>
+<ul>
+<li>首先参数注入<code>1' and 1=2 union select 1,2 --</code>(<strong>注意–后有空格</strong>)。</li>
+</ul>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_23692" alt="img"></p>
+<p>由上图得知，First name处显示结果位查询结果的第一列的值，surname处显示结果位查询结果第二列的值。</p>
+<ul>
+<li>通过注入<code>1' and 1=2 union select user(),database() --</code>得到数据库用户为<strong>root@localhost</strong>及数据库名<strong>dvwa</strong></li>
+</ul>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_62655" alt="img"></p>
+<ul>
+<li>通过注入<code>1' and 1=2 union select version(),database() --</code>得到数据库版本信息，此处数据库版本为<strong>5.0.90-community-nt</strong>。</li>
+</ul>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_83473" alt="img"></p>
+<ul>
+<li>通过注入<code>1' and 1=2 union select 1,@@global.version_compile_os from mysql.user --</code>获得操作系统信息。</li>
+</ul>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_94423" alt="img"></p>
+<h3 id="查询mysql数据库所有数据库及表">查询mysql数据库所有数据库及表</h3>
+<p>通过注入<code>1' and 1=2 union select 1,schema_name from information_schema.schemata --</code>查询mysql数据库的所有数据库名。</p>
+<p>这里利用mysql默认的数据库<strong>information_schema</strong>，该数据库存储了Mysql所以数据库和表的信息。如图所示</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_21763" alt="img"></p>
+<h3 id="猜解表名">猜解表名</h3>
+<p>通过注入<code>1' and exists(select * from users) --</code>猜解dvwa数据库中的表名。</p>
+<p>利用<code>1' and exists(select * from [表名])</code>，这里测试的结果，表名为users，在真实的渗透环境中，攻击者往往关心存储管理员用户和密码信息的表。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_36450" alt="img"></p>
+<h3 id="猜解字段名">猜解字段名</h3>
+<p>猜解字段名：<code>1' and exists(select [表名] from users) --</code>。这里测试的字段名有<code>first_name</code>,<code>last_name</code>。</p>
+<p>通过注入<code>1' and exists(select first_name from users) --</code>和<code>1' and exists(select last_name from users) --</code>猜解字段名。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_21940" alt="img"></p>
+<h3 id="爆出数据库中字段内容">爆出数据库中字段内容</h3>
+<p>注入<code>1' and 1=2 union select first_name,last_name from users --</code>，这里其实如果是存放管理员账户的表，那么用户名，密码信息字段就可以爆出来了。</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_94412" alt="img"></p>
+<h2 id="代码分析">代码分析</h2>
+<h3 id="low等级源代码">low等级源代码</h3>
+<p>如图所示</p>
+<p><img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_37330" alt="img"></p>
+<p>通过代码可以看出，对输入<strong>$id</strong>的值没有进行任何过滤就直接放入了SQL语句中进行处理，这样带来了极大的隐患。</p>
+<h3 id="中等等级代码分析">中等等级代码分析</h3>
+<p>将DVWA安全级别调整位medium，查看源代码。<img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_95600" alt="img"></p>
+<p>通过源代码可以看出，在中等级别时对输入的<strong>$id</strong>值使用<code>mysql_real_eascape_string()</code>函数进行了处理。在PHP中，使用<code>mysql_real_eascape_string()</code>函数用来转移SQL语句中使用字符串的特殊字符。但是使用这个函数对参数进行转换是存在绕过的。只需要将攻击字转换一下编码格式即可绕过该防护函数。比如URL编码等方式。</p>
+<p>同时发现SQL语句中变成了<code>“WHRER user_id = “$id”</code> ，此处变成了数字型注入，所以此处使用<code>mysql_real_eascape_string()</code>函数并没有起到防护作用。可以通过类似于<code>1 or 1=1</code>的语句来进行注入。</p>
+<h3 id="高等级代码分析">高等级代码分析</h3>
+<p>将DVWA安全级别调整为high，查看源代码。<img src="http://www.shiyanbar.com/UploadImage/2016/3/7/20_75240" alt="img"></p>
+<p>从源代码可以看出，此处为字符型注入。对传入<strong>$id</strong>的值使用<code>stripslashes()</code>函数处理以后，再经过到<code>$mysql_real_escape_string()</code>函数进行第二次过滤。在默认情况下，PHP会对所有的GET，POST和cookie数据自动运行<code>addslashes()</code>,<code>addslashes()</code>函数返回在部分与定义之前添加<code>\</code>。</p>
+<p><code>Striptslashes()</code>函数则是删除由<code>addslashes()</code>函数添加的反斜杠。在使用两个函数进行过滤之后再使用<code>is_numric()</code>函数检查<strong>$id</strong>值是否位数字，彻底断绝了注入的存在。此种防护不存在绕过的可能。</p>
+
+    </div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/sql/">sql</a>
+  
+  <a class="badge badge-light" href="/tags/dvwa/">DVWA</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://p0st3r.github.io/post/dvwa-sql-injection-test/&amp;text=DVWA%e7%9a%84SQL%e6%b3%a8%e5%85%a5%e6%b5%8b%e8%af%95" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://p0st3r.github.io/post/dvwa-sql-injection-test/&amp;t=DVWA%e7%9a%84SQL%e6%b3%a8%e5%85%a5%e6%b5%8b%e8%af%95" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=DVWA%e7%9a%84SQL%e6%b3%a8%e5%85%a5%e6%b5%8b%e8%af%95&amp;body=https://p0st3r.github.io/post/dvwa-sql-injection-test/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://p0st3r.github.io/post/dvwa-sql-injection-test/&amp;title=DVWA%e7%9a%84SQL%e6%b3%a8%e5%85%a5%e6%b5%8b%e8%af%95" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=DVWA%e7%9a%84SQL%e6%b3%a8%e5%85%a5%e6%b5%8b%e8%af%95%20https://p0st3r.github.io/post/dvwa-sql-injection-test/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://p0st3r.github.io/post/dvwa-sql-injection-test/&amp;title=DVWA%e7%9a%84SQL%e6%b3%a8%e5%85%a5%e6%b5%8b%e8%af%95" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu4bb7090cebbbe4a3e0580de401f23728_6887_270x270_fill_q90_lanczos_center.jpg" alt="">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://p0st3r.github.io/"></a></h5>
+        <h6 class="card-subtitle">Researcher of NTA</h6>
+        <p class="card-text">My research interests include Hacking, Cryptography, Reverse Analysis, and NLP</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:dhakkan@foxmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/p0st3r" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/post/webshell-upload-strategy/" rel="next">木马文件上传防御策略及几种绕过检测方式</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/post/kvm-vps-ss-rs/" rel="prev">基于KVM架构的VPS服务器搭建ss及锐速优化教程</a>
+  </div>
+  
+</div>
+
+</div>
+
+
+
+  
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.37431be2d92d7fb0160054761ab79602.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    2016 &middot;  ©Lithium No rights reserved.
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>
+    &middot;
+    <span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span>
+    
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

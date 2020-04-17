@@ -1,0 +1,1424 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="0x00 iptables简介 netfilter/iptables（">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/post/iptables/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PQ63HJL');
+</script>
+
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://p0st3r.github.io/post/iptables/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="HumblePoster">
+  <meta property="og:url" content="https://p0st3r.github.io/post/iptables/">
+  <meta property="og:title" content="iptables防火墙的应用和SNAT/DNAT策略 | HumblePoster">
+  <meta property="og:description" content="0x00 iptables简介 netfilter/iptables（"><meta property="og:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
+  <meta property="twitter:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2017-04-12T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2017-04-12T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://p0st3r.github.io/post/iptables/"
+  },
+  "headline": "iptables防火墙的应用和SNAT/DNAT策略",
+  
+  "datePublished": "2017-04-12T00:00:00Z",
+  "dateModified": "2017-04-12T00:00:00Z",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "HumblePoster",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "0x00 iptables简介 netfilter/iptables（"
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>iptables防火墙的应用和SNAT/DNAT策略 | HumblePoster</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/hack"><span>Hack</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/ml"><span>ML</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/nlp"><span>NLP</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-md-auto">
+      
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/categories"><span>Categories</span></a>
+        </li>
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tags"><span>Tags</span></a>
+        </li>
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>iptables防火墙的应用和SNAT/DNAT策略</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span><a href="/authors/admin/">admin</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    2017-04-12
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    14 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/hack/">Hack</a></span>
+  
+  <span class="middot-divider"></span>
+  <span id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span>
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <h1 id="0x00-iptables简介">0x00 iptables简介</h1>
+<p>netfilter/iptables（简称为iptables）组成Linux平台下的包过滤防火墙，与大多数的Linux软件一样，这个包过滤防火墙是免费的，它可以代替昂贵的商业防火墙解决方案。</p>
+<p>Linux防火墙体系主要工作在网络层，针对TCP/IP数据包实施过滤和限制，完成封包过滤、封包重定向和网络地址转换（NAT）等功能，属于典型的包过滤防火墙（也称网络层防火墙）。其基于内核编码实现，具有非常稳定的性能和高效率，因此被广泛的应用。</p>
+<h2 id="1-netfilter和iptables的区别">1. Netfilter和iptables的区别：</h2>
+<ul>
+<li>Netfilter:指的是Linux内核中实现包过滤防火墙的内部结构，不以程序或文件的形式存在，属于“内核态”（KernelSpace，又称内核空间）的防火墙功能体系；</li>
+<li>Iptables：指的是用来管理Linux防火墙的命令程序，通常位于/sbin/iptables，属于“用户态”（UserSpace，又称用户空间）的防火墙管理体系；</li>
+</ul>
+<p>所以其实iptables只是Linux防火墙的管理工具而已，位于/sbin/iptables。真正实现防火墙功能的是 netfilter，它是Linux内核中实现包过滤的内部结构。</p>
+<h2 id="2-规则rules">2. 规则（rules)</h2>
+<p>规则（rules）其实就是网络管理员预定义的条件，规则一般的定义为“如果数据包头符合这样的条件，就这样处理这个数据包”。</p>
+<p>规则存储在内核空间的信息 包过滤表中，这些规则分别指定了<strong>源地址</strong>、<strong>目的地址</strong>、<strong>传输协议</strong>（如TCP、UDP、ICMP）和<strong>服务类型</strong>（如HTTP、FTP和SMTP）等。当数据包与规则匹配时，iptables就根据规则所定义的方法来处理这些数据包，如<strong>放行（accept）</strong>、**拒绝（reject）<strong>和</strong>丢弃（drop）**等。</p>
+<p>配置防火墙的主要工作就是添加、修改和删除这些规则。</p>
+<h2 id="3-包过滤的工作层次">3. 包过滤的工作层次：</h2>
+<p>主要是网络层，针对IP数据包。体现在对包内的IP地址、端口等信息的处理上。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-ac1c43e4005e585e8b039f6d0f654d76_720w.png" alt="img"></p>
+<h2 id="3-iptables的表链结构">3. iptables的表、链结构：</h2>
+<p>iptables作用：为包过滤机制的实现提供规则（或策略），通过各种不同的规则，告诉netfilter对来自某些源、前往某些目的或具有某些协议特征的数据包应该如何处理。</p>
+<p>iptables内置了4个表，即<strong>filter</strong>表、<strong>nat</strong>表、<strong>mangle</strong>表和<strong>raw表</strong>，分别用于实现<strong>包过滤</strong>，<strong>网络地址转换</strong>、<strong>包重构(修改)<strong>和</strong>数据跟踪处理</strong>。 链（chains）是数据包传播的路径，每一条链其实就是众多规则中的一个检查清单，每一条链中可以有一 条或数条规则。</p>
+<p>当一个数据包到达一个链时，iptables就会从链中第一条规则开始检查，看该数据包是否满足规则所定义的条件。如果满足，系统就会根据 该条规则所定义的方法处理该数据包；否则iptables将继续检查下一条规则，如果该数据包不符合链中任一条规则，iptables就会根据该链预先定 义的默认策略来处理数据包。</p>
+<h3 id="规则链">规则链：</h3>
+<ul>
+<li>规则的作用：对数据包进行过滤或处理</li>
+<li>链的作用：容纳各种防火墙规则</li>
+<li>链的分类依据：处理数据包的不同时机</li>
+</ul>
+<p>默认包括5种规则链</p>
+<ul>
+<li>INPUT：处理入站数据包</li>
+<li>OUTPUT：处理出站数据包</li>
+<li>FORWARD：处理转发数据包</li>
+<li>POSTROUTING链：在进行路由选择后处理数据包（对数据链进行源地址修改转换）</li>
+<li>PREROUTING链：在进行路由选择前处理数据包（做目标地址转换）</li>
+</ul>
+<p><strong>INPUT</strong>、<strong>OUTPUT</strong>链主要用在“主机型防火墙”中，即主要针对服务器本机进行保护的防火墙；而<strong>FORWARD</strong>、<strong>PREROUTING=</strong>、<strong>POSTROUTING</strong>链多用在“网络型防火墙”中。</p>
+<h3 id="规则表">规则表</h3>
+<ul>
+<li>表的作用：容纳各种规则链</li>
+<li>表的划分依据：防火墙规则的作用相似</li>
+</ul>
+<p>默认包括4个规则表：</p>
+<ul>
+<li>raw表：确定是否对该数据包进行状态跟踪；对应iptable_raw，表内包含两个链：OUTPUT、PREROUTING</li>
+<li>mangle表：为数据包的TOS（服务类型）、TTL（生命周期）值，或者为数据包设置Mark标记，以实现流量整形、策略路由等高级应用。其对应iptable_mangle，表内包含五个链：PREROUTING、POSTROUTING、INPUT、OUTPUT、FORWARD</li>
+<li>nat表：修改数据包中的源、目标IP地址或端口；其对应的模块为iptable_nat，表内包括三个链：PREROUTING、POSTROUTING、OUTPUT</li>
+<li>filter表：确定是否放行该数据包（过滤）；其对应的内核模块为iptable_filter，表内包含三个链：INPUT、FORWARD、OUTPUT</li>
+</ul>
+<p><img src="https://pic1.zhimg.com/80/v2-3716f456bd27f19d2b71c522b7e4a7d4_720w.png" alt="img"></p>
+<p>Iptables采用“表”和“链”的分层结构。注意一定要明白这些表和链的关系及作用。</p>
+<h2 id="4-链表的优先顺序">4. 链、表的优先顺序</h2>
+<ul>
+<li>
+<p>规则表之间的优先顺序</p>
+</li>
+<li>
+<ul>
+<li>Raw==》mangle==》nat==》filter</li>
+</ul>
+</li>
+<li>
+<p>规则链之间的顺序</p>
+</li>
+<li>
+<ul>
+<li>入站：PREROUTING==》INPUT</li>
+<li>出站：OUTPUT==》POSTROUTING</li>
+<li>转发：PREROUTING==》FORWARD==》POSTROUTIN</li>
+</ul>
+</li>
+<li>
+<p>规则链内的匹配顺序</p>
+</li>
+<li>
+<ul>
+<li>按顺序依次检查，<strong>匹配即停止</strong>（LOG策略例外）</li>
+<li>若找不到相匹配的规则，则按该链的默认策略处理</li>
+</ul>
+</li>
+</ul>
+<h1 id="0x01-编写防火墙规则">0x01 编写防火墙规则</h1>
+<h2 id="1-iptables-的基本语法控制类型">1. iptables <strong>的基本语法、控制类型</strong></h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">iptables [ -t 表名] 选项 [链名] [条件] [ -j 控制类型] 
+</code></pre></div><p><strong>注意事项：</strong></p>
+<ul>
+<li>不指定表名时，-t 默认指filter表</li>
+<li>不指定链名时，默认指表内的所有链</li>
+<li>除非设置链的默认策略，否则必须指定匹配条件</li>
+<li>选项、链名、控制类型使用大写字母，其余均为小写</li>
+</ul>
+<h2 id="2-数据包的常见控制类型">2. 数据包的常见控制类型</h2>
+<blockquote>
+<ul>
+<li>ACCEPT：允许通过</li>
+<li>DROP：直接丢弃，不给出任何回应</li>
+<li>REJECT：拒绝通过，必要时会给出提示</li>
+<li>LOG：在/var/log/messages文件中记录日志信息，然后传给下一条规则继续匹配（匹配即停止对LOG操作不起作用，因为LOG只是一种辅助动作，并没有真正的处理数据包）</li>
+</ul>
+</blockquote>
+<h2 id="3-iptables命令的管理控制选项">3. iptables命令的管理控制选项</h2>
+<ul>
+<li>-A 在指定链的末尾添加（append）一条新的规则 -D 删除（delete）指定链中的某一条规则，可以按规则序号和内容删除</li>
+<li>-I 在指定链中插入（insert）一条新的规则，默认在第一行添加-R 修改、替换（replace）指定链中的某一条规则，可以按规则序号和内容替换</li>
+<li>-L 列出（list）指定链中所有的规则进行查看</li>
+<li>-E 重命名用户定义的链，不改变链本身</li>
+<li>-F 清空（flush）</li>
+<li>-N 新建（new-chain）一条用户自己定义的规则链</li>
+<li>-X 删除指定表中用户自定义的规则链（delete-chain）</li>
+<li>-P 设置指定链的默认策略（policy）</li>
+<li>-Z 将所有表的所有链的字节和数据包计数器清零</li>
+<li>-n 使用数字形式（numeric）显示输出结果</li>
+<li>-v：以更详细的方式显示规则信息</li>
+<li>&ndash;line-numbers：查看规则时，显示规则的序号-X：删除自定义的规则链 <strong>eg：将filter表中FORWARD链中的默认策略设为丢弃，OUTPUT链的默认策略设为允许</strong></li>
+</ul>
+<h2 id="4-规则的匹配条件">4. 规则的匹配条件</h2>
+<ul>
+<li>
+<p>通用匹配</p>
+</li>
+<li>
+<ul>
+<li>
+<p>协议匹配: -p [协议名]</p>
+</li>
+<li>
+<p>地址匹配</p>
+</li>
+<li>
+<ul>
+<li>-s [源地址]</li>
+<li>-d [目标地址]</li>
+</ul>
+</li>
+<li>
+<p>接口匹配</p>
+</li>
+<li>
+<ul>
+<li>-i [入站网卡]</li>
+<li>-o [出站网卡]</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>隐含匹配</p>
+</li>
+<li>
+<ul>
+<li>
+<p>端口匹配</p>
+</li>
+<li>
+<ul>
+<li>-sport [源端口]</li>
+<li>-dport [目标端口]</li>
+</ul>
+</li>
+<li>
+<p>TCP标记匹配：&ndash;tcp-flags [检查范围] [被设置的标记]</p>
+</li>
+<li>
+<p>ICMP类型匹配：&ndash;icmp-type [ICMP类型]</p>
+</li>
+</ul>
+</li>
+<li>
+<p>显式匹配</p>
+</li>
+<li>
+<ul>
+<li>多端口匹配：-m multiport &ndash;sport | &ndash;dport [端口列表]</li>
+<li>IP范围匹配：-m iprange &ndash;src-range [IP范围]</li>
+<li>MAC地址匹配：-m mac &ndash;mac-range [MAC地址]</li>
+<li>状态匹配：-m state &ndash;state [连接状态]</li>
+</ul>
+</li>
+</ul>
+<h3 id="常见通用匹配条件">常见通用匹配条件：</h3>
+<ol>
+<li><strong>协议匹配：-p [协议名]</strong></li>
+</ol>
+<p>（eg：<strong>tcp</strong>、<strong>udp</strong>、<strong>icmp</strong>、<strong>all</strong>(针对所有IP数据包)），可用的协议类型存放于Linux系统的/etc/procotols文件中；</p>
+<p>eg：丢弃通过icmp协议访问防火墙本机的数据包、允许转发经过防火墙的除icmp协议以外的数据包：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@iptables ~]# iptables -I INPUT -p icmp -j DROP
+[root@iptables ~]# iptables -A FORWARD -p ! icmp -j ACCEPT
+</code></pre></div><p>【！】表示取反</p>
+<p><strong>2. 地址匹配：-s [源地址]、 -d [目标地址]</strong></p>
+<p>可以是IP地址、网段地址，但不建议使用主机名、域名地址，因为解析过程会影响效率</p>
+<p>eg：拒绝转发源地址为192.168.10.100的数据、允许转发源地址位于192.168.1.0/24网段的数据：</p>
+<pre><code>[root@iptables ~]# iptables -A FORWARD -s 192.168.10.100 -j REJECT [root@iptables ~]# iptables -A FORWARD -s 192.168.1.0/24 -j ACCEPT 
+</code></pre><p>当遇到小规模的网络扫描或攻击时，封IP地址是比较有效的方式。</p>
+<p>eg：添加防火墙规则封锁来自172.16.16.0/24网段的频繁扫描、登录穷举等不良企图：</p>
+<pre><code>[root@iptables ~]# iptables -I INPUT -s 172.16.16.0/24 -j DROP [root@iptables ~]# iptables -I FORWARD -s 172.16.16.0/24 -j DROP
+</code></pre><p><strong>3. 接口匹配</strong>：<strong>-i [入站网卡]、-o [出站网卡]</strong></p>
+<p>eg：丢弃从外网接口eth0访问防火墙本机且源地址为私有地址的数据包：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@iptables ~]# iptables -A INPUT -i eth0 -s 172.16.0.0/12 -j DROP
+</code></pre></div><h3 id="常用隐含匹配条件">常用隐含匹配条件：</h3>
+<p><strong>1. 端口匹配</strong>：<strong>&ndash;sport [源端口]、&ndash;dport [目的端口]</strong></p>
+<p>单个端口号或者以冒号“：”分隔的端口范围都是可以接受的，但不连续的多个端口不能采用这种方式。</p>
+<p>eg：允许为网段192.168.1.0/24转发DNS查询数据包：</p>
+<p><code>[root@iptables ~]# iptables -A FORWARD -s 192.168.1.0/24 -p udp --dport 53 -j ACCEPT [root@iptables ~]# iptables -A FORWARD -d 192.168.1.0/24 -p udp --sport 53 -j ACCEPT</code></p>
+<p>eg：构建vsftpd服务器时，开放20、21端口，以及用于被动模式的端口范围24500~24600：</p>
+<p><code>[root@iptables ~]# iptables -A INPUT -p tcp --dport 20:21 -j ACCEPT [root@iptables ~]# iptables -A INPUT -p tcp --dport 24500:24600 -j ACCEPT</code></p>
+<p><strong>2. TCP标记匹配</strong>：<strong>&ndash;tcp-flags 检查范围 被设置的标记</strong></p>
+<p>针对协议为TCP、用来检查数据包的标记位（&ndash;tcp-flags）</p>
+<p>“检查范围”指出需要检查数据包的哪几个标记，“被设置的标记”则明确匹配对应值为1的标记，多个标记之间以逗号进行分隔。</p>
+<p>eg：拒绝从外网接口eth0直接访问防火墙本机的TCP请求，但允许其他主机发给防火墙的TCP等响应数据包请求：</p>
+<p><code>[root@iptables ~]# iptables -P INPUT DROP [root@iptables ~]# iptables -I INPUT -i eth0 -p tcp --tcp-flags SYN,RST,ACK SYN -j DROP [root@iptables ~]# iptables -I INPUT -i eth0 -p tcp --tcp-flags ! --syn -j ACCEPT</code></p>
+<p><strong>3. ICMP类型匹配</strong>：<strong>&ndash;icmp-type ICMP类型</strong></p>
+<p>ICMP类型使用字符串或数字代码表示：</p>
+<ul>
+<li>Echo-Request代码为8——表ICMP请求；</li>
+<li>Echo-Reply代码为0——ICMP回显；</li>
+<li>Destination-Unreachable代码为3——ICMP目标不可达；</li>
+</ul>
+<p>eg：禁止从其他主机ping本机，但是允许本机ping其他主机：</p>
+<p><code>[root@iptables ~]# iptables -A INPUT -p icmp --icmp-type 8 -j DROP [root@iptables ~]# iptables -A INPUT -p icmp --icmp-type 0 -j ACCEPT [root@iptables ~]# iptables -A INPUT -p icmp --icmp-type 3 -j ACCEPT [root@iptables ~]# iptables -A INPUT -p icmp -j DROP </code></p>
+<h3 id="常用的显式匹配条件">常用的显式匹配条件</h3>
+<p><strong>1. 多端口匹配</strong>：<strong>-m multiport &ndash;sports [源端口列表]</strong></p>
+<p><strong>-m multiport &ndash;dports [目的端口列表]</strong></p>
+<p>eg：允许本机开放25、80、110、143端口，以便提供电子邮件服务：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@iptables ~]# iptables -A INPUT -p tcp -m multiport --dport 25,80,110,143 -j ACCEPT
+</code></pre></div><p><strong>2. IP范围匹配</strong>：<strong>-m iprange &ndash;src-range [IP范围]</strong></p>
+<p>用来检查数据包的源地址、目标地址，其中IP范围采用“起始地址—结束地址”的形式：</p>
+<p>eg：禁止转发源IP地址位于192.168.1.10与192.168.1.20之间的TCP数据包：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@iptables ~]# iptables -A FORWARD -p tcp -m iprange --src-range 192.168.1.10-192.168.1.20 -j ACCEPT
+</code></pre></div><p><strong>3. MAC地址匹配</strong>：<strong>-m mac &ndash;mac-source [MAC地址]</strong></p>
+<p>因为MAC地址的局限性，此类匹配一般只适用于内部网络。</p>
+<p>eg：根据MAC地址封锁主机，禁止其访问本机的任何应用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@iptables ~]# iptables -A INPUT -m mac --mac-source 00:01:02:03:04:cc -j DROP
+</code></pre></div><p><strong>4. 状态匹配</strong>：<strong>-m state &ndash;state [连接状态]</strong></p>
+<ul>
+<li>基于iptables的状态跟踪机制用来检查数据包的连接状态（State）</li>
+<li>常见的连接状态包括NEW（与任何连接无关的）、ESTABLISHED（响应请求或者已建立连接的）、RELATED（与已有连接有相关性的，eg：FTP数据连接）。</li>
+</ul>
+<p>eg：禁止转发与正常TCP连接无关的非“&ndash;syn”请求数据包（如伪造的一些网络攻击数据包）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@iptables ~]# iptables -A FORWARD -m state --state NEW -p tcp ! --syn -j DROP
+</code></pre></div><p>eg：只开放本机的web服务（80端口），但对发给本机的TCP应答数据包予以放行，其他入站数据包均丢弃：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@iptables ~]# iptables -I INPUT -p tcp -m multiport --dport 80 -j ACCEPT
+[root@iptables ~]# iptables -I INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT
+[root@iptables ~]# iptables -P INPUT DROP
+</code></pre></div><h1 id="0x02-iptables防火墙规则的保存与恢复">0x02 iptables防火墙规则的保存与恢复</h1>
+<p>1、保存iptables的规则，避免开机失效</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">iptables-save &gt; /etc/iptables 
+</code></pre></div><p>2、编辑网卡，写入开机加载iptables规则</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">vi  /etc/network/interfaces
+</code></pre></div><p>3、 在网卡配置文件中写入加载 之前保存的规则文件 使其开机可以加载iptables的规则文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text"> iptables-restore &lt; /etc/iptables 
+</code></pre></div><h1 id="0x03-snat和dnat">0x03 SNAT和DNAT</h1>
+<p>SNAT是指在数据包从网卡发送出去的时候，把数据包中的源地址部分替换为指定的IP，这样，接收方就认为数据包的来源是被替换的那个IP的主机。</p>
+<p>DNAT就是指数据包从网卡发送出去的时候，修改数据包中的目的IP，表现为如果你想访问A，可是因为网关做了DNAT，把所有访问A的数据包的目的IP全部修改为B，那么，你实际上访问的是B 因为，路由是按照目的地址来选择的。</p>
+<p>因此DNAT是在PREROUTING链上来进行的，而SNAT是在数据包发送出去的时候才进行，所以是在POSTROUTING链上进行的。 通过SNAT和DNAT可以使内网和外网进行相互通讯。#</p>
+<p>##SNAT策略概述</p>
+<ul>
+<li>SNAT策略的典型应用环境</li>
+</ul>
+<p>SNAT策略的典型应用环境</p>
+<p>​		局域网主机共享单个公网IP地址接入Internet</p>
+<ul>
+<li>
+<p>SNAT策略的原理</p>
+<p><strong>源地址转换</strong>（Source Network Address Translation）是linux防火墙的一种地址转换操作，也是iptables命令中的一种数据包控制类型，并根据指定条件修改数据包的源IP地址。</p>
+</li>
+<li>
+<p>实验环境拓扑：</p>
+</li>
+<li>
+<p>实验分析：</p>
+<ul>
+<li>
+<p>a：只开启路由转发，未做地址转换的情况：</p>
+<p>分析：</p>
+<ul>
+<li>从局域网PC机访问Internet的数据包经过网关转发后其源IP地址保持不变；</li>
+<li>当Internet中的主机收到这样的请求数据包后，响应数据包将无法正确返回，从而导致访问失败。</li>
+</ul>
+</li>
+<li>
+<p>b：开启路由转发，并设置SNAT转换的情况：</p>
+<p>分析：</p>
+<ul>
+<li>局域网PC机访问Internet的数据包到达网关服务器时，会先进行路由选择；</li>
+<li>如果该数据包需要从外网接口eth0向外转发，则将其源IP地址192.168.10.2修改为网关的外网接口地址210.106.46.151，然后发送给目标主机。</li>
+</ul>
+</li>
+</ul>
+<p>b访问方式的优点：Internet中的服务器并不知道局域网PC机的实际IP地址，中间的转换完全由网关主机完成，起到了保护内部网络的作用。</p>
+</li>
+</ul>
+<h2 id="snat策略的应用">SNAT策略的应用</h2>
+<p>前提条件：</p>
+<ul>
+<li>局域网各主机正确设置IP地址/子网掩码</li>
+<li>局域网各主机正确设置默认网关地址</li>
+<li>Linux网关支持IP路由转发</li>
+</ul>
+<p>实现方法：</p>
+<ul>
+<li>编写SNAT转换规则</li>
+</ul>
+<p>SNAT共享固定IP地址上网：</p>
+<ul>
+<li>
+<p>实验环境描述：</p>
+<ul>
+<li>Linux网关服务器两块网卡eth0：210.106.46.151连接Internet、eth1：192.168.10.1连接局域网，开启IP路由功能</li>
+<li>局域网PC机的默认网关设为192.168.10.1，并设置正确的DNS服务器。</li>
+<li>内网和外网分别新建客户机，分别指定对应的网关地址，在外网客户机上开启httpd服务，在内网客户机中访问httpd服务，最后查看httpd客户机的访问记录；</li>
+<li>要求：192.168.10.0/24网段的PC机能够通过共享方式正常访问internet。</li>
+</ul>
+</li>
+<li>
+<p>实验步骤：</p>
+<p>1：打开网关的路由转发（IP转发是实现路由功能的关键所在）：</p>
+<p>打开路由转发的两种方式：</p>
+<ul>
+<li>
+<p>永久打开（修改<code>/proc</code>文件系统中的<code>ip_forward</code>，当值为1时表示开启，为0表示关闭）：</p>
+</li>
+<li>
+<p>临时开启，临时生效</p>
+</li>
+</ul>
+<p>2：正确设置SNAT策略（若要保持SNAT策略长期有效，应将相关命令写入rc.local中）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@localhost ~]# iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o eth0 -j SNAT --to-source 210.106.46.151
+</code></pre></div><pre><code>	
+  3：测试SNAT共享接入的结果：
+	
+  ​	上诉操作完成后，使用局域网PC就可以正常访问Internet中的网站。
+	
+  ​	对于被访问的网站服务器，在日志文件中将会记录以网关主机210.106.46.151访问。
+
+</code></pre></li>
+</ul>
+<p><strong>共享动态IP地址上网</strong>：</p>
+<ul>
+<li>MASQUERADE —— 地址伪装</li>
+<li>适用于外网IP地址非固定的情况</li>
+<li>对于ADSL拨号连接，接口通常为ppp0、ppp1</li>
+<li>将SNAT规则改为MASQUERADE即可</li>
+</ul>
+<p>实例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[root@localhost ~]# iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o ppp0 -j MASQUERADE
+</code></pre></div><p>如果网关使用固定的公网IP地址，建议选择SNAT策略而不是MASQUERADE策略，以减少不必要的系统开销。</p>
+<p>##DNAT策略概述</p>
+<ul>
+<li>DNAT策略的原理：</li>
+</ul>
+<p><strong>目标地址转换</strong>，Destination Network Address Translation，是Linux防火墙的另一种地址转换操作，也是iptables命令中的一种数据包控制类型，其作用是根据指定条件修改数据包的目标IP地址、目标端口。</p>
+<p>SNAT用来修改源IP地址，而DNAT用来修改目标IP地址、目标端口；SNAT只能用在NAT表的POSTROUTING链，而DNAT只能用在NAT表的PREROUTING链和OUTPUT链（或被其调用的链）中。</p>
+
+    </div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/iptables/">iptables</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://p0st3r.github.io/post/iptables/&amp;text=iptables%e9%98%b2%e7%81%ab%e5%a2%99%e7%9a%84%e5%ba%94%e7%94%a8%e5%92%8cSNAT/DNAT%e7%ad%96%e7%95%a5" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://p0st3r.github.io/post/iptables/&amp;t=iptables%e9%98%b2%e7%81%ab%e5%a2%99%e7%9a%84%e5%ba%94%e7%94%a8%e5%92%8cSNAT/DNAT%e7%ad%96%e7%95%a5" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=iptables%e9%98%b2%e7%81%ab%e5%a2%99%e7%9a%84%e5%ba%94%e7%94%a8%e5%92%8cSNAT/DNAT%e7%ad%96%e7%95%a5&amp;body=https://p0st3r.github.io/post/iptables/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://p0st3r.github.io/post/iptables/&amp;title=iptables%e9%98%b2%e7%81%ab%e5%a2%99%e7%9a%84%e5%ba%94%e7%94%a8%e5%92%8cSNAT/DNAT%e7%ad%96%e7%95%a5" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=iptables%e9%98%b2%e7%81%ab%e5%a2%99%e7%9a%84%e5%ba%94%e7%94%a8%e5%92%8cSNAT/DNAT%e7%ad%96%e7%95%a5%20https://p0st3r.github.io/post/iptables/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://p0st3r.github.io/post/iptables/&amp;title=iptables%e9%98%b2%e7%81%ab%e5%a2%99%e7%9a%84%e5%ba%94%e7%94%a8%e5%92%8cSNAT/DNAT%e7%ad%96%e7%95%a5" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu4bb7090cebbbe4a3e0580de401f23728_6887_270x270_fill_q90_lanczos_center.jpg" alt="">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://p0st3r.github.io/"></a></h5>
+        <h6 class="card-subtitle">Researcher of NTA</h6>
+        <p class="card-text">My research interests include Hacking, Cryptography, Reverse Analysis, and NLP</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:dhakkan@foxmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/p0st3r" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/post/win-getshell-and-open-rdp/" rel="next">Windows服务器提权和开启3389远程连接</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/post/php-file-contains/" rel="prev">PHP文件包含介绍及一些利用方式</a>
+  </div>
+  
+</div>
+
+</div>
+
+
+
+  
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.37431be2d92d7fb0160054761ab79602.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    2016 &middot;  ©Lithium No rights reserved.
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>
+    &middot;
+    <span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span>
+    
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

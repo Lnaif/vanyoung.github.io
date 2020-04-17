@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Machine Learning | HumblePoster</title>
+    <link>https://p0st3r.github.io/ml/</link>
+      <atom:link href="https://p0st3r.github.io/ml/index.xml" rel="self" type="application/rss+xml" />
+    <description>Machine Learning</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Sun, 09 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>Machine Learning</title>
+      <link>https://p0st3r.github.io/ml/</link>
+    </image>
+    
+    <item>
+      <title>Definition</title>
+      <link>https://p0st3r.github.io/ml/ch1_1/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch1_1/</guid>
+      <description>&lt;p&gt;Just as we judge tomorrow&amp;rsquo;s weather based on past experience, eaters want to pick a good melon from their past experience, so can a computer help humans to make that happen? If there is such a discipline, where human &amp;ldquo;experience&amp;rdquo; corresponds to the &amp;ldquo;data&amp;rdquo; in the computer, and the computer learns this empirical data to generate an algorithmic model that allows the computer to make valid judgments in the face of new situations, and that is Machine Learning.&lt;/p&gt;
+&lt;p&gt;Mitchell, author of another classic textbook, gives a formal definition that assumes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;P&lt;/code&gt;: The performance of a computer program on a task class $T$.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;T&lt;/code&gt;: The type of task the computer program wants to achieve.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;E&lt;/code&gt;: Denotes experience, i.e., a historical data set.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If the computer program obtained an improvement in performance $P$ on task $T$ by using experience $E$, the program is said to have learned from $E$.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Terms</title>
+      <link>https://p0st3r.github.io/ml/ch1_2/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch1_2/</guid>
+      <description>&lt;h2 id=&#34;data&#34;&gt;Data&lt;/h2&gt;
+&lt;p&gt;Suppose we collect data on a batch of watermelons, e.g.:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;(color=green; rootstock=crumpled; knock=muddy)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(color=black; rootstock=slightly crumpled; knock=dull)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(color=light from; rootstock=hard; knock=crisp)&amp;hellip;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Each pair of brackets is a record of a watermelon. Definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Data Set&lt;/code&gt;: The collection of all records is &lt;em&gt;data set&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Sample&lt;/code&gt;: Each record is an &lt;em&gt;instance&lt;/em&gt; or &lt;em&gt;sample&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Feature&lt;/code&gt; or &lt;code&gt;Attribute&lt;/code&gt;: A single feature is: a &lt;em&gt;feature&lt;/em&gt; or &lt;em&gt;attribute&lt;/em&gt;. e.g. color or percussion.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Vector&lt;/code&gt;: For each record represented on the axis can be represented by a &lt;em&gt;vector&lt;/em&gt;. e.g. (green, huddled, turbid), i.e. each watermelon is: a feature vector.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Dimensionality&lt;/code&gt;: The number of characteristics of a sample is &lt;em&gt;dimensionality&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Dimensional Disaster&lt;/code&gt;: The watermelon&amp;rsquo;s example dimension is 3, when the dimensionality is very large and it called &lt;em&gt;dimensional disaster&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;data-set&#34;&gt;Data Set&lt;/h2&gt;
+&lt;p&gt;When a computer program learns empirical data to generate an algorithm model, each record is called a &lt;code&gt;training sample&lt;/code&gt;, and when the model is trained and we want to test the model&amp;rsquo;s performance with new samples, each new sample is called a &lt;code&gt;test sample&lt;/code&gt;. Definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Training Set&lt;/code&gt;: The set of all training samples is &lt;em&gt;training set&lt;/em&gt;, [special].&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Test Set&lt;/code&gt;: The set of all test samples is &lt;em&gt;test set&lt;/em&gt; , [general].&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Generalization&lt;/code&gt;: The ability of the machine-learned model to apply to the new sample is &lt;em&gt;generalization&lt;/em&gt;. i.e. from special to general.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;classfication&#34;&gt;Classfication&lt;/h2&gt;
+&lt;p&gt;In the case of the watermelon, we want the computer to train a decision model to determine whether a new watermelon is a good watermelon or not by learning data about its characteristics. What we can tell is: whether watermelon is good or bad, which is a discrete value. Likewise, there are projections of future population numbers by using population data from previous years, which are continuous values. Definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Classfication&lt;/code&gt;: The problem where the predicted values are discrete is &lt;em&gt;classification&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Regression&lt;/code&gt;: The problem where the predicted values are continuous is &lt;em&gt;regression&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;method-of-learning&#34;&gt;Method of learning&lt;/h2&gt;
+&lt;p&gt;In our process of predicting, it is clear that we already know in advance whether the melon in the training set is a good or bad,  the learner learns the characteristics of these melons and thus concludes the law. The watermelon in the training set have been marked, called marking information.&lt;/p&gt;
+&lt;p&gt;But there are also cases where the information is not marked. For example, we want to divide a pile of watermelons into two small piles according to their characteristics,  so that the watermelons in a pile are as similar as possible. For this problem, we do not know beforehand how good or bad the watermelons are, the samples are not marked with information. Definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Supervised Learning&lt;/code&gt;: The learning task for which the training data has tagged information is &lt;em&gt;supervised learning&lt;/em&gt;, and it is easy to know that both the classification and regression described above are supervised learning categories.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Unsupervised Learing&lt;/code&gt;: The learning tasks for which the training data is not labeled with information are &lt;em&gt;unsupervised learning&lt;/em&gt;, commonly known as clustering and association rules.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Error and overfitting</title>
+      <link>https://p0st3r.github.io/ml/ch2_1/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch2_1/</guid>
+      <description>&lt;h2 id=&#34;error&#34;&gt;Error&lt;/h2&gt;
+&lt;p&gt;The difference between the learner&amp;rsquo;s actual prediction of the sample and the true value of the sample is called &amp;lsquo;error&amp;rsquo;. Definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;lsquo;Training Error&amp;rsquo; or &amp;lsquo;Empirical Error&amp;rsquo;: Error in the training set&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;lsquo;Test Error&amp;rsquo;: Error in the test set&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;lsquo;generalization error&amp;rsquo;: The learner&amp;rsquo;s error in all new samples&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;overfitting&#34;&gt;Overfitting&lt;/h2&gt;
+&lt;p&gt;Apparently, we want learners perform well on the new sample which with small generalization errors. Therefore, the learners should be able to learn as many universal &lt;strong&gt;general characterisitics&lt;/strong&gt; from the training set as possible, so as to make the correct discrimination when encountering new samples.&lt;/p&gt;
+&lt;p&gt;However, when learners learn the traing set &lt;strong&gt;too wel&lt;/strong&gt; that take some of the training sample&amp;rsquo;s own characteristics as a general feature; there are also cases where the learning capacity is insufficient to learn the basic characteristics of the training set. Definitions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;lsquo;Overfitting&amp;rsquo;: Over-learning to the point of learning the not-so-generic characteristics included in the training sample&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;lsquo;Underfitting&amp;rsquo;: The learning ability is so poor that the general properties of the training sample have not been learned well&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is known that in the overfitting problem, the training error is very small, but the test error is large; in the underfitting problem, both the training error and the test error are large. Currently, the underfitting problem is relatively easy to overcome, such as increasing the number of iterations, but there is still no very good solution to the overfitting problem, and overfitting is a key obstacle to machine learning.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://camo.githubusercontent.com/3c5a03bf3c29a9c1926ce013d3ac938e93d87ac9/68747470733a2f2f692e6c6f6c692e6e65742f323031382f31302f31372f356263373138313137323939362e706e67&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Method of Evaluation</title>
+      <link>https://p0st3r.github.io/ml/ch2_2/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch2_2/</guid>
+      <description>&lt;p&gt;In realistic tasks, we often have multiple algorithms to choose from, so how do chonse the best one for us? As mentioned in last chapter, we want the learner with the &amp;lsquo;smallest generalization error&amp;rsquo;, and the ideal solution is to evaluate the generalization error of the model and select the smallest one. However, the generalization error refers to the ability of the model to be applied to all new samples that we do not have direct access to the it.&lt;/p&gt;
+&lt;p&gt;Thus, we usually use a &amp;lsquo;test set&amp;rsquo; to test the learner&amp;rsquo;s ability to discriminate on new samples, and then use the &lt;strong&gt;test error&lt;/strong&gt; on the &lt;strong&gt;test set&lt;/strong&gt; as an approximation of the &lt;strong&gt;generalization error&lt;/strong&gt;. Obviously the test set which we select should be as mutually exclusive as possible with the training set, and here&amp;rsquo;s a little story to explain why.&lt;/p&gt;
+&lt;p&gt;Suppose the teacher has 10 questions for the students to practice, and uses the same 10 questions for the test, however some children may could only do these 10 questions and get a high score. It is clear that the score does not reflect the real level effectively.&lt;/p&gt;
+&lt;p&gt;In our task, we would like to have a well generalized models, as the teacher would like the students not only learned the course well but also gained the ability to think about what they have learned.&lt;/p&gt;
+&lt;p&gt;Training samples are equivalent to the exercises for students to practice, and the testing process is equivalent to an exam. If the test sample had been used for training, it would have been an over-optimistic estimate.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Split Traing set and Test set</title>
+      <link>https://p0st3r.github.io/ml/ch2_3/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch2_3/</guid>
+      <description>&lt;p&gt;In order to use the &lt;strong&gt;test error&lt;/strong&gt; of a &lt;strong&gt;test set&lt;/strong&gt; as an approximation of the &lt;strong&gt;generalization error&lt;/strong&gt;, we need to effectively split the initial data set into mutually exclusive &lt;strong&gt;training sets&lt;/strong&gt; and &lt;strong&gt;test sets&lt;/strong&gt;. The following are some common methods.&lt;/p&gt;
+&lt;h2 id=&#34;hold-out&#34;&gt;Hold-out&lt;/h2&gt;
+&lt;p&gt;The data set $D$ is divided into two mutually exclusive sets, one as the training set $S$ and one as the test set $T$, satisfying $D=S\cupT$ and $S\capT=\phi$. The common division is about 2/3-4/5 samples are used for training and the rest for testing.&lt;/p&gt;
+&lt;p&gt;It is important to note that the division of the training/test sets should be as consistent as possible in the distribution of the data to avoid additional bias, and the stratified sampling is commonly used.&lt;/p&gt;
+&lt;p&gt;At the same time, the results of the single hold-out are often not stable enough due to the random nature of the division, and generally we take the average of a number of random division repeated experiments.&lt;/p&gt;
+&lt;h2 id=&#34;cross-validation&#34;&gt;Cross Validation&lt;/h2&gt;
+&lt;h2 id=&#34;bootstrapping&#34;&gt;Bootstrapping&lt;/h2&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Linear regression</title>
+      <link>https://p0st3r.github.io/ml/ch3_1/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch3_1/</guid>
+      <description>&lt;p&gt;lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam. Quisque risus orci, mollis id ante sit amet, gravida egestas nisl. Sed ac tempus magna. Proin in dui enim. Donec condimentum, sem id dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus. Vestibulum sit amet erat at nulla eleifend gravida.&lt;/p&gt;
+&lt;p&gt;Nullam vel molestie justo. Curabitur vitae efficitur leo. In hac habitasse platea dictumst. Sed pulvinar mauris dui, eget varius purus congue ac. Nulla euismod, lorem vel elementum dapibus, nunc justo porta mi, sed tempus est est vel tellus. Nam et enim eleifend, laoreet sem sit amet, elementum sem. Morbi ut leo congue, maximus velit ut, finibus arcu. In et libero cursus, rutrum risus non, molestie leo. Nullam congue quam et volutpat malesuada. Sed risus tortor, pulvinar et dictum nec, sodales non mi. Phasellus lacinia commodo laoreet. Nam mollis, erat in feugiat consectetur, purus eros egestas tellus, in auctor urna odio at nibh. Mauris imperdiet nisi ac magna convallis, at rhoncus ligula cursus.&lt;/p&gt;
+&lt;p&gt;Cras aliquam rhoncus ipsum, in hendrerit nunc mattis vitae. Duis vitae efficitur metus, ac tempus leo. Cras nec fringilla lacus. Quisque sit amet risus at ipsum pharetra commodo. Sed aliquam mauris at consequat eleifend. Praesent porta, augue sed viverra bibendum, neque ante euismod ante, in vehicula justo lorem ac eros. Suspendisse augue libero, venenatis eget tincidunt ut, malesuada at lorem. Donec vitae bibendum arcu. Aenean maximus nulla non pretium iaculis. Quisque imperdiet, nulla in pulvinar aliquet, velit quam ultrices quam, sit amet fringilla leo sem vel nunc. Mauris in lacinia lacus.&lt;/p&gt;
+&lt;p&gt;Suspendisse a tincidunt lacus. Curabitur at urna sagittis, dictum ante sit amet, euismod magna. Sed rutrum massa id tortor commodo, vitae elementum turpis tempus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean purus turpis, venenatis a ullamcorper nec, tincidunt et massa. Integer posuere quam rutrum arcu vehicula imperdiet. Mauris ullamcorper quam vitae purus congue, quis euismod magna eleifend. Vestibulum semper vel augue eget tincidunt. Fusce eget justo sodales, dapibus odio eu, ultrices lorem. Duis condimentum lorem id eros commodo, in facilisis mauris scelerisque. Morbi sed auctor leo. Nullam volutpat a lacus quis pharetra. Nulla congue rutrum magna a ornare.&lt;/p&gt;
+&lt;p&gt;Aliquam in turpis accumsan, malesuada nibh ut, hendrerit justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque sed erat nec justo posuere suscipit. Donec ut efficitur arcu, in malesuada neque. Nunc dignissim nisl massa, id vulputate nunc pretium nec. Quisque eget urna in risus suscipit ultricies. Pellentesque odio odio, tincidunt in eleifend sed, posuere a diam. Nam gravida nisl convallis semper elementum. Morbi vitae felis faucibus, vulputate orci placerat, aliquet nisi. Aliquam erat volutpat. Maecenas sagittis pulvinar purus, sed porta quam laoreet at.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Linear probability regression</title>
+      <link>https://p0st3r.github.io/ml/ch3_2/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch3_2/</guid>
+      <description>&lt;p&gt;lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam. Quisque risus orci, mollis id ante sit amet, gravida egestas nisl. Sed ac tempus magna. Proin in dui enim. Donec condimentum, sem id dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus. Vestibulum sit amet erat at nulla eleifend gravida.&lt;/p&gt;
+&lt;p&gt;Nullam vel molestie justo. Curabitur vitae efficitur leo. In hac habitasse platea dictumst. Sed pulvinar mauris dui, eget varius purus congue ac. Nulla euismod, lorem vel elementum dapibus, nunc justo porta mi, sed tempus est est vel tellus. Nam et enim eleifend, laoreet sem sit amet, elementum sem. Morbi ut leo congue, maximus velit ut, finibus arcu. In et libero cursus, rutrum risus non, molestie leo. Nullam congue quam et volutpat malesuada. Sed risus tortor, pulvinar et dictum nec, sodales non mi. Phasellus lacinia commodo laoreet. Nam mollis, erat in feugiat consectetur, purus eros egestas tellus, in auctor urna odio at nibh. Mauris imperdiet nisi ac magna convallis, at rhoncus ligula cursus.&lt;/p&gt;
+&lt;p&gt;Cras aliquam rhoncus ipsum, in hendrerit nunc mattis vitae. Duis vitae efficitur metus, ac tempus leo. Cras nec fringilla lacus. Quisque sit amet risus at ipsum pharetra commodo. Sed aliquam mauris at consequat eleifend. Praesent porta, augue sed viverra bibendum, neque ante euismod ante, in vehicula justo lorem ac eros. Suspendisse augue libero, venenatis eget tincidunt ut, malesuada at lorem. Donec vitae bibendum arcu. Aenean maximus nulla non pretium iaculis. Quisque imperdiet, nulla in pulvinar aliquet, velit quam ultrices quam, sit amet fringilla leo sem vel nunc. Mauris in lacinia lacus.&lt;/p&gt;
+&lt;p&gt;Suspendisse a tincidunt lacus. Curabitur at urna sagittis, dictum ante sit amet, euismod magna. Sed rutrum massa id tortor commodo, vitae elementum turpis tempus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean purus turpis, venenatis a ullamcorper nec, tincidunt et massa. Integer posuere quam rutrum arcu vehicula imperdiet. Mauris ullamcorper quam vitae purus congue, quis euismod magna eleifend. Vestibulum semper vel augue eget tincidunt. Fusce eget justo sodales, dapibus odio eu, ultrices lorem. Duis condimentum lorem id eros commodo, in facilisis mauris scelerisque. Morbi sed auctor leo. Nullam volutpat a lacus quis pharetra. Nulla congue rutrum magna a ornare.&lt;/p&gt;
+&lt;p&gt;Aliquam in turpis accumsan, malesuada nibh ut, hendrerit justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque sed erat nec justo posuere suscipit. Donec ut efficitur arcu, in malesuada neque. Nunc dignissim nisl massa, id vulputate nunc pretium nec. Quisque eget urna in risus suscipit ultricies. Pellentesque odio odio, tincidunt in eleifend sed, posuere a diam. Nam gravida nisl convallis semper elementum. Morbi vitae felis faucibus, vulputate orci placerat, aliquet nisi. Aliquam erat volutpat. Maecenas sagittis pulvinar purus, sed porta quam laoreet at.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Basic concepts of Decision tree</title>
+      <link>https://p0st3r.github.io/ml/ch4_1/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch4_1/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

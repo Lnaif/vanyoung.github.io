@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Proxy | HumblePoster</title>
+    <link>https://p0st3r.github.io/tags/proxy/</link>
+      <atom:link href="https://p0st3r.github.io/tags/proxy/index.xml" rel="self" type="application/rss+xml" />
+    <description>Proxy</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Tue, 25 Oct 2016 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>Proxy</title>
+      <link>https://p0st3r.github.io/tags/proxy/</link>
+    </image>
+    
+    <item>
+      <title>基于KVM架构的VPS服务器搭建ss及锐速优化教程</title>
+      <link>https://p0st3r.github.io/post/kvm-vps-ss-rs/</link>
+      <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/kvm-vps-ss-rs/</guid>
+      <description>&lt;h1 id=&#34;准备&#34;&gt;准备&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;KVM架构虚拟服务器&lt;/li&gt;
+&lt;li&gt;xshell&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;服务器&#34;&gt;服务器&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;任意一家运营商的KVM架构VPS服务器&lt;/li&gt;
+&lt;li&gt;Ubuntu 14.04 64bit系统&lt;/li&gt;
+&lt;li&gt;运行&lt;code&gt;apt-get install vim&lt;/code&gt; 安装vim&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;搭建shadowsocks环境&#34;&gt;搭建shadowsocks环境&lt;/h1&gt;
+&lt;p&gt;使用&lt;code&gt;xshell&lt;/code&gt;连接服务器主机&lt;/p&gt;
+&lt;h2 id=&#34;安装shadowsocks服务端&#34;&gt;安装shadowsocks服务端&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;apt-get install python-pip
+pip install shadowsocks
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;配置shadowsocks&#34;&gt;配置shadowsocks&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;用vim新建&lt;code&gt;shadowsocks.json&lt;/code&gt;文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/shadowsocks.json
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;复制以下内容进去&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;server&amp;quot;:&amp;quot;0.0.0.0&amp;quot;,
+    &amp;quot;local_address&amp;quot;:&amp;quot;127.0.0.1&amp;quot;,
+    &amp;quot;local_port&amp;quot;:1080,
+    &amp;quot;port_password&amp;quot;:{
+        &amp;quot;10000&amp;quot;:&amp;quot;Password1&amp;quot;,
+        &amp;quot;10001&amp;quot;:&amp;quot;Password2&amp;quot;,
+        &amp;quot;10002&amp;quot;:&amp;quot;Password3&amp;quot;,
+        &amp;quot;10003&amp;quot;:&amp;quot;Password4&amp;quot;
+        },
+        &amp;quot;timeout&amp;quot;: 300,
+        &amp;quot;method&amp;quot;:&amp;quot;rc4-md5&amp;quot;,
+        &amp;quot;fast_open&amp;quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;“10000”是指端口，“Password1”是指此端口的密码，均可以随意设置&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;常用 vim 操作自己百度，如果 vim 命令不可用是因为没安装 vim，可以用 vi 替代&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;保存刚才的文档，然后启动 shadowsocks 服务（每次重启服务器后都必须再 次执行下面的命令） ：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ssserver -c /etc/shadowsocks.json -d start
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;锐速优化可选&#34;&gt;锐速优化（可选）&lt;/h1&gt;
+&lt;p&gt;锐速现在最低套餐是 300 元一年，新手不建议使用，如需使用百度锐速官网&lt;/p&gt;
+&lt;h2 id=&#34;更换内核&#34;&gt;更换内核&lt;/h2&gt;
+&lt;h3 id=&#34;查询当前内核&#34;&gt;查询当前内核&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;输入以下命令查询当前内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uname -r
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;安装指定内核&#34;&gt;安装指定内核&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;目前锐速最高支持linux-image-3.13.0-46-generic内核，运行以下命令安装此内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;apt-get install linux-image-3.13.0-46-generic
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;卸载其他内核&#34;&gt;卸载其他内核&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;运行命令查询本系统的其他内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo dpkg --get-selections | grep linux-image
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;实例&lt;/strong&gt;，查询出有其他5个内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;linux-image-3.16.0-30-generic
+linux-image-3.16.0-60-generic
+linux-image-extra-3.16.0-30-generic
+linux-image-extra-3.16.0-60-generic
+linux-image-generic-lts-utopic
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;运行命令卸载其他内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-get remove linux-image-3.16.0-30-generic linux-image-3.16.0-60-generic linux-image-extra-3.16.0-30-generic linux-image-extra-3.16.0-60-generic linux-image-generic-lts-utopic
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;删除后执行grub更新和重启&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo update-grub
+sudo reboot now
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;固定内核版本&#34;&gt;固定内核版本&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;防止内核意外升级&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-mark hold linux-image
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;优化内核&#34;&gt;优化内核&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使用vim打开&lt;code&gt;limits.conf&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/security/limits.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后添加下面语句&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;*    soft    nofile    51200
+*    hard    nofile    51200
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改&lt;code&gt;/etc/pam.d/common-session&lt;/code&gt;,加入以下内容&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;session required pam_limits.so
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改&lt;code&gt;/etc/profile&lt;/code&gt;,最下面加入以下内容&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ulimit    -SHn    51200
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改&lt;code&gt;/etc/sysctl.conf&lt;/code&gt;,加入以下内容&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fs.file-max = 51200
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.core.netdev_max_backlog = 250000
+net.core.somaxconn = 4096
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 0
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.ip_local_port_range = 10000 65000
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_rmem = 4096 87380 67108864
+net.ipv4.tcp_wmem = 4096 65536 67108864
+net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_congestion_control = hybla
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;保存修改后执行 sysctl -p 使配置生效。 再额外使用一次 sudo reboot now 重启以生效。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;安装锐速&#34;&gt;安装锐速&lt;/h2&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;输入以下命令安装锐速：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget http ://my.serverspeeder.com/d/ls/serverSpeederInstaller.tar.gz
+tar -xzvf serverSpeederInstaller.tar.gz
+sudo bash serverSpeederInstaller.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;安装过程中依次输入以下命令：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;你的锐速邮箱
+你的锐速密码
+eth0
+1000000
+1000000
+0
+y
+y
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;优化锐速&#34;&gt;优化锐速&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;打开&lt;code&gt;/serverspeeder/etc/config&lt;/code&gt;，编辑如下内容：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rsc=&amp;quot;1&amp;quot;
+gso=&amp;quot;1&amp;quot;
+maxmode=&amp;quot;1&amp;quot;
+advinacc=&amp;quot;1&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;重启&#34;&gt;重启&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;重启锐速完成优化&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;service serverSpeeder restart
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;开机启动&#34;&gt;开机启动&lt;/h1&gt;
+&lt;h2 id=&#34;添加路径&#34;&gt;添加路径&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在&lt;code&gt;/etc/init.d&lt;/code&gt;目录下新建&lt;code&gt;ss_start&lt;/code&gt;文件并加入如下内容：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nohup /usr/local/bin/ss-server -c /etc/shadowsocks.json &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在&lt;code&gt;/etc/init.d&lt;/code&gt;目录下新建&lt;code&gt;rs_start&lt;/code&gt;文件并加入如下内容：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/serverspeeder/bin/serverSpeeder.sh start
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;加权限&#34;&gt;加权限&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;chmod +x /etc/init.d/ss_start
+chmod +x /etc/init.d/rs_start
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;加自启&#34;&gt;加自启&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;sudo update-rc.d ss_start defaults 91
+sudo update-rc.d rs_start defaults 91
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;安全措施&#34;&gt;安全措施&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;关闭 ping 功能：&lt;/p&gt;
+&lt;p&gt;根据我的经验，如果不关闭 ping，会经常有黑客试探攻击服务器，所以最好 关闭 ping 服务，只需要每次启动或者重启服务器后执行一行代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo &amp;quot;1&amp;quot; &amp;gt;/proc/sys/net/ipv4/icmp_echo_ignore_all
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;至此，搭建+优化SS全过程已完毕。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

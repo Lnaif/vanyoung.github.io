@@ -1,0 +1,1248 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="这篇文章主要介绍了菜刀的基本使用方法，总结了一些对文件上传的防御策略和绕过文件上传检测的方法">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/post/webshell-upload-strategy/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PQ63HJL');
+</script>
+
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://p0st3r.github.io/post/webshell-upload-strategy/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="HumblePoster">
+  <meta property="og:url" content="https://p0st3r.github.io/post/webshell-upload-strategy/">
+  <meta property="og:title" content="木马文件上传防御策略及几种绕过检测方式 | HumblePoster">
+  <meta property="og:description" content="这篇文章主要介绍了菜刀的基本使用方法，总结了一些对文件上传的防御策略和绕过文件上传检测的方法"><meta property="og:image" content="https://p0st3r.github.io/post/webshell-upload-strategy/featured.jpg">
+  <meta property="twitter:image" content="https://p0st3r.github.io/post/webshell-upload-strategy/featured.jpg"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2017-03-20T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2017-03-20T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://p0st3r.github.io/post/webshell-upload-strategy/"
+  },
+  "headline": "木马文件上传防御策略及几种绕过检测方式",
+  
+  "image": [
+    "https://p0st3r.github.io/post/webshell-upload-strategy/featured.jpg"
+  ],
+  
+  "datePublished": "2017-03-20T00:00:00Z",
+  "dateModified": "2017-03-20T00:00:00Z",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "HumblePoster",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "这篇文章主要介绍了菜刀的基本使用方法，总结了一些对文件上传的防御策略和绕过文件上传检测的方法"
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>木马文件上传防御策略及几种绕过检测方式 | HumblePoster</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/hack"><span>Hack</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/ml"><span>ML</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/nlp"><span>NLP</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-md-auto">
+      
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/categories"><span>Categories</span></a>
+        </li>
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tags"><span>Tags</span></a>
+        </li>
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+
+<div class="article-container pt-3">
+  <h1>木马文件上传防御策略及几种绕过检测方式</h1>
+
+  
+
+  
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span><a href="/authors/admin/">admin</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    2017-03-20
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    7 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/hack/">Hack</a></span>
+  
+  <span class="middot-divider"></span>
+  <span id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span>
+
+</div>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+<div class="article-header article-container featured-image-wrapper mt-4 mb-4" style="max-width: 720px; max-height: 300px;">
+  <div style="position: relative">
+    <img src="/post/webshell-upload-strategy/featured_huf8cee1ddf71253dad61cc8d6e87b478a_119658_720x0_resize_q90_lanczos.jpg" alt="" class="featured-image">
+    
+  </div>
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <h1 id="0x01-中国菜刀连接">0x01 中国菜刀连接</h1>
+<h2 id="1-webshell">1. WebShell</h2>
+<p>WebShell就是以asp、php、jsp或者cgi等网页文件形式存在的一种命令执行环境，也可以将其称做为一种网页后门。黑客在入侵了一个网站后，通常会将asp或php后门文件与网站服务器WE目录下正常的网页文件混在一起，然后就可以使用浏览器或工具来访问asp或者php后门，得到一个命令执行环境，以达到控制网站服务器的目的。</p>
+<p>通常来说，上传一句话木马通过中国菜刀连接是比较简便地拿到服务器的方法。菜刀可以连接asp、aspx、php、jsp的一句话木马。</p>
+<h2 id="2-一句话木马">2. 一句话木马</h2>
+<ul>
+<li>
+<p>asp：</p>
+<pre><code class="language-asp" data-lang="asp">&lt;%eval request(&quot;pass&quot;)%&gt;
+</code></pre></li>
+<li>
+<p>aspx:</p>
+<pre><code class="language-asp" data-lang="asp">&lt;%@ Page Language=&quot;Jscript&quot;%&gt;&lt;%eval(Request.Item[&quot;pass&quot;],&quot;unsafe&quot;);%&gt;
+</code></pre></li>
+<li>
+<p>php:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span> <span style="color:#f92672">@</span><span style="color:#66d9ef">eval</span>($_POST[<span style="color:#e6db74">&#39;pass&#39;</span>]);<span style="color:#75715e">?&gt;</span>
+</code></pre></div></li>
+</ul>
+<p>其中，pass是这个木马中的密码的值，也可以替换为其他字符。</p>
+<h2 id="3-一句话木马运作方式">3. 一句话木马运作方式</h2>
+<p>首先，可以把这个一句话木马插入到一个正常的网站文件中，asp的插入到asp文件里，php的插入到php文件里，其他同理。也可以把木马单独写在一个文件里，比如新建一个php文件，整个php文件内容就只有这一句话。</p>
+<p>插入的方法，一般来讲是通过文件上传功能，如作业上传网站、图片上传网站，将木马文件上传到目标网站的服务器 中，再将文件存储的链接添加到菜刀中，输入木马的密码即可直接拿到服务器的控制权。</p>
+<h2 id="4-简单的例子">4. 简单的例子</h2>
+<h3 id="编写php木马">编写php木马</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span> <span style="color:#f92672">@</span><span style="color:#66d9ef">eval</span>($_POST[<span style="color:#e6db74">&#39;xxt&#39;</span>]);<span style="color:#75715e">?&gt;</span> 
+</code></pre></div><p>将该php文件命名为 【xxt.php】</p>
+<h3 id="降低dvwa安全标准">降低DVWA安全标准</h3>
+<p>因为这里主要是介绍菜刀的连接方式，为了简便使用没有防备的上传点。</p>
+<p>在DVWA漏洞训练平台中，登陆后将DVWA的安全级别调整为low（见红框内）。调整之后选择 File Upload, 进入页面。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-381443d25db71eac8b4694a43e87bd7a_720w.png" alt="img"></p>
+<h3 id="上传php木马">上传php木马</h3>
+<p>浏览文件，选择【xxt.php】，点击 Upload 上传。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-dd7586fe7d712c460bf4c0258a16a61a_720w.png" alt="img"></p>
+<p>上传成功，显示了文件的保存路径。前两个省略号是指父级目录，因此文件的绝对路径为</p>
+<p>
+<a href="https://link.zhihu.com/?target=http%3A//127.0.0.1/dvwa-master/hackable/uploads/xxt.php" target="_blank" rel="noopener">http://127.0.0.1/dvwa-master/hackable/uploads/xxt.php</a></p>
+<h3 id="菜刀连接">菜刀连接</h3>
+<p>打开菜刀，右键—&gt; 添加—&gt;输入绝对路径和密码—&gt;添加</p>
+<p><img src="https://pic3.zhimg.com/80/v2-2ad1a31cafac7f0f47871bb86d5e272a_720w.png" alt="img"></p>
+<p><img src="https://pic1.zhimg.com/80/v2-92e754f28b20e5950617bb7586926030_720w.png" alt="img"></p>
+<p>最上方的就是我们刚添加的后门路径，双击即可查看服务器文件夹，并对其操作</p>
+<p><img src="https://pic2.zhimg.com/80/v2-e909f9b64f937d6ca2abdf188a6a8135_720w.png" alt="img"></p>
+<p>因为这个DVWA平台是在我的本地服务器搭的，所以这里的服务器就是我自己的电脑啦</p>
+<h1 id="0x02-文件上传防御策略">0x02 文件上传防御策略</h1>
+<h2 id="1--常见防御策略">1.  常见防御策略</h2>
+<p>在一般的网站中，是不可能直接让你上传木马文件的，都要对上传进行过滤。</p>
+<p>通常会有文件类型限制、文件大小限制等过滤方式。文件类型限制最为常见，一般有<strong>前台文件扩展名检测</strong>、<strong>服务器端扩展名检测</strong>、<strong>content-type 参数检测</strong>或<strong>文件内容检测</strong>。</p>
+<h3 id="前台脚本检测扩展名">前台脚本检测扩展名</h3>
+<p>当用户在客户端选择文件点击上传的时候，客户端还没有向服务器发送任何消息，就对本地文件进行检测来判断是否是可以上传的类型，这种方式称为前台脚本检测扩展名。绕过前台脚本检测扩展名，就是将所要上传文件的扩展名更改为符合脚本检测规则的扩展名，通过BurpSuite工具，截取数据包，并将数据包中文件扩展名更改回原来的，达到绕过的目的。</p>
+<h3 id="content-type文件类型检测">Content-Type文件类型检测</h3>
+<p><strong>Content-Type</strong>，内容类型，是网页请求中附带的参数，用于定义网络文件的类型和网页的编码，决定文件接收方将以什么形式、什么编码读取这个文件，这就是经常看到一些Asp网页点击的结果却是下载到的一个文件或一张图片的原因。</p>
+<p><strong>ContentType</strong> 一般参数有</p>
+<ul>
+<li>application/x-cdf 应用型文件</li>
+<li>text/HTML 文本</li>
+<li>image/JPEG jpg 图片</li>
+<li>image/GIF gif图片</li>
+</ul>
+<p>当浏览器在上传文件到服务器的时候，服务器对说上传文件的 Content-Type 类型进行检测，如果是白名单允许的，则可以正常上传，否则上传失败。绕过 Content—Type 文件类型检测，就是用 BurpSuite 截取并修改数据包中文件的 Content-Type 类型，使其符合白名单的规则，达到上传的目的。</p>
+<h3 id="服务器端扩展名检测">服务器端扩展名检测</h3>
+<p>当浏览器将文件提交到服务器端的时候，服务器端会根据设定的黑白名单对浏览器提交上来的文件扩展名进行检测，如果上传的文件扩展名不符合黑白名单的限制，则不予上传，否则上传成功。</p>
+<h3 id="文件内容检测">文件内容检测</h3>
+<p>一般文件内容验证使用getimagesize()函数检测，会判断文件是否是一个有效的文件图片，如果是，则允许上传，否则的话不允许上传。所以经常要将一句话木马插入到一个【合法】的图片文件当中，然后用中国菜刀远程连接。</p>
+<h1 id="0x03-绕过检测上传">0x03 绕过检测上传</h1>
+<h2 id="1-利用00截断上传绕过前台检测">1. 利用00截断上传绕过前台检测</h2>
+<p>比如某网站的上传点采用了前端扩展名检测，只允许上传图片文件，而我们要上传一个php木马，可以按照以下步骤</p>
+<ol>
+<li>
+<p>php木马伪装jpg文件</p>
+<p>先编写一个一句话木马，命名为【lubr.php.jpg】，因为扩展名检测是从文件名的右边往左读的，当读到第一个【. 】的时候，便通过扩展名确定这个文件的类型。这里就将 php 文件伪装成了jpg 文件。</p>
+</li>
+<li>
+<p>BurpSuite拦截改2e为00</p>
+<p>开启 BurpSuite 的【proxy】 功能，在选择 【lubr.php.jpg】 文件后，点击上传。</p>
+<p>这时上传文件的数据包不会直接发往服务器，而是要经由 Burp 来发送，我们在这里可以查看和修改数据包的内容。</p>
+<p>点击hex查看十六进制源码，如下图</p>
+<p><img src="https://pic1.zhimg.com/80/v2-7af67370ae3ba0e72478a6f9d9c190b4_720w.png" alt="img"></p>
+<p>找到 lubr.php.jpg 对应的源码，将 lubr.php 后的【.】 对应的【2e】改为【00】</p>
+<p><img src="https://pic2.zhimg.com/80/v2-38ab35d43d6572a7c8065e43573f6465_720w.png" alt="img"></p>
+<p>【00】对应【空】 ,注意【空格Space】不等于【空】</p>
+<p>点击 【forward】，即可成功上传文件</p>
+</li>
+<li>
+<p>菜刀连接</p>
+<p>获取php木马的绝对路径，略</p>
+</li>
+</ol>
+<h2 id="2-截断改扩展名绕过前台检测">2. 截断改扩展名绕过前台检测</h2>
+<p>与00截断类似，此方法也是通过截断数据包做修改来实现的。</p>
+<p>如果直接上传php文件，会被拦截。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-9ca0771bd3632f20b6d58d08cba476ed_720w.png" alt="img"></p>
+<ol>
+<li>
+<p>准备一句话木马</p>
+<p>先写一个php一句话木马，然后在这里命名为 lubr.jpg，而不是php文件</p>
+</li>
+<li>
+<p>BurpSuite拦截改扩展名</p>
+<p>在BurpSuite中会抓到截取的数据包，在数据包中将所上传的文件后缀名由【.jpg】改为【.php】</p>
+</li>
+</ol>
+<p><img src="https://pic1.zhimg.com/80/v2-b816c41f5bbf6b72037452111bf22c6c_720w.png" alt="img"></p>
+<p>​	点击【forward】，传递数据包，前台即可提示，上传【lubr.php】成功</p>
+<p>​	略</p>
+<h2 id="3--绕过content-type检测文件类型上传">3.  绕过Content-Type检测文件类型上传</h2>
+<p>Content-Type如果为【application/octet-stream】，这一般是可运行程序（木马）的类型，因此会拒绝上传。但如果我们将其改为【image/gif】图片类型，可能就能够绕过该检测。</p>
+<ol>
+<li>
+<p>BurpSuite拦截改Content-Type参数</p>
+<p>在BurpSuite中会抓到截取的数据包，在数据包中将所上传的文件的Content-Type由【application/octet-stream】改为【image/gif】</p>
+</li>
+</ol>
+<p>​	<img src="https://pic4.zhimg.com/80/v2-a92474b3bab37ace1d80ba8bb66725f7_720w.png" alt="img"></p>
+<p>​	点击【forward】，传递数据包，前台即可提示，上传【lubr.php】成功</p>
+<p>​	略</p>
+<h2 id="4-apache解析漏洞上传shell绕过服务器端扩展名检测">4. apache解析漏洞上传shell绕过服务器端扩展名检测</h2>
+<p>Apache 识别文件类型是从右向左识别的，如果如遇不认识的扩展名会向前一次识别，直到遇到能识别的扩展名**，**因为Apache认为一个文件可以拥有多个扩展名，哪怕没有文件名，也可以拥有多个扩展名。这种漏洞存在于使用module模式与php结合的所有版本的Apache。</p>
+<p>假如某网站刚好使用了有解析漏洞版本的Apache，而且其对服务器端对【.php】文件直接上传做了过滤。</p>
+<ol>
+<li>
+<p>一句话木马</p>
+<p>因为服务器端对【.php】上传做了过滤，因此无论怎么用BurpSuite修改都不能上传成功。</p>
+<p>如果将该木马命名为 【lubr.php.adc】，则显示上传成功。</p>
+<p>因为服务器端黑名单只限制了几种扩展名的上传，而其他扩展名都是合法的，不论这种扩展名是否有效，而apache却能识别无效的扩展名并不予解析，这种不对称的扩展名识别造成了上传漏洞的产生。</p>
+</li>
+<li>
+<p>菜刀连接</p>
+</li>
+</ol>
+<p><img src="https://pic1.zhimg.com/80/v2-38cc75e063bd49751e267408dac2d338_720w.png" alt="img"></p>
+<p>​	菜刀也不识别【.abc】，直接解析【.php】，连接成功。</p>
+<h2 id="5-构造图片马绕过文件内容检测">5. 构造图片马绕过文件内容检测</h2>
+<p>文件内容检测脚本中getimagesize(string filename)函数会通过读取文件头，返回图片的长、宽等信息，如果没有相关的图片文件头，函数会报错，是一种比较严的防御措施。但并不代表其牢不可破。</p>
+<p>虽然php内容不合法，但我们可以将其伪装成一个图片，以欺骗检测脚本来进行非法上传。</p>
+<ol>
+<li>
+<p>构造图片马</p>
+<p>随便找一个图片，将其与要上传的木马置于同一文件夹下</p>
+<p><img src="https://pic2.zhimg.com/80/v2-a69e2e5d62aec6c57280a760497d80f1_720w.png" alt="img"></p>
+<p>打开cmd，进入该文件夹，输入</p>
+<pre><code>copy doram.jpg/b+lubr.php/a xiaoma.jpg
+</code></pre><p>将【lubr.php】插入到【doram.jpg】中。其中【xiaoma.jpg】是插入后的文件。</p>
+<p>用记事本打开【xiaoma.jpg】，发现木马插入到了文件最后。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-551a4bca6c9b4744dccf6cc662ff533f_720w.png" alt="img"></p>
+</li>
+<li>
+<p>上传木马</p>
+<p>将文件名改为【xiaoma.jpg.php】，然后上传成功，菜刀连接。</p>
+<p>以上就是几种检测情况的绕过方法，真实情况下需各种方式配合使用。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/webshell/">webshell</a>
+  
+  <a class="badge badge-light" href="/tags/upload/">upload</a>
+  
+  <a class="badge badge-light" href="/tags/bypass/">bypass</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://p0st3r.github.io/post/webshell-upload-strategy/&amp;text=%e6%9c%a8%e9%a9%ac%e6%96%87%e4%bb%b6%e4%b8%8a%e4%bc%a0%e9%98%b2%e5%be%a1%e7%ad%96%e7%95%a5%e5%8f%8a%e5%87%a0%e7%a7%8d%e7%bb%95%e8%bf%87%e6%a3%80%e6%b5%8b%e6%96%b9%e5%bc%8f" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://p0st3r.github.io/post/webshell-upload-strategy/&amp;t=%e6%9c%a8%e9%a9%ac%e6%96%87%e4%bb%b6%e4%b8%8a%e4%bc%a0%e9%98%b2%e5%be%a1%e7%ad%96%e7%95%a5%e5%8f%8a%e5%87%a0%e7%a7%8d%e7%bb%95%e8%bf%87%e6%a3%80%e6%b5%8b%e6%96%b9%e5%bc%8f" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=%e6%9c%a8%e9%a9%ac%e6%96%87%e4%bb%b6%e4%b8%8a%e4%bc%a0%e9%98%b2%e5%be%a1%e7%ad%96%e7%95%a5%e5%8f%8a%e5%87%a0%e7%a7%8d%e7%bb%95%e8%bf%87%e6%a3%80%e6%b5%8b%e6%96%b9%e5%bc%8f&amp;body=https://p0st3r.github.io/post/webshell-upload-strategy/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://p0st3r.github.io/post/webshell-upload-strategy/&amp;title=%e6%9c%a8%e9%a9%ac%e6%96%87%e4%bb%b6%e4%b8%8a%e4%bc%a0%e9%98%b2%e5%be%a1%e7%ad%96%e7%95%a5%e5%8f%8a%e5%87%a0%e7%a7%8d%e7%bb%95%e8%bf%87%e6%a3%80%e6%b5%8b%e6%96%b9%e5%bc%8f" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=%e6%9c%a8%e9%a9%ac%e6%96%87%e4%bb%b6%e4%b8%8a%e4%bc%a0%e9%98%b2%e5%be%a1%e7%ad%96%e7%95%a5%e5%8f%8a%e5%87%a0%e7%a7%8d%e7%bb%95%e8%bf%87%e6%a3%80%e6%b5%8b%e6%96%b9%e5%bc%8f%20https://p0st3r.github.io/post/webshell-upload-strategy/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://p0st3r.github.io/post/webshell-upload-strategy/&amp;title=%e6%9c%a8%e9%a9%ac%e6%96%87%e4%bb%b6%e4%b8%8a%e4%bc%a0%e9%98%b2%e5%be%a1%e7%ad%96%e7%95%a5%e5%8f%8a%e5%87%a0%e7%a7%8d%e7%bb%95%e8%bf%87%e6%a3%80%e6%b5%8b%e6%96%b9%e5%bc%8f" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu4bb7090cebbbe4a3e0580de401f23728_6887_270x270_fill_q90_lanczos_center.jpg" alt="">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://p0st3r.github.io/"></a></h5>
+        <h6 class="card-subtitle">Researcher of NTA</h6>
+        <p class="card-text">My research interests include Hacking, Cryptography, Reverse Analysis, and NLP</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:dhakkan@foxmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/p0st3r" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/post/php-file-contains/" rel="next">PHP文件包含介绍及一些利用方式</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/post/dvwa-sql-injection-test/" rel="prev">DVWA的SQL注入测试</a>
+  </div>
+  
+</div>
+
+</div>
+
+
+
+  
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.37431be2d92d7fb0160054761ab79602.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    2016 &middot;  ©Lithium No rights reserved.
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>
+    &middot;
+    <span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span>
+    
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

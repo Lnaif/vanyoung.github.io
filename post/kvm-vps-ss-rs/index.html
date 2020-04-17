@@ -1,0 +1,1266 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/post/kvm-vps-ss-rs/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PQ63HJL');
+</script>
+
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://p0st3r.github.io/post/kvm-vps-ss-rs/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="HumblePoster">
+  <meta property="og:url" content="https://p0st3r.github.io/post/kvm-vps-ss-rs/">
+  <meta property="og:title" content="基于KVM架构的VPS服务器搭建ss及锐速优化教程 | HumblePoster">
+  <meta property="og:description" content="整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。"><meta property="og:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
+  <meta property="twitter:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2016-10-25T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2016-10-25T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://p0st3r.github.io/post/kvm-vps-ss-rs/"
+  },
+  "headline": "基于KVM架构的VPS服务器搭建ss及锐速优化教程",
+  
+  "datePublished": "2016-10-25T00:00:00Z",
+  "dateModified": "2016-10-25T00:00:00Z",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "HumblePoster",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "整理了这个SS搭建及优化的教程，适用于所有KVM技术的VPS，希望对喜欢折腾的朋友能起到一定的参考作用。"
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>基于KVM架构的VPS服务器搭建ss及锐速优化教程 | HumblePoster</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">HumblePoster</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/hack"><span>Hack</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/ml"><span>ML</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/nlp"><span>NLP</span></a>
+        </li>
+
+        
+        
+
+      
+      </ul>
+      <ul class="navbar-nav ml-md-auto">
+      
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/categories"><span>Categories</span></a>
+        </li>
+
+        
+
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link" href="/tags"><span>Tags</span></a>
+        </li>
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>基于KVM架构的VPS服务器搭建ss及锐速优化教程</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span><a href="/authors/admin/">admin</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    2016-10-25
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    3 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tools/">Tools</a></span>
+  
+  <span class="middot-divider"></span>
+  <span id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span>
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <h1 id="准备">准备</h1>
+<ul>
+<li>KVM架构虚拟服务器</li>
+<li>xshell</li>
+</ul>
+<h1 id="服务器">服务器</h1>
+<ul>
+<li>任意一家运营商的KVM架构VPS服务器</li>
+<li>Ubuntu 14.04 64bit系统</li>
+<li>运行<code>apt-get install vim</code> 安装vim</li>
+</ul>
+<h1 id="搭建shadowsocks环境">搭建shadowsocks环境</h1>
+<p>使用<code>xshell</code>连接服务器主机</p>
+<h2 id="安装shadowsocks服务端">安装shadowsocks服务端</h2>
+<pre><code>apt-get install python-pip
+pip install shadowsocks
+</code></pre><h2 id="配置shadowsocks">配置shadowsocks</h2>
+<ul>
+<li>
+<p>用vim新建<code>shadowsocks.json</code>文件</p>
+<pre><code>vim /etc/shadowsocks.json
+</code></pre></li>
+<li>
+<p>复制以下内容进去</p>
+<pre><code>{
+    &quot;server&quot;:&quot;0.0.0.0&quot;,
+    &quot;local_address&quot;:&quot;127.0.0.1&quot;,
+    &quot;local_port&quot;:1080,
+    &quot;port_password&quot;:{
+        &quot;10000&quot;:&quot;Password1&quot;,
+        &quot;10001&quot;:&quot;Password2&quot;,
+        &quot;10002&quot;:&quot;Password3&quot;,
+        &quot;10003&quot;:&quot;Password4&quot;
+        },
+        &quot;timeout&quot;: 300,
+        &quot;method&quot;:&quot;rc4-md5&quot;,
+        &quot;fast_open&quot;: true
+}
+</code></pre></li>
+</ul>
+<p>“10000”是指端口，“Password1”是指此端口的密码，均可以随意设置</p>
+<p><strong>常用 vim 操作自己百度，如果 vim 命令不可用是因为没安装 vim，可以用 vi 替代</strong></p>
+<p>保存刚才的文档，然后启动 shadowsocks 服务（每次重启服务器后都必须再 次执行下面的命令） ：</p>
+<pre><code>ssserver -c /etc/shadowsocks.json -d start
+</code></pre><h1 id="锐速优化可选">锐速优化（可选）</h1>
+<p>锐速现在最低套餐是 300 元一年，新手不建议使用，如需使用百度锐速官网</p>
+<h2 id="更换内核">更换内核</h2>
+<h3 id="查询当前内核">查询当前内核</h3>
+<ul>
+<li>
+<p>输入以下命令查询当前内核</p>
+<pre><code>uname -r
+</code></pre></li>
+</ul>
+<h3 id="安装指定内核">安装指定内核</h3>
+<ul>
+<li>
+<p>目前锐速最高支持linux-image-3.13.0-46-generic内核，运行以下命令安装此内核</p>
+<pre><code>apt-get install linux-image-3.13.0-46-generic
+</code></pre></li>
+</ul>
+<h3 id="卸载其他内核">卸载其他内核</h3>
+<ul>
+<li>
+<p>运行命令查询本系统的其他内核</p>
+<pre><code>sudo dpkg --get-selections | grep linux-image
+</code></pre></li>
+<li>
+<p><strong>实例</strong>，查询出有其他5个内核</p>
+<pre><code>linux-image-3.16.0-30-generic
+linux-image-3.16.0-60-generic
+linux-image-extra-3.16.0-30-generic
+linux-image-extra-3.16.0-60-generic
+linux-image-generic-lts-utopic
+</code></pre></li>
+<li>
+<p>运行命令卸载其他内核</p>
+<pre><code>sudo apt-get remove linux-image-3.16.0-30-generic linux-image-3.16.0-60-generic linux-image-extra-3.16.0-30-generic linux-image-extra-3.16.0-60-generic linux-image-generic-lts-utopic
+</code></pre></li>
+<li>
+<p>删除后执行grub更新和重启</p>
+<pre><code>sudo update-grub
+sudo reboot now
+</code></pre></li>
+</ul>
+<h2 id="固定内核版本">固定内核版本</h2>
+<ul>
+<li>
+<p>防止内核意外升级</p>
+<pre><code>sudo apt-mark hold linux-image
+</code></pre></li>
+</ul>
+<h2 id="优化内核">优化内核</h2>
+<ul>
+<li>
+<p>使用vim打开<code>limits.conf</code></p>
+<pre><code>vim /etc/security/limits.conf
+</code></pre><p>然后添加下面语句</p>
+<pre><code>*    soft    nofile    51200
+*    hard    nofile    51200
+</code></pre></li>
+<li>
+<p>修改<code>/etc/pam.d/common-session</code>,加入以下内容</p>
+<pre><code>session required pam_limits.so
+</code></pre></li>
+<li>
+<p>修改<code>/etc/profile</code>,最下面加入以下内容</p>
+<pre><code>ulimit    -SHn    51200
+</code></pre></li>
+<li>
+<p>修改<code>/etc/sysctl.conf</code>,加入以下内容</p>
+<pre><code>fs.file-max = 51200
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.core.netdev_max_backlog = 250000
+net.core.somaxconn = 4096
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 0
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.ip_local_port_range = 10000 65000
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_rmem = 4096 87380 67108864
+net.ipv4.tcp_wmem = 4096 65536 67108864
+net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_congestion_control = hybla
+</code></pre></li>
+</ul>
+<p><strong>保存修改后执行 sysctl -p 使配置生效。 再额外使用一次 sudo reboot now 重启以生效。</strong></p>
+<h2 id="安装锐速">安装锐速</h2>
+<h3 id="安装">安装</h3>
+<ul>
+<li>
+<p>输入以下命令安装锐速：</p>
+<pre><code>wget http ://my.serverspeeder.com/d/ls/serverSpeederInstaller.tar.gz
+tar -xzvf serverSpeederInstaller.tar.gz
+sudo bash serverSpeederInstaller.sh
+</code></pre></li>
+<li>
+<p>安装过程中依次输入以下命令：</p>
+<pre><code>你的锐速邮箱
+你的锐速密码
+eth0
+1000000
+1000000
+0
+y
+y
+</code></pre></li>
+</ul>
+<h3 id="优化锐速">优化锐速</h3>
+<ul>
+<li>
+<p>打开<code>/serverspeeder/etc/config</code>，编辑如下内容：</p>
+<pre><code>rsc=&quot;1&quot;
+gso=&quot;1&quot;
+maxmode=&quot;1&quot;
+advinacc=&quot;1&quot;
+</code></pre></li>
+</ul>
+<h3 id="重启">重启</h3>
+<ul>
+<li>
+<p>重启锐速完成优化</p>
+<pre><code>service serverSpeeder restart
+</code></pre></li>
+</ul>
+<h1 id="开机启动">开机启动</h1>
+<h2 id="添加路径">添加路径</h2>
+<ul>
+<li>
+<p>在<code>/etc/init.d</code>目录下新建<code>ss_start</code>文件并加入如下内容：</p>
+<pre><code>nohup /usr/local/bin/ss-server -c /etc/shadowsocks.json &gt; /dev/null 2&gt;&amp;1 &amp;
+</code></pre></li>
+<li>
+<p>在<code>/etc/init.d</code>目录下新建<code>rs_start</code>文件并加入如下内容：</p>
+<pre><code>/serverspeeder/bin/serverSpeeder.sh start
+</code></pre></li>
+</ul>
+<h2 id="加权限">加权限</h2>
+<pre><code>chmod +x /etc/init.d/ss_start
+chmod +x /etc/init.d/rs_start
+</code></pre><h2 id="加自启">加自启</h2>
+<pre><code>sudo update-rc.d ss_start defaults 91
+sudo update-rc.d rs_start defaults 91
+</code></pre><h1 id="安全措施">安全措施</h1>
+<ul>
+<li>
+<p>关闭 ping 功能：</p>
+<p>根据我的经验，如果不关闭 ping，会经常有黑客试探攻击服务器，所以最好 关闭 ping 服务，只需要每次启动或者重启服务器后执行一行代码：</p>
+<pre><code>echo &quot;1&quot; &gt;/proc/sys/net/ipv4/icmp_echo_ignore_all
+</code></pre><p>至此，搭建+优化SS全过程已完毕。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/vpn/">VPN</a>
+  
+  <a class="badge badge-light" href="/tags/proxy/">Proxy</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://p0st3r.github.io/post/kvm-vps-ss-rs/&amp;text=%e5%9f%ba%e4%ba%8eKVM%e6%9e%b6%e6%9e%84%e7%9a%84VPS%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%90%ad%e5%bb%bass%e5%8f%8a%e9%94%90%e9%80%9f%e4%bc%98%e5%8c%96%e6%95%99%e7%a8%8b" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://p0st3r.github.io/post/kvm-vps-ss-rs/&amp;t=%e5%9f%ba%e4%ba%8eKVM%e6%9e%b6%e6%9e%84%e7%9a%84VPS%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%90%ad%e5%bb%bass%e5%8f%8a%e9%94%90%e9%80%9f%e4%bc%98%e5%8c%96%e6%95%99%e7%a8%8b" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=%e5%9f%ba%e4%ba%8eKVM%e6%9e%b6%e6%9e%84%e7%9a%84VPS%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%90%ad%e5%bb%bass%e5%8f%8a%e9%94%90%e9%80%9f%e4%bc%98%e5%8c%96%e6%95%99%e7%a8%8b&amp;body=https://p0st3r.github.io/post/kvm-vps-ss-rs/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://p0st3r.github.io/post/kvm-vps-ss-rs/&amp;title=%e5%9f%ba%e4%ba%8eKVM%e6%9e%b6%e6%9e%84%e7%9a%84VPS%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%90%ad%e5%bb%bass%e5%8f%8a%e9%94%90%e9%80%9f%e4%bc%98%e5%8c%96%e6%95%99%e7%a8%8b" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=%e5%9f%ba%e4%ba%8eKVM%e6%9e%b6%e6%9e%84%e7%9a%84VPS%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%90%ad%e5%bb%bass%e5%8f%8a%e9%94%90%e9%80%9f%e4%bc%98%e5%8c%96%e6%95%99%e7%a8%8b%20https://p0st3r.github.io/post/kvm-vps-ss-rs/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://p0st3r.github.io/post/kvm-vps-ss-rs/&amp;title=%e5%9f%ba%e4%ba%8eKVM%e6%9e%b6%e6%9e%84%e7%9a%84VPS%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%90%ad%e5%bb%bass%e5%8f%8a%e9%94%90%e9%80%9f%e4%bc%98%e5%8c%96%e6%95%99%e7%a8%8b" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu4bb7090cebbbe4a3e0580de401f23728_6887_270x270_fill_q90_lanczos_center.jpg" alt="">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://p0st3r.github.io/"></a></h5>
+        <h6 class="card-subtitle">Researcher of NTA</h6>
+        <p class="card-text">My research interests include Hacking, Cryptography, Reverse Analysis, and NLP</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:dhakkan@foxmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/p0st3r" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/post/dvwa-sql-injection-test/" rel="next">DVWA的SQL注入测试</a>
+  </div>
+  
+  
+</div>
+
+</div>
+
+
+
+  
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.37431be2d92d7fb0160054761ab79602.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    2016 &middot;  ©Lithium No rights reserved.
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span>
+    &middot;
+    <span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span>
+    
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

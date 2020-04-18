@@ -23,6 +23,11 @@
   </url>
   
   <url>
+    <loc>https://p0st3r.github.io/nlp/ner/</loc>
+    <lastmod>2019-05-05T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://p0st3r.github.io/ml/ch1_2/</loc>
     <lastmod>2019-05-05T00:00:00+01:00</lastmod>
   </url>
@@ -153,12 +158,12 @@
   </url>
   
   <url>
-    <loc>https://p0st3r.github.io/tags/crypt/</loc>
+    <loc>https://p0st3r.github.io/categories/crypt/</loc>
     <lastmod>2018-05-09T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://p0st3r.github.io/categories/crypt/</loc>
+    <loc>https://p0st3r.github.io/tags/crypt/</loc>
     <lastmod>2018-05-09T00:00:00+00:00</lastmod>
   </url>
   

@@ -27,8 +27,8 @@
   
     
   
-  <meta name="description" content="Error The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called &lsquo;error&rsquo;. Definitions:
-  &lsquo;Training Error&rsquo; or &lsquo;Empirical Error&rsquo;: Error in the training set">
+  <meta name="description" content="Error The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called error. Definitions:
+  Training Error or Empirical Error: Error in the training set">
 
   
   <link rel="alternate" hreflang="en-us" href="https://p0st3r.github.io/ml/ch2_1/">
@@ -247,8 +247,8 @@
   <meta property="og:site_name" content="HumblePoster">
   <meta property="og:url" content="https://p0st3r.github.io/ml/ch2_1/">
   <meta property="og:title" content="Error and overfitting | HumblePoster">
-  <meta property="og:description" content="Error The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called &lsquo;error&rsquo;. Definitions:
-  &lsquo;Training Error&rsquo; or &lsquo;Empirical Error&rsquo;: Error in the training set"><meta property="og:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
+  <meta property="og:description" content="Error The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called error. Definitions:
+  Training Error or Empirical Error: Error in the training set"><meta property="og:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
   <meta property="twitter:image" content="https://p0st3r.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png"><meta property="og:locale" content="en-us">
   
     
@@ -730,16 +730,16 @@
 
           <div class="article-style">
             <h2 id="error">Error</h2>
-<p>The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called &lsquo;error&rsquo;. Definitions:</p>
+<p>The difference between the learner&rsquo;s actual prediction of the sample and the true value of the sample is called <code>error</code>. Definitions:</p>
 <ul>
 <li>
-<p>&lsquo;Training Error&rsquo; or &lsquo;Empirical Error&rsquo;: Error in the training set</p>
+<p><code>Training Error</code> or <code>Empirical Error</code>: Error in the training set</p>
 </li>
 <li>
-<p>&lsquo;Test Error&rsquo;: Error in the test set</p>
+<p><code>Test Error</code>: Error in the test set</p>
 </li>
 <li>
-<p>&lsquo;generalization error&rsquo;: The learner&rsquo;s error in all new samples</p>
+<p>`Generalization Error: The learner&rsquo;s error in all new samples</p>
 </li>
 </ul>
 <h2 id="overfitting">Overfitting</h2>
@@ -747,10 +747,10 @@
 <p>However, when learners learn the traing set <strong>too wel</strong> that take some of the training sample&rsquo;s own characteristics as a general feature; there are also cases where the learning capacity is insufficient to learn the basic characteristics of the training set. Definitions:</p>
 <ul>
 <li>
-<p>&lsquo;Overfitting&rsquo;: Over-learning to the point of learning the not-so-generic characteristics included in the training sample</p>
+<p><code>Overfitting</code>: Over-learning to the point of learning the not-so-generic characteristics included in the training sample</p>
 </li>
 <li>
-<p>&lsquo;Underfitting&rsquo;: The learning ability is so poor that the general properties of the training sample have not been learned well</p>
+<p><code>Underfitting</code>: The learning ability is so poor that the general properties of the training sample have not been learned well</p>
 </li>
 </ul>
 <p>It is known that in the overfitting problem, the training error is very small, but the test error is large; in the underfitting problem, both the training error and the test error are large. Currently, the underfitting problem is relatively easy to overcome, such as increasing the number of iterations, but there is still no very good solution to the overfitting problem, and overfitting is a key obstacle to machine learning.</p>

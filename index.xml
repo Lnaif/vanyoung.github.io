@@ -405,7 +405,7 @@
 &lt;p&gt;A typical approach of unsupervised learning is clustering. Clustering-based NER systems extract named entities from the clustered groups based on context similarity. The key idea is that lexical resources, lexical patterns, and statistics computed on a large corpus can be used to infer mentions of named entities.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;典型的无监督方法如聚类可以利用语义相似性，从聚集的组中抽取命名实体。其核心思路在于利用基于巨大语料得到的词汇资源、词汇模型、统计数据来推断命名实体的类别。&lt;/p&gt;
-&lt;p&gt;##Feature-based Supervised Learning Approaches&lt;/p&gt;
+&lt;h3 id=&#34;feature-based-supervised-learning-approaches&#34;&gt;Feature-based Supervised Learning Approaches&lt;/h3&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Applying supervised learning, NER is cast to a multi-class classification or sequence labeling task. Given annotated data samples, features are carefully designed to represent each training example. Machine learning algorithms are then utilized to learn a model to recognize similar patterns from unseen data.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -519,7 +519,7 @@
 &lt;li&gt;
 &lt;a href=&#34;http://p0st3r.github.io/2020/http%3A//arxiv.org/abs/1810.04805&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BERT&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;#0x07 Context Encoder&lt;/p&gt;
+&lt;h2 id=&#34;context-encoder&#34;&gt;Context Encoder&lt;/h2&gt;
 &lt;p&gt;The second stage of DL-based NER is to learn context encoder from the input representations.&lt;/p&gt;
 &lt;p&gt;The widely-used context encoder architectures are:&lt;/p&gt;
 &lt;ul&gt;
@@ -562,7 +562,7 @@
 &lt;p&gt;Recursive neural networks are non-linear adaptive models that are able to learn deep structured information, by traversing a given structure in topological order. Named entities are highly related to linguistic constituents, e.g., noun phrases. Typical sequential labeling approaches take little into consideration about phrase structures of sentences, however, recursive neural network can effectively use the structural information to obtain better prediction results.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;递归神经网络是一种非线性自适应的模型，它可以学习得到输入的深度结构化信息。命名实体与某些语言成分联系十分紧密，如名词词组。传统的序列标注方法几乎忽略了句子的结构信息（成分间的结构），而递归神经网络能有效的利用这样的结构信息，从而得出更好的预测结果。&lt;/p&gt;
-&lt;p&gt;Typical application:&lt;/p&gt;
+&lt;p&gt;Example:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;a href=&#34;http://aclanthology.info/papers/D17-1281/d17-1281&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Leveraging linguistic structures for named entity recognition with bidirectional recursive neural networks&lt;/a&gt;&lt;/li&gt;
@@ -574,7 +574,7 @@ p(t1,t2,…,tN)=N∏k=1p(tk|t1,t2,…,tk−1)p(t1,t2,…,tN)=∏k=1Np(tk|t1,t2,�
 A backward language model is similar to a forward language model, except it runs over the sequence in reverse order, predicting the previous token given its future context:
 p(t1,t2,…,tN)=N∏k=1p(tk|tk+1,tk+2,…,tN)p(t1,t2,…,tN)=∏k=1Np(tk|tk+1,tk+2,…,tN)
 For neural language models, probability of token tktk can be computed by the output of recurrent neural networks. At each position kk, we can obtain two context-dependent representations (forward and backward) and then combine them as the final language model embedding for token tktk. Such language-model-augmented knowledge has been empirically verified to be helpful in numerous sequence labeling tasks.&lt;/p&gt;
-&lt;p&gt;Typical application:&lt;/p&gt;
+&lt;p&gt;Example:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;a href=&#34;https://arxiv.org/abs/1705.00108&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Semi-supervised sequence tagging with bidirectional language models&lt;/a&gt; 文章认为，利用单词级别表示作为输入来产生上下文表示的循环神经网络往往是在相对较小的标注数据集上训练的。而神经语言模型可以在大型的无标注数据集上训练。文中模型同时使用词嵌入模型与神经语言模型对无监督的语料进行训练，得到两种单词表示；之后模型中省去了将输入向量转化为上下文相关向量的操作，直接结合前面得到的两类单词表示并用于有监督的序列标注任务，简化了模型的结构。&lt;/li&gt;
@@ -604,7 +604,7 @@ For neural language models, probability of token tktk can be computed by the out
 &lt;p&gt;With a multi-layer Perceptron + Softmax layer as the tag decoder layer, the sequence labeling task is cast as a multi-class classification problem. Tag for each word is independently predicted based on the context-dependent representations without taking into account its neighbors.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;利用这个结构可以将NER这类序列标注模型视为多类型分类问题。基于该阶段输入的上下文语义表示，每个单词的标签被独立地预测，与其邻居无关。&lt;/p&gt;
-&lt;p&gt;Typical application:&lt;/p&gt;
+&lt;p&gt;Example:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;a href=&#34;https://arxiv.org/abs/1702.02098&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fast and accurate entity recognition with iterated dilated convolutions&lt;/a&gt;&lt;/li&gt;
@@ -735,16 +735,16 @@ For neural language models, probability of token tktk can be computed by the out
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
       <guid>https://p0st3r.github.io/ml/ch2_1/</guid>
       <description>&lt;h2 id=&#34;error&#34;&gt;Error&lt;/h2&gt;
-&lt;p&gt;The difference between the learner&amp;rsquo;s actual prediction of the sample and the true value of the sample is called &amp;lsquo;error&amp;rsquo;. Definitions:&lt;/p&gt;
+&lt;p&gt;The difference between the learner&amp;rsquo;s actual prediction of the sample and the true value of the sample is called &lt;code&gt;error&lt;/code&gt;. Definitions:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;&amp;lsquo;Training Error&amp;rsquo; or &amp;lsquo;Empirical Error&amp;rsquo;: Error in the training set&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Training Error&lt;/code&gt; or &lt;code&gt;Empirical Error&lt;/code&gt;: Error in the training set&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&amp;lsquo;Test Error&amp;rsquo;: Error in the test set&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Test Error&lt;/code&gt;: Error in the test set&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&amp;lsquo;generalization error&amp;rsquo;: The learner&amp;rsquo;s error in all new samples&lt;/p&gt;
+&lt;p&gt;`Generalization Error: The learner&amp;rsquo;s error in all new samples&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;overfitting&#34;&gt;Overfitting&lt;/h2&gt;
@@ -752,10 +752,10 @@ For neural language models, probability of token tktk can be computed by the out
 &lt;p&gt;However, when learners learn the traing set &lt;strong&gt;too wel&lt;/strong&gt; that take some of the training sample&amp;rsquo;s own characteristics as a general feature; there are also cases where the learning capacity is insufficient to learn the basic characteristics of the training set. Definitions:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;&amp;lsquo;Overfitting&amp;rsquo;: Over-learning to the point of learning the not-so-generic characteristics included in the training sample&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Overfitting&lt;/code&gt;: Over-learning to the point of learning the not-so-generic characteristics included in the training sample&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&amp;lsquo;Underfitting&amp;rsquo;: The learning ability is so poor that the general properties of the training sample have not been learned well&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Underfitting&lt;/code&gt;: The learning ability is so poor that the general properties of the training sample have not been learned well&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;It is known that in the overfitting problem, the training error is very small, but the test error is large; in the underfitting problem, both the training error and the test error are large. Currently, the underfitting problem is relatively easy to overcome, such as increasing the number of iterations, but there is still no very good solution to the overfitting problem, and overfitting is a key obstacle to machine learning.&lt;/p&gt;
@@ -3571,6 +3571,18 @@ sudo update-rc.d rs_start defaults 91
 &lt;p&gt;详细规则请阅读&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;http://www.giantbranch.cn&#34;&gt;http://www.giantbranch.cn&lt;/a&gt;:8889/%E8%A7%84%E5%88%99&lt;/p&gt;
 &lt;p&gt;补充一下，校内的同学，认真写writeup（题解），排名靠前的可获得神秘奖品&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://p0st3r.github.io/ml/ch2_6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://p0st3r.github.io/ml/ch2_6/</guid>
+      <description>&lt;p&gt;In the last two articles, we introduced a variety of common evaluation methods and performance measures so that we can select the most appropriate one to calculate the learner&amp;rsquo;s &lt;em&gt;test error&lt;/em&gt; based on the characteristics of the data set and model task.&lt;/p&gt;
+&lt;p&gt;Howerver, the &lt;em&gt;test error&lt;/em&gt; is affected by many factors such as the randomness of the algorithm (e.g. K-Means) and the diffirence between test sets, which makes the same model get different results each time. Also the &lt;em&gt;test error&lt;/em&gt; is an approximation of the &lt;em&gt;generalization error&lt;/em&gt; instead of the true generalization performance of the learners.&lt;/p&gt;
+&lt;p&gt;So how to compare the performance measures of single or multiple learners on different/same test set? And that is the comparative test. Final bias and variance is an important tool to explain learner generalization performance. This post continues from the previous post and focuses on comparison tests, variance and bias.&lt;/p&gt;
+&lt;h2 id=&#34;comparison-test&#34;&gt;Comparison test&lt;/h2&gt;
 </description>
     </item>
     

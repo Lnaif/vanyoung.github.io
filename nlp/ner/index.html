@@ -537,10 +537,6 @@
 
 
 
-  
-    
-  
-
 
 
 
@@ -568,14 +564,6 @@
   
   <div class="docs-toc-item">
     <a class="docs-toc-link" href="/nlp/ner/">Named Entity Recognition</a>
-    <ul class="nav docs-sidenav">
-      
-      <li class="active">
-        <a href="/nlp/ner/">Named Entity Recognition</a>
-      </li>
-      
-    </ul>
-    
 
   </div>
   
@@ -611,6 +599,7 @@
       <ul>
         <li><a href="#rule-based-approaches">Rule-based Approaches</a></li>
         <li><a href="#unsupervised-learning-approaches">Unsupervised Learning Approaches</a></li>
+        <li><a href="#feature-based-supervised-learning-approaches">Feature-based Supervised Learning Approaches</a></li>
       </ul>
     </li>
     <li><a href="#deep-learning-techniques-for-ner">Deep learning Techniques for NER</a>
@@ -624,6 +613,10 @@
         <li><a href="#word-level-representation">Word-level Representation</a></li>
         <li><a href="#character-level-representation">Character-level Representation</a></li>
         <li><a href="#hybrid-representation">Hybrid Representation</a></li>
+      </ul>
+    </li>
+    <li><a href="#context-encoder">Context Encoder</a>
+      <ul>
         <li><a href="#convolutional-neural-networks">Convolutional Neural Networks</a></li>
         <li><a href="#recurrent-neural-networks">Recurrent Neural Networks</a></li>
         <li><a href="#recursive-neural-networks">Recursive Neural Networks</a></li>
@@ -1026,7 +1019,7 @@
 <p>A typical approach of unsupervised learning is clustering. Clustering-based NER systems extract named entities from the clustered groups based on context similarity. The key idea is that lexical resources, lexical patterns, and statistics computed on a large corpus can be used to infer mentions of named entities.</p>
 </blockquote>
 <p>典型的无监督方法如聚类可以利用语义相似性，从聚集的组中抽取命名实体。其核心思路在于利用基于巨大语料得到的词汇资源、词汇模型、统计数据来推断命名实体的类别。</p>
-<p>##Feature-based Supervised Learning Approaches</p>
+<h3 id="feature-based-supervised-learning-approaches">Feature-based Supervised Learning Approaches</h3>
 <blockquote>
 <p>Applying supervised learning, NER is cast to a multi-class classification or sequence labeling task. Given annotated data samples, features are carefully designed to represent each training example. Machine learning algorithms are then utilized to learn a model to recognize similar patterns from unseen data.</p>
 </blockquote>
@@ -1140,7 +1133,7 @@
 <li>
 <a href="http://p0st3r.github.io/2020/http%3A//arxiv.org/abs/1810.04805" target="_blank" rel="noopener">BERT</a></li>
 </ul>
-<p>#0x07 Context Encoder</p>
+<h2 id="context-encoder">Context Encoder</h2>
 <p>The second stage of DL-based NER is to learn context encoder from the input representations.</p>
 <p>The widely-used context encoder architectures are:</p>
 <ul>
@@ -1183,7 +1176,7 @@
 <p>Recursive neural networks are non-linear adaptive models that are able to learn deep structured information, by traversing a given structure in topological order. Named entities are highly related to linguistic constituents, e.g., noun phrases. Typical sequential labeling approaches take little into consideration about phrase structures of sentences, however, recursive neural network can effectively use the structural information to obtain better prediction results.</p>
 </blockquote>
 <p>递归神经网络是一种非线性自适应的模型，它可以学习得到输入的深度结构化信息。命名实体与某些语言成分联系十分紧密，如名词词组。传统的序列标注方法几乎忽略了句子的结构信息（成分间的结构），而递归神经网络能有效的利用这样的结构信息，从而得出更好的预测结果。</p>
-<p>Typical application:</p>
+<p>Example:</p>
 <ul>
 <li>
 <a href="http://aclanthology.info/papers/D17-1281/d17-1281" target="_blank" rel="noopener">Leveraging linguistic structures for named entity recognition with bidirectional recursive neural networks</a></li>
@@ -1195,7 +1188,7 @@ p(t1,t2,…,tN)=N∏k=1p(tk|t1,t2,…,tk−1)p(t1,t2,…,tN)=∏k=1Np(tk|t1,t2,�
 A backward language model is similar to a forward language model, except it runs over the sequence in reverse order, predicting the previous token given its future context:
 p(t1,t2,…,tN)=N∏k=1p(tk|tk+1,tk+2,…,tN)p(t1,t2,…,tN)=∏k=1Np(tk|tk+1,tk+2,…,tN)
 For neural language models, probability of token tktk can be computed by the output of recurrent neural networks. At each position kk, we can obtain two context-dependent representations (forward and backward) and then combine them as the final language model embedding for token tktk. Such language-model-augmented knowledge has been empirically verified to be helpful in numerous sequence labeling tasks.</p>
-<p>Typical application:</p>
+<p>Example:</p>
 <ul>
 <li>
 <a href="https://arxiv.org/abs/1705.00108" target="_blank" rel="noopener">Semi-supervised sequence tagging with bidirectional language models</a> 文章认为，利用单词级别表示作为输入来产生上下文表示的循环神经网络往往是在相对较小的标注数据集上训练的。而神经语言模型可以在大型的无标注数据集上训练。文中模型同时使用词嵌入模型与神经语言模型对无监督的语料进行训练，得到两种单词表示；之后模型中省去了将输入向量转化为上下文相关向量的操作，直接结合前面得到的两类单词表示并用于有监督的序列标注任务，简化了模型的结构。</li>
@@ -1225,7 +1218,7 @@ For neural language models, probability of token tktk can be computed by the out
 <p>With a multi-layer Perceptron + Softmax layer as the tag decoder layer, the sequence labeling task is cast as a multi-class classification problem. Tag for each word is independently predicted based on the context-dependent representations without taking into account its neighbors.</p>
 </blockquote>
 <p>利用这个结构可以将NER这类序列标注模型视为多类型分类问题。基于该阶段输入的上下文语义表示，每个单词的标签被独立地预测，与其邻居无关。</p>
-<p>Typical application:</p>
+<p>Example:</p>
 <ul>
 <li>
 <a href="https://arxiv.org/abs/1702.02098" target="_blank" rel="noopener">Fast and accurate entity recognition with iterated dilated convolutions</a></li>

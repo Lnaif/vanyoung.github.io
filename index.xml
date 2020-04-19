@@ -92,7 +92,7 @@
 &lt;blockquote&gt;
 &lt;p&gt;Given a sequence of tokens s=&amp;lt;w1,w2,…,wn&amp;gt;s=&amp;lt;w1,w2,…,wn&amp;gt;, NER is to output a list of tuples &amp;lt;Is,Ie,t&amp;gt;&amp;lt;Is,Ie,t&amp;gt;, each of which is a named entity mentioned in ss. Here, Is∈[1,N]Is∈[1,N] and Ie∈[1,N]Ie∈[1,N] are the start and the end indexes of a named entity mention; tt is the entity type from a predefined category set. Example as:&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;assets/image-20200418111239312.png&#34; alt=&#34;image-20200418111239312&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_def.png&#34; alt=&#34;def&#34;&gt;&lt;/p&gt;
 &lt;p&gt;给定标识符集合 s=&amp;lt;w1,w2,…,wn&amp;gt;s=&amp;lt;w1,w2,…,wn&amp;gt; ，NER 输出一个三元组的 &amp;lt;Is,Ie,t&amp;gt;&amp;lt;Is,Ie,t&amp;gt; 列表，列表中的每个三元组代表 ss 中的一个命名实体。此处 Is∈[1,N]Is∈[1,N]，Ie∈[1,N]Ie∈[1,N] 分别为命名实体的起始索引以及结束索引；tt 指代从预定义类别中选择的实体类型&lt;/p&gt;
 &lt;h2 id=&#34;tasks-of-ner&#34;&gt;Tasks of NER&lt;/h2&gt;
 &lt;blockquote&gt;
@@ -368,7 +368,7 @@
 &lt;blockquote&gt;
 &lt;p&gt;F-score is the harmonic mean of precision and recall, and the balanced F-score is most commonly used:&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;$Fscore=2\times\frac{Precision\times{Recall}}{Precision+Recall}$&lt;/p&gt;
+&lt;p&gt;$F{score}=2\times\frac{Precision\times{Recall}}{Precision+Recall}$&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;As most of NER systems involve multiple entity types, it is often required to assess the performance across all entity classes. Two measures are commonly used for this purpose:&lt;/p&gt;
 &lt;ul&gt;
@@ -442,7 +442,7 @@
 &lt;li&gt;标签解码（tag decoder）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;一个深度NER系统的结构示例如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;assets/image-20200418111322568.png&#34; alt=&#34;image-20200418111322568&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_structure.png&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;distributed-representations-for-input&#34;&gt;Distributed Representations for Input&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;A straight forward option of representing a word is &lt;em&gt;one-hot&lt;/em&gt; vector representation. In one-hot vector space, two distinct words have completely different representations and are orthogonal. &lt;em&gt;Distributed representation&lt;/em&gt; represents words in low dimensional real-valued dense vectors where each dimension represents a latent feature. Automatically learned from text, distributed representation captures semantic and syntactic properties of word, which do not explicitly present in the input to NER.&lt;/p&gt;
@@ -500,8 +500,8 @@
 &lt;li&gt;RNN-based&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Figures below illustrate the two architectures:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;assets/image-20200418111407867.png&#34; alt=&#34;image-20200418111407867&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;assets/image-20200418111423908.png&#34; alt=&#34;image-20200418111423908&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_cnn.png&#34; alt=&#34;ner_cnn&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_rnn.png&#34; alt=&#34;ner_rnn&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Examples:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;CNN-based：
@@ -531,7 +531,7 @@
 &lt;/ul&gt;
 &lt;h3 id=&#34;convolutional-neural-networks&#34;&gt;Convolutional Neural Networks&lt;/h3&gt;
 &lt;p&gt;Collobert et al. proposed a sentence approach network where a word is tagged with the consideration of whole sentence:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;assets/image-20200418111044886.png&#34; alt=&#34;image-20200418111044886&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_sentence_cnn.png&#34; alt=&#34;image-20200418111044886&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Each word in the input sequence is embedded to an N-dimensional vector after the stage of input representation. Then a convolutional layer is used to produce local features around each word, and the size of the output of the convolutional layers depends on the number of words in the sentence. The global feature vector is constructed by combining local feature vectors extracted by the convolutional layers. The dimension of the global feature vector is fixed, independent of the sentence length, in order to apply subsequent standard affine layers. Two approaches are widely used to extract global features: a max or an averaging operation over the position(i.e., “time” step) in the sentence. Finally, these fixed-size global features are fed into tag decoder to compute distribution scores for all possible tags for the words in the network input.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -551,7 +551,7 @@
 &lt;li&gt;LSTM（long-short term memory）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;特别的，双向循环神经网络（bidirectional RNNs）能同时有效地利用过去的信息和未来的信息，即可以有效利用全局信息。因此，双向循环神经网络逐渐成为解决 NER 这类序列标注任务的标准解法。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;assets/image-20200418111123972.png&#34; alt=&#34;image-20200418111123972&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_text_encoder_rnn.png&#34; alt=&#34;image-20200418111123972&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Example:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -567,13 +567,13 @@
 &lt;li&gt;
 &lt;a href=&#34;http://aclanthology.info/papers/D17-1281/d17-1281&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Leveraging linguistic structures for named entity recognition with bidirectional recursive neural networks&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;assets/image-20200418111202373.png&#34; alt=&#34;image-20200418111202373&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_bidirect.png&#34; alt=&#34;image-20200418111202373&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;neural-language-model&#34;&gt;Neural Language Model&lt;/h3&gt;
-&lt;p&gt;Language model is a family of models describing the generation of sequences. Given a token sequence, (t1,t2,…,tN)(t1,t2,…,tN), a forward language model computes the probability of sequence by modeling the probability of token tktk given its history t1,…,tk−1t1,…,tk−1:
-p(t1,t2,…,tN)=N∏k=1p(tk|t1,t2,…,tk−1)p(t1,t2,…,tN)=∏k=1Np(tk|t1,t2,…,tk−1)
+&lt;p&gt;Language model is a family of models describing the generation of sequences. Given a token sequence, $(t_1,t_2,…,t_N)$, a forward language model computes the probability of sequence by modeling the probability of token $t_k$ given its history $t1,…,t_{k−1}$:
+$p(t_1,t_2,&amp;hellip;,t_N)=\prod\limits_{k=1}^Np(t_k|t_1,t_2,&amp;hellip;,t_{k-1})$
 A backward language model is similar to a forward language model, except it runs over the sequence in reverse order, predicting the previous token given its future context:
-p(t1,t2,…,tN)=N∏k=1p(tk|tk+1,tk+2,…,tN)p(t1,t2,…,tN)=∏k=1Np(tk|tk+1,tk+2,…,tN)
-For neural language models, probability of token tktk can be computed by the output of recurrent neural networks. At each position kk, we can obtain two context-dependent representations (forward and backward) and then combine them as the final language model embedding for token tktk. Such language-model-augmented knowledge has been empirically verified to be helpful in numerous sequence labeling tasks.&lt;/p&gt;
+$p(t_1,t_2,&amp;hellip;,t_N)=\prod\limits_p(t_k|t_{k+1},t_{k+2},&amp;hellip;,t_N)$
+For neural language models, probability of token tktk can be computed by the output of recurrent neural networks. At each position $k$, we can obtain two context-dependent representations (forward and backward) and then combine them as the final language model embedding for token $t_K$. Such language-model-augmented knowledge has been empirically verified to be helpful in numerous sequence labeling tasks.&lt;/p&gt;
 &lt;p&gt;Example:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;

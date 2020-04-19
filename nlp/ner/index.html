@@ -706,7 +706,7 @@
 <blockquote>
 <p>Given a sequence of tokens s=&lt;w1,w2,…,wn&gt;s=&lt;w1,w2,…,wn&gt;, NER is to output a list of tuples &lt;Is,Ie,t&gt;&lt;Is,Ie,t&gt;, each of which is a named entity mentioned in ss. Here, Is∈[1,N]Is∈[1,N] and Ie∈[1,N]Ie∈[1,N] are the start and the end indexes of a named entity mention; tt is the entity type from a predefined category set. Example as:</p>
 </blockquote>
-<p><img src="assets/image-20200418111239312.png" alt="image-20200418111239312"></p>
+<p><img src="https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_def.png" alt="def"></p>
 <p>给定标识符集合 s=&lt;w1,w2,…,wn&gt;s=&lt;w1,w2,…,wn&gt; ，NER 输出一个三元组的 &lt;Is,Ie,t&gt;&lt;Is,Ie,t&gt; 列表，列表中的每个三元组代表 ss 中的一个命名实体。此处 Is∈[1,N]Is∈[1,N]，Ie∈[1,N]Ie∈[1,N] 分别为命名实体的起始索引以及结束索引；tt 指代从预定义类别中选择的实体类型</p>
 <h2 id="tasks-of-ner">Tasks of NER</h2>
 <blockquote>
@@ -982,7 +982,7 @@
 <blockquote>
 <p>F-score is the harmonic mean of precision and recall, and the balanced F-score is most commonly used:</p>
 </blockquote>
-<p>$Fscore=2\times\frac{Precision\times{Recall}}{Precision+Recall}$</p>
+<p>$F{score}=2\times\frac{Precision\times{Recall}}{Precision+Recall}$</p>
 <blockquote>
 <p>As most of NER systems involve multiple entity types, it is often required to assess the performance across all entity classes. Two measures are commonly used for this purpose:</p>
 <ul>
@@ -1056,7 +1056,7 @@
 <li>标签解码（tag decoder）</li>
 </ol>
 <p>一个深度NER系统的结构示例如下：</p>
-<p><img src="assets/image-20200418111322568.png" alt="image-20200418111322568"></p>
+<p><img src="https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_structure.png" alt="img"></p>
 <h2 id="distributed-representations-for-input">Distributed Representations for Input</h2>
 <blockquote>
 <p>A straight forward option of representing a word is <em>one-hot</em> vector representation. In one-hot vector space, two distinct words have completely different representations and are orthogonal. <em>Distributed representation</em> represents words in low dimensional real-valued dense vectors where each dimension represents a latent feature. Automatically learned from text, distributed representation captures semantic and syntactic properties of word, which do not explicitly present in the input to NER.</p>
@@ -1114,8 +1114,8 @@
 <li>RNN-based</li>
 </ul>
 <p>Figures below illustrate the two architectures:</p>
-<p><img src="assets/image-20200418111407867.png" alt="image-20200418111407867"></p>
-<p><img src="assets/image-20200418111423908.png" alt="image-20200418111423908"></p>
+<p><img src="https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_cnn.png" alt="ner_cnn"></p>
+<p><img src="https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_rnn.png" alt="ner_rnn"></p>
 <p>Examples:</p>
 <ul>
 <li>CNN-based：
@@ -1145,7 +1145,7 @@
 </ul>
 <h3 id="convolutional-neural-networks">Convolutional Neural Networks</h3>
 <p>Collobert et al. proposed a sentence approach network where a word is tagged with the consideration of whole sentence:</p>
-<p><img src="assets/image-20200418111044886.png" alt="image-20200418111044886"></p>
+<p><img src="https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_sentence_cnn.png" alt="image-20200418111044886"></p>
 <blockquote>
 <p>Each word in the input sequence is embedded to an N-dimensional vector after the stage of input representation. Then a convolutional layer is used to produce local features around each word, and the size of the output of the convolutional layers depends on the number of words in the sentence. The global feature vector is constructed by combining local feature vectors extracted by the convolutional layers. The dimension of the global feature vector is fixed, independent of the sentence length, in order to apply subsequent standard affine layers. Two approaches are widely used to extract global features: a max or an averaging operation over the position(i.e., “time” step) in the sentence. Finally, these fixed-size global features are fed into tag decoder to compute distribution scores for all possible tags for the words in the network input.</p>
 </blockquote>
@@ -1165,7 +1165,7 @@
 <li>LSTM（long-short term memory）</li>
 </ol>
 <p>特别的，双向循环神经网络（bidirectional RNNs）能同时有效地利用过去的信息和未来的信息，即可以有效利用全局信息。因此，双向循环神经网络逐渐成为解决 NER 这类序列标注任务的标准解法。</p>
-<p><img src="assets/image-20200418111123972.png" alt="image-20200418111123972"></p>
+<p><img src="https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_text_encoder_rnn.png" alt="image-20200418111123972"></p>
 <p>Example:</p>
 <ul>
 <li>
@@ -1181,13 +1181,13 @@
 <li>
 <a href="http://aclanthology.info/papers/D17-1281/d17-1281" target="_blank" rel="noopener">Leveraging linguistic structures for named entity recognition with bidirectional recursive neural networks</a></li>
 </ul>
-<p><img src="assets/image-20200418111202373.png" alt="image-20200418111202373"></p>
+<p><img src="https://raw.githubusercontent.com/p0st3r/Figurebed/master/ner_bidirect.png" alt="image-20200418111202373"></p>
 <h3 id="neural-language-model">Neural Language Model</h3>
-<p>Language model is a family of models describing the generation of sequences. Given a token sequence, (t1,t2,…,tN)(t1,t2,…,tN), a forward language model computes the probability of sequence by modeling the probability of token tktk given its history t1,…,tk−1t1,…,tk−1:
-p(t1,t2,…,tN)=N∏k=1p(tk|t1,t2,…,tk−1)p(t1,t2,…,tN)=∏k=1Np(tk|t1,t2,…,tk−1)
+<p>Language model is a family of models describing the generation of sequences. Given a token sequence, $(t_1,t_2,…,t_N)$, a forward language model computes the probability of sequence by modeling the probability of token $t_k$ given its history $t1,…,t_{k−1}$:
+$p(t_1,t_2,&hellip;,t_N)=\prod\limits_{k=1}^Np(t_k|t_1,t_2,&hellip;,t_{k-1})$
 A backward language model is similar to a forward language model, except it runs over the sequence in reverse order, predicting the previous token given its future context:
-p(t1,t2,…,tN)=N∏k=1p(tk|tk+1,tk+2,…,tN)p(t1,t2,…,tN)=∏k=1Np(tk|tk+1,tk+2,…,tN)
-For neural language models, probability of token tktk can be computed by the output of recurrent neural networks. At each position kk, we can obtain two context-dependent representations (forward and backward) and then combine them as the final language model embedding for token tktk. Such language-model-augmented knowledge has been empirically verified to be helpful in numerous sequence labeling tasks.</p>
+$p(t_1,t_2,&hellip;,t_N)=\prod\limits_p(t_k|t_{k+1},t_{k+2},&hellip;,t_N)$
+For neural language models, probability of token tktk can be computed by the output of recurrent neural networks. At each position $k$, we can obtain two context-dependent representations (forward and backward) and then combine them as the final language model embedding for token $t_K$. Such language-model-augmented knowledge has been empirically verified to be helpful in numerous sequence labeling tasks.</p>
 <p>Example:</p>
 <ul>
 <li>
